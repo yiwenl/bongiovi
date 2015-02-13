@@ -85,7 +85,7 @@
 
 	p.attachShaderProgram = function() {
 		this._isReady = true;
-		console.log("Create shader : ", this.idVertex, this.idFragment);
+		// console.log("Create shader : ", this.idVertex, this.idFragment);
 		this.shaderProgram = this.gl.createProgram();
 		this.gl.attachShader(this.shaderProgram, this.vertexShader);
 		this.gl.attachShader(this.shaderProgram, this.fragmentShader);

@@ -29,7 +29,6 @@ bongiovi = window.bongiovi || {};
 
 		var size = this.gl.getParameter(this.gl.SAMPLES);
 		var antialias = this.gl.getContextAttributes().antialias;
-		console.log( "Sample size : ", size, antialias );
 
 		this.gl.viewport(0, 0, this.gl.viewportWidth, this.gl.viewportHeight);
 		this.gl.enable(this.gl.DEPTH_TEST);
@@ -42,8 +41,6 @@ bongiovi = window.bongiovi || {};
 		mat4.identity(this.matrix);
 		this.depthTextureExt 	= this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 		this.floatTextureExt 	= this.gl.getExtension("OES_texture_float") // Or browser-appropriate prefix
-
-		console.log( "Extentions : ", this.depthTextureExt, this.floatTextureExt );
 
 		this.enableAlphaBlending();
 

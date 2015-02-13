@@ -4,6 +4,7 @@
 	<title>Library - bongiovi</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 	<script type="text/javascript" src="js/libs/gl-matrix-2.2.2-min.js"></script>
+<!-- 
 	<script type="text/javascript" src="js/bongiovi/SimpleImageLoader.js"></script>
 	<script type="text/javascript" src="js/bongiovi/Scheduler.js"></script>
 	<script type="text/javascript" src="js/bongiovi/GLTool.js"></script>
@@ -16,7 +17,8 @@
 	<script type="text/javascript" src="js/bongiovi/GLTexture.js"></script>
 	<script type="text/javascript" src="js/bongiovi/View.js"></script>
 	<script type="text/javascript" src="js/bongiovi/ViewCopy.js"></script>
-
+ -->
+ 	<script type="text/javascript" src="js/compile/bongiovi-min.js"></script>
 	<script type="text/javascript" src="js/SceneTest.js"></script>
 	
 	<script type="text/javascript">
@@ -33,17 +35,11 @@
 		bongiovi.GL.init(canvas);
 		
 		var imgsToLoad = ["assets/image0.jpg","assets/image1.jpg","assets/image2.jpg","assets/image3.jpg","assets/image3.jpg"];
-		bongiovi.SimpleImageLoader.load(imgsToLoad, this, onImageLoaded, onImageProgress);
-	}
-
-	function onImageProgress(percent) {
-		console.log("Loading : ", percent);
+		bongiovi.SimpleImageLoader.load(imgsToLoad, this, onImageLoaded);
 	}
 
 	function onImageLoaded(img) {
-		console.debug("Images loaded : ", img);
 		images = img;
-
 		scene = new SceneTest();
 		bongiovi.Scheduler.addEF(this, loop);
 	}
