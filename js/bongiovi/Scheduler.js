@@ -16,7 +16,7 @@ if(window.requestAnimFrame == undefined) {
 }
 
 (function() {
-	Scheduler = function() {
+	var Scheduler = function() {
 		this.FRAMERATE = 60;
 		this._delayTasks = [];
 		this._nextTasks = [];
@@ -136,6 +136,9 @@ if(window.requestAnimFrame == undefined) {
 		var t = {scope:scope, func:func, params:params};
 		this._usurpTask.push(t);
 	}
+
+	bongiovi.Scheduler = new Scheduler();
+	
 })();
 
-bongiovi.Scheduler = new Scheduler();
+

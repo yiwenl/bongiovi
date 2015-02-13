@@ -2,21 +2,56 @@
 <html>
 <head>
 	<title>Library - bongiovi</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script type="text/javascript" src="js/libs/gl-matrix-2.2.2-min.js"></script>
+	<script type="text/javascript" src="js/bongiovi/SimpleImageLoader.js"></script>
 	<script type="text/javascript" src="js/bongiovi/Scheduler.js"></script>
+	<script type="text/javascript" src="js/bongiovi/GLTool.js"></script>
+	<script type="text/javascript" src="js/bongiovi/SceneRotation.js"></script>
+	<script type="text/javascript" src="js/bongiovi/Scene.js"></script>
+	<script type="text/javascript" src="js/bongiovi/Camera.js"></script>
+	<script type="text/javascript" src="js/bongiovi/CameraPerspective.js"></script>
+	<script type="text/javascript" src="js/bongiovi/Mesh.js"></script>
+	<script type="text/javascript" src="js/bongiovi/GLShader.js"></script>
+	<script type="text/javascript" src="js/bongiovi/GLTexture.js"></script>
+	<script type="text/javascript" src="js/bongiovi/View.js"></script>
+	<script type="text/javascript" src="js/bongiovi/ViewCopy.js"></script>
+
+	<script type="text/javascript" src="js/SceneTest.js"></script>
+	
 	<script type="text/javascript">
 	var count = 0;
 	var efIndex;
-	function init() {
-		console.log(bongiovi.Scheduler);
+	var scene;
+	var images;
 
-		efIndex = bongiovi.Scheduler.addEF(this, loop);
+	function init() {
+		var canvas = document.createElement("canvas");
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		document.body.appendChild(canvas);
+		bongiovi.GL.init(canvas);
+		
+		var imgsToLoad = ["assets/image0.jpg","assets/image1.jpg","assets/image2.jpg","assets/image3.jpg","assets/image3.jpg"];
+		bongiovi.SimpleImageLoader.load(imgsToLoad, this, onImageLoaded, onImageProgress);
 	}
 
+	function onImageProgress(percent) {
+		console.log("Loading : ", percent);
+	}
+
+	function onImageLoaded(img) {
+		console.debug("Images loaded : ", img);
+		images = img;
+
+		scene = new SceneTest();
+		bongiovi.Scheduler.addEF(this, loop);
+	}
 
 	function loop() {
-		console.log(count);
-		if(count ++ > 50) bongiovi.Scheduler.removeEF(efIndex);
+		scene.loop();
 	}
+
 	</script>
 </head>
 <body onload="init()">
