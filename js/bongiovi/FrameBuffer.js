@@ -1,20 +1,30 @@
-// Framebuffer.js
+// FrameBuffer.js
 
 // define(["alfrid/GLTool", "alfrid/GLTexture"], function(GLTool, GLTexture) {
 (function() {
 	var gl;
+	var GLTexture = bongiovi.GLTexture;
+	var isPowerOfTwo = function(x) {	return !(x == 0) && !(x & (x - 1));	}
 
-	var Framebuffer = function(width, height, magFilter, minFilter) {
+	var FrameBuffer = function(width, height, options) {
 		gl = bongiovi.GLTool.gl;
-		this.width  = width;
-		this.height = height;
-		this.magFilter = magFilter==undefined ? gl.LINEAR : magFilter;
-		this.minFilter = minFilter==undefined ? gl.LINEAR : minFilter;
+		options        = options || {};
+		this.width     = width;
+		this.height    = height;
+		this.magFilter = options.magFilter || gl.LINEAR;
+		this.minFilter = options.minFilter || gl.LINEAR_MIPMAP_NEAREST;
+		this.wrapS     = options.wrapS || gl.MIRRORED_REPEAT;
+		this.wrapT     = options.wrapT || gl.MIRRORED_REPEAT;
+
+		if(!isPowerOfTwo(width) || !isPowerOfTwo(height)) {
+			this.wrapS = this.wrapT = gl.CLAMP_TO_EDGE;
+			if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST) this.minFilter = gl.LINEAR;
+		} 
 
 		this._init();
 	}
 
-	var p = Framebuffer.prototype;
+	var p = FrameBuffer.prototype;
 
 	p._init = function() {
 		this.depthTextureExt 	= gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
@@ -39,7 +49,7 @@
 		else
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameBuffer.width, this.frameBuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
-		gl.generateMipmap(gl.TEXTURE_2D);
+		if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
 
 		gl.bindTexture(gl.TEXTURE_2D, this.depthTexture);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -86,5 +96,5 @@
 		return this.glDepthTexture;
 	};
 
-	bongiovi.Framebuffer = Framebuffer;
+	bongiovi.FrameBuffer = FrameBuffer;
 })();

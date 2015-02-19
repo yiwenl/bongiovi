@@ -2,34 +2,52 @@
 
 (function() {
 	var gl, GL;
+	var isPowerOfTwo = function(x) {	return !(x == 0) && !(x & (x - 1));	}
 
-	var GLTexture = function(source, isTexture) {
-		isTexture = isTexture == undefined ? false : true;
+	var GLTexture = function(source, isTexture, options) {
+		isTexture = isTexture || false;
+		options = options || {};
 		gl = bongiovi.GL.gl;
 		GL = bongiovi.GL;
 		if(isTexture) {
 			this.texture = source;
 		} else {
-			this.texture = gl.createTexture();
-			this._isVideo = (source.tagName == "VIDEO");
+			this.texture   = gl.createTexture();
+			this._isVideo  = (source.tagName == "VIDEO");
+			this.magFilter = options.magFilter || gl.LINEAR;
+			this.minFilter = options.minFilter || gl.LINEAR_MIPMAP_NEAREST;
 
+			this.wrapS     = options.wrapS || gl.MIRRORED_REPEAT;
+			this.wrapT     = options.wrapT || gl.MIRRORED_REPEAT;
+
+			if(source.width) {
+				if(!isPowerOfTwo(source.width) || !isPowerOfTwo(source.height)) {
+					this.wrapS = this.wrapT = gl.CLAMP_TO_EDGE;
+					if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST) this.minFilter = gl.LINEAR;
+				} 	
+			}
+
+			
 
 			gl.bindTexture(gl.TEXTURE_2D, this.texture);
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
 
 			if(!this._isVideo) {
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
-				gl.generateMipmap(gl.TEXTURE_2D);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapT);
+				
+				if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
+				
 			} else {
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
-				gl.generateMipmap(gl.TEXTURE_2D);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapT);
+
+				if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
 			}
 
 			gl.bindTexture(gl.TEXTURE_2D, null);
@@ -47,7 +65,7 @@
 		if(!this._isVideo) {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-			gl.generateMipmap(gl.TEXTURE_2D);
+			if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
 		} else {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

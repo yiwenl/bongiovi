@@ -17,3 +17,6 @@ var GLShader          = require("../../js/bongiovi/GLShader.js");
 var GLTexture         = require("../../js/bongiovi/GLTexture.js");
 var View              = require("../../js/bongiovi/View.js");
 var ViewCopy          = require("../../js/bongiovi/ViewCopy.js");
+var FrameBuffer       = require("../../js/bongiovi/FrameBuffer.js");
+var Pass              = require("../../js/bongiovi/Pass.js");
+var EffectComposer    = require("../../js/bongiovi/EffectComposer.js");
