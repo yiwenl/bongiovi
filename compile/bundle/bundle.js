@@ -18,11 +18,8 @@ var GLShader          = require("../../js/bongiovi/GLShader.js");
 var GLTexture         = require("../../js/bongiovi/GLTexture.js");
 var View              = require("../../js/bongiovi/View.js");
 var ViewCopy          = require("../../js/bongiovi/ViewCopy.js");
-var FrameBuffer       = require("../../js/bongiovi/FrameBuffer.js");
-var Pass              = require("../../js/bongiovi/Pass.js");
-var EffectComposer    = require("../../js/bongiovi/EffectComposer.js");
 
-},{"../../js/bongiovi/Camera.js":2,"../../js/bongiovi/CameraPerspective.js":3,"../../js/bongiovi/EffectComposer.js":4,"../../js/bongiovi/FrameBuffer.js":5,"../../js/bongiovi/GLShader.js":6,"../../js/bongiovi/GLTexture.js":7,"../../js/bongiovi/GLTool.js":8,"../../js/bongiovi/Mesh.js":9,"../../js/bongiovi/Pass.js":10,"../../js/bongiovi/Scene.js":11,"../../js/bongiovi/SceneRotation.js":12,"../../js/bongiovi/Scheduler.js":13,"../../js/bongiovi/SimpleImageLoader.js":14,"../../js/bongiovi/View.js":15,"../../js/bongiovi/ViewCopy.js":16}],2:[function(require,module,exports){
+},{"../../js/bongiovi/Camera.js":2,"../../js/bongiovi/CameraPerspective.js":3,"../../js/bongiovi/GLShader.js":4,"../../js/bongiovi/GLTexture.js":5,"../../js/bongiovi/GLTool.js":6,"../../js/bongiovi/Mesh.js":7,"../../js/bongiovi/Scene.js":8,"../../js/bongiovi/SceneRotation.js":9,"../../js/bongiovi/Scheduler.js":10,"../../js/bongiovi/SimpleImageLoader.js":11,"../../js/bongiovi/View.js":12,"../../js/bongiovi/ViewCopy.js":13}],2:[function(require,module,exports){
 bongiovi = window.bongiovi || {};
 
 (function() {
@@ -77,140 +74,6 @@ bongiovi = window.bongiovi || {};
 
 })();
 },{}],4:[function(require,module,exports){
-// EffectComposer.js
-
-// define(["alfrid/Pass"], function(Pass) {
-(function(Pass) {
-	var EffectComposer = function() {
-		this.texture;
-		this._passes = [];
-	}
-
-	var p = EffectComposer.prototype = new bongiovi.Pass();
-	var s = bongiovi.Pass.prototype;
-
-	p.addPass = function(pass) {
-		this._passes.push(pass);
-	};
-
-	p.render = function(texture) {
-		this.texture = texture;
-		for(var i=0; i<this._passes.length; i++) {
-			this.texture = this._passes[i].render(this.texture);
-		}
-
-		return this.texture;
-	};
-
-	p.getTexture = function() {
-		return this.texture;	
-	};
-
-	bongiovi.EffectComposer = EffectComposer;
-	
-})();
-},{}],5:[function(require,module,exports){
-// FrameBuffer.js
-
-// define(["alfrid/GLTool", "alfrid/GLTexture"], function(GLTool, GLTexture) {
-(function() {
-	var gl;
-	var GLTexture = bongiovi.GLTexture;
-	var isPowerOfTwo = function(x) {	return !(x == 0) && !(x & (x - 1));	}
-
-	var FrameBuffer = function(width, height, options) {
-		gl = bongiovi.GLTool.gl;
-		options        = options || {};
-		this.width     = width;
-		this.height    = height;
-		this.magFilter = options.magFilter || gl.LINEAR;
-		this.minFilter = options.minFilter || gl.LINEAR_MIPMAP_NEAREST;
-		this.wrapS     = options.wrapS || gl.MIRRORED_REPEAT;
-		this.wrapT     = options.wrapT || gl.MIRRORED_REPEAT;
-
-		if(!isPowerOfTwo(width) || !isPowerOfTwo(height)) {
-			this.wrapS = this.wrapT = gl.CLAMP_TO_EDGE;
-			if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST) this.minFilter = gl.LINEAR;
-		} 
-
-		this._init();
-	}
-
-	var p = FrameBuffer.prototype;
-
-	p._init = function() {
-		this.depthTextureExt 	= gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
-
-		this.texture            = gl.createTexture();
-		this.depthTexture       = gl.createTexture();
-		this.glTexture			= new GLTexture(this.texture, true);
-		this.glDepthTexture		= new GLTexture(this.depthTexture, true);
-		this.frameBuffer        = gl.createFramebuffer();		
-		gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-		this.frameBuffer.width  = this.width;
-		this.frameBuffer.height = this.height;
-		var size                = this.width;
-
-		gl.bindTexture(gl.TEXTURE_2D, this.texture);
-	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
-	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
-	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		if(this.magFilter == gl.NEAREST && this.minFilter == gl.NEAREST) 
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameBuffer.width, this.frameBuffer.height, 0, gl.RGBA, gl.FLOAT, null);
-		else
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, this.frameBuffer.width, this.frameBuffer.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-
-		if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
-
-		gl.bindTexture(gl.TEXTURE_2D, this.depthTexture);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		if(this.depthTextureExt != null)gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, this.width, this.height, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
-
-	    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
-	    if(this.depthTextureExt == null) {
-	    	console.log( "no depth texture" );
-	    	var renderbuffer = gl.createRenderbuffer();
-	    	gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
-	    	gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, this.frameBuffer.width, this.frameBuffer.height);
-	    	gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
-	    } else {
-	    	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, this.depthTexture, 0);
-	    }
-	    
-	    
-
-	    gl.bindTexture(gl.TEXTURE_2D, null);
-	    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-	    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	};
-
-
-	p.bind = function() {
-		gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-	};
-
-
-	p.unbind = function() {
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-	};
-
-
-	p.getTexture = function() {
-		return this.glTexture;
-	};
-
-
-	p.getDepthTexture = function() {
-		return this.glDepthTexture;
-	};
-
-	bongiovi.FrameBuffer = FrameBuffer;
-})();
-},{}],6:[function(require,module,exports){
 
 // define(["alfrid/GLTool"], function(GLTool) {
 (function() {
@@ -362,57 +225,39 @@ bongiovi = window.bongiovi || {};
 	bongiovi.GLShader = GLShader;
 	
 })();
-},{}],7:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // GLTexture.js
 
 (function() {
 	var gl, GL;
-	var isPowerOfTwo = function(x) {	return !(x == 0) && !(x & (x - 1));	}
 
-	var GLTexture = function(source, isTexture, options) {
-		isTexture = isTexture || false;
-		options = options || {};
+	var GLTexture = function(source, isTexture) {
+		isTexture = isTexture == undefined ? false : true;
 		gl = bongiovi.GL.gl;
 		GL = bongiovi.GL;
 		if(isTexture) {
 			this.texture = source;
 		} else {
-			this.texture   = gl.createTexture();
-			this._isVideo  = (source.tagName == "VIDEO");
-			this.magFilter = options.magFilter || gl.LINEAR;
-			this.minFilter = options.minFilter || gl.LINEAR_MIPMAP_NEAREST;
+			this.texture = gl.createTexture();
+			this._isVideo = (source.tagName == "VIDEO");
 
-			this.wrapS     = options.wrapS || gl.MIRRORED_REPEAT;
-			this.wrapT     = options.wrapT || gl.MIRRORED_REPEAT;
-
-			if(source.width) {
-				if(!isPowerOfTwo(source.width) || !isPowerOfTwo(source.height)) {
-					this.wrapS = this.wrapT = gl.CLAMP_TO_EDGE;
-					if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST) this.minFilter = gl.LINEAR;
-				} 	
-			}
-
-			
 
 			gl.bindTexture(gl.TEXTURE_2D, this.texture);
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
 
 			if(!this._isVideo) {
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapT);
-				
-				if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
-				
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+				gl.generateMipmap(gl.TEXTURE_2D);
 			} else {
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.wrapT);
-
-				if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+				gl.generateMipmap(gl.TEXTURE_2D);
 			}
 
 			gl.bindTexture(gl.TEXTURE_2D, null);
@@ -430,7 +275,7 @@ bongiovi = window.bongiovi || {};
 		if(!this._isVideo) {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-			if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);
+			gl.generateMipmap(gl.TEXTURE_2D);
 		} else {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -456,7 +301,7 @@ bongiovi = window.bongiovi || {};
 
 	bongiovi.GLTexture = GLTexture;
 })();
-},{}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 bongiovi = window.bongiovi || {};
 
 (function() {
@@ -624,7 +469,7 @@ bongiovi = window.bongiovi || {};
 
 })();
 
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function() {
 
 	var Mesh = function(aVertexSize, aIndexSize, aDrawType) {
@@ -731,57 +576,7 @@ bongiovi = window.bongiovi || {};
 	bongiovi.Mesh = Mesh;
 
 })();
-},{}],10:[function(require,module,exports){
-(function() {
-	var gl, GL;
-
-	var Pass = function(params, width, height) {
-		gl = bongiovi.GL.gl;
-		GL = bongiovi.GL;
-
-		if(params == undefined) return;
-		if( (typeof params) == "string") {
-			this.view = new bongiovi.ViewCopy("assets/shaders/copy.vert", params);
-		} else {
-			this.view = params;
-		}
-
-		this.width = width == undefined ? 512 : width;
-		this.height = height == undefined ? 512 : height;
-		this._init();
-	}
-
-	var p = Pass.prototype;
-
-
-	p._init = function() {
-		this.fbo = new bongiovi.FrameBuffer(this.width, this.height);
-		this.fbo.bind();
-		GL.setViewport(0, 0, this.fbo.width, this.fbo.height);
-		GL.clear(0, 0, 0, 0);
-		this.fbo.unbind();
-	};
-
-	p.render = function(texture) {
-		// console.log( "Set Viewport : ", this.fbo.width, this.fbo.height );
-		GL.setViewport(0, 0, this.fbo.width, this.fbo.height);
-		this.fbo.bind();
-		GL.clear(0, 0, 0, 0);
-		this.view.render(texture);
-		this.fbo.unbind();
-
-		return this.fbo.getTexture();
-	};
-
-
-	p.getTexture = function() {
-		return this.fbo.getTexture();
-	};
-
-	bongiovi.Pass = Pass;
-})();
-
-},{}],11:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function() {
 	var Scene = function() {
 		this.gl = bongiovi.GLTool.gl;
@@ -838,7 +633,7 @@ bongiovi = window.bongiovi || {};
 	bongiovi.Scene = Scene;
 
 })();
-},{}],12:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 bongiovi = window.bongiovi || {};
 
 (function() {
@@ -867,7 +662,6 @@ bongiovi = window.bongiovi || {};
 		this._offset        = .004;
 		this._easing        = .1;
 		this._slerp			= -1;
-		this._isLocked 		= false;
 
 		var that = this;
 		aListenerTarget.addEventListener("mousedown", function(aEvent) { that._onMouseDown(aEvent); });
@@ -881,10 +675,6 @@ bongiovi = window.bongiovi || {};
 	};
 
 	var p = SceneRotation.prototype;
-
-	p.lock = function(value) {
-		this._isLocked = value;
-	};
 
 	p.getMousePos = function(aEvent) {
 		var mouseX, mouseY;
@@ -901,7 +691,6 @@ bongiovi = window.bongiovi || {};
 	};
 
 	p._onMouseDown = function(aEvent) {
-		if(this._isLocked) return;
 		if(this._isMouseDown) return;
 
 		var mouse = this.getMousePos(aEvent);
@@ -923,18 +712,15 @@ bongiovi = window.bongiovi || {};
 	};
 
 	p._onMouseMove = function(aEvent) {
-		if(this._isLocked) return;
 		this.mouse = this.getMousePos(aEvent);
 	};
 
 	p._onMouseUp = function(aEvent) {
-		if(this._isLocked) return;
 		if(!this._isMouseDown) return;
 		this._isMouseDown = false;
 	};
 
 	p._onMouseWheel = function(aEvent) {
-		if(this._isLocked) return;
 		aEvent.preventDefault();
 		var w = aEvent.wheelDelta;
 		var d = aEvent.detail;
@@ -1004,7 +790,9 @@ bongiovi = window.bongiovi || {};
 
 
 		mat4.fromQuat(this.matrix, this.tempRotation);
+		// if(toTrace) console.log(mat4.str(this.matrix)); 
 		mat4.multiply(this.matrix, this.matrix, this.m);
+		// if(toTrace) console.log(mat4.str(this.matrix) + "\n\n");
 	};
 
 	var multiplyVec3 = function(out, quat, vec) {
@@ -1056,7 +844,7 @@ bongiovi = window.bongiovi || {};
 			vec3.normalize(axis, axis);
 			var angle = vec3.length(v) * this._offset;
 			var _quat = quat.clone( [Math.sin(angle) * axis[0], Math.sin(angle) * axis[1], Math.sin(angle) * axis[2], Math.cos(angle) ] );
-			quat.multiply(aTempRotation, _quat, aTempRotation);
+			quat.multiply(aTempRotation, aTempRotation, _quat);
 		}
 		
 		this._z += (this._preZ - this._z) * this._easing;
@@ -1066,7 +854,7 @@ bongiovi = window.bongiovi || {};
 	bongiovi.SceneRotation = SceneRotation;
 	
 })();
-},{}],13:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // Scheduler.js
 
 bongiovi = window.bongiovi || {};
@@ -1212,7 +1000,7 @@ if(window.requestAnimFrame == undefined) {
 
 
 
-},{}],14:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // SimpleImageLoader.js
 
 bongiovi = window.bongiovi || {};
@@ -1265,7 +1053,7 @@ bongiovi = window.bongiovi || {};
 })();
 
 bongiovi.SimpleImageLoader = new SimpleImageLoader();
-},{}],15:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // define(["alfrid/GLShader"], function(GLShader) {
 (function() {
 
@@ -1291,7 +1079,7 @@ bongiovi.SimpleImageLoader = new SimpleImageLoader();
 	bongiovi.View = View;
 	
 })();
-},{}],16:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // define(["alfrid/View", "alfrid/GLTool", "alfrid/Mesh"], function(View, GLTool, Mesh) {
 (function() {
 

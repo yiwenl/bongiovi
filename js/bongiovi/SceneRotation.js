@@ -26,6 +26,7 @@ bongiovi = window.bongiovi || {};
 		this._offset        = .004;
 		this._easing        = .1;
 		this._slerp			= -1;
+		this._isLocked 		= false;
 
 		var that = this;
 		aListenerTarget.addEventListener("mousedown", function(aEvent) { that._onMouseDown(aEvent); });
@@ -39,6 +40,10 @@ bongiovi = window.bongiovi || {};
 	};
 
 	var p = SceneRotation.prototype;
+
+	p.lock = function(value) {
+		this._isLocked = value;
+	};
 
 	p.getMousePos = function(aEvent) {
 		var mouseX, mouseY;
@@ -55,6 +60,7 @@ bongiovi = window.bongiovi || {};
 	};
 
 	p._onMouseDown = function(aEvent) {
+		if(this._isLocked) return;
 		if(this._isMouseDown) return;
 
 		var mouse = this.getMousePos(aEvent);
@@ -76,15 +82,18 @@ bongiovi = window.bongiovi || {};
 	};
 
 	p._onMouseMove = function(aEvent) {
+		if(this._isLocked) return;
 		this.mouse = this.getMousePos(aEvent);
 	};
 
 	p._onMouseUp = function(aEvent) {
+		if(this._isLocked) return;
 		if(!this._isMouseDown) return;
 		this._isMouseDown = false;
 	};
 
 	p._onMouseWheel = function(aEvent) {
+		if(this._isLocked) return;
 		aEvent.preventDefault();
 		var w = aEvent.wheelDelta;
 		var d = aEvent.detail;
@@ -154,9 +163,7 @@ bongiovi = window.bongiovi || {};
 
 
 		mat4.fromQuat(this.matrix, this.tempRotation);
-		// if(toTrace) console.log(mat4.str(this.matrix)); 
 		mat4.multiply(this.matrix, this.matrix, this.m);
-		// if(toTrace) console.log(mat4.str(this.matrix) + "\n\n");
 	};
 
 	var multiplyVec3 = function(out, quat, vec) {
@@ -208,7 +215,7 @@ bongiovi = window.bongiovi || {};
 			vec3.normalize(axis, axis);
 			var angle = vec3.length(v) * this._offset;
 			var _quat = quat.clone( [Math.sin(angle) * axis[0], Math.sin(angle) * axis[1], Math.sin(angle) * axis[2], Math.cos(angle) ] );
-			quat.multiply(aTempRotation, aTempRotation, _quat);
+			quat.multiply(aTempRotation, _quat, aTempRotation);
 		}
 		
 		this._z += (this._preZ - this._z) * this._easing;
