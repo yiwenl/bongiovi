@@ -3,6 +3,8 @@ var browserSync = require('browser-sync');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream2')
 var uglify = require('gulp-uglify');
+var closureCompiler = require('gulp-closure-compiler');
+
 
 gulp.task('browserify', function() {
 	var bundleStream = browserify('./js/app.js')
@@ -62,5 +64,14 @@ gulp.task('browser-sync', function() {
 	});
 });
 
-gulp.task('default', ['watch', 'browserify', 'browser-sync']);
+gulp.task('closure', function() {
+  gulp.src('../js/bongiovi/*.js')
+    .pipe(closureCompiler({
+      compilerPath: 'compiler/compiler.jar',
+      fileName: 'bongiovi-min.js'
+    }))
+    .pipe(gulp.dest('../js/compile'));
+});
+
+gulp.task('default', ['closure']);
 gulp.task('compileAll', ['minify', 'compile']);

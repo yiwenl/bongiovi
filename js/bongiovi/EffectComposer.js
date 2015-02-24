@@ -3,7 +3,6 @@
 // define(["alfrid/Pass"], function(Pass) {
 (function(Pass) {
 	var EffectComposer = function() {
-		this.texture;
 		this._passes = [];
 	}
 
