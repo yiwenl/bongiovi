@@ -7,9 +7,9 @@ bongiovi = window.bongiovi || {};
 		this._imgs = {};
 		this._loadedCount = 0;
 		this._toLoadCount = 0;
-		this._scope;
-		this._callback;
-		this._callbackProgress;
+		this._scope = undefined;
+		this._callback = undefined;
+		this._callbackProgress = undefined;
 	}
 
 	var p = SimpleImageLoader.prototype;
