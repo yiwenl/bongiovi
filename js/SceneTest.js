@@ -7,6 +7,8 @@
 		bongiovi.Scene.call(this);
 		this.sceneRotation.lock();
 		this.camera.lockRotation(false);
+		// this.sceneRotation.inverseControl(true);
+		// this.camera.inverseControl(true);
 	}
 
 

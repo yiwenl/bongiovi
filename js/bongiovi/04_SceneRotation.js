@@ -37,6 +37,11 @@ bongiovi = window.bongiovi || {};
 
 	var p = SceneRotation.prototype;
 
+	p.inverseControl = function(value) {
+		if(value == undefined) this._isInvert = true;
+		else this._isInvert = value;
+	};
+
 	p.lock = function(value) {
 		if(value == undefined) this._isLocked = true
 		else this._isLocked = value;

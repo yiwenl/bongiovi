@@ -29,6 +29,7 @@
 		this._preRY 		= 0;
 		this._isLocked 		= false;
 		this._isLockRotation = false;
+		this._isInvert		= false;
 
 		this._listenerTarget.addEventListener("mousewheel", this._onWheel.bind(this));
 		this._listenerTarget.addEventListener("DOMMouseScroll", this._onWheel.bind(this));
@@ -39,6 +40,11 @@
 		this._listenerTarget.addEventListener("touchmove", this._onMouseMove.bind(this));
 		window.addEventListener("mouseup", this._onMouseUp.bind(this));
 		window.addEventListener("touchend", this._onMouseUp.bind(this));
+	};
+
+	p.inverseControl = function(value) {
+		if(value == undefined) this._isInvert = true;
+		else this._isInvert = value;
 	};
 
 	p.lock = function(value) {
@@ -67,9 +73,11 @@
 		getMouse(mEvent, this._mouse);
 		if(this._isMouseDown) {
 			var diffX = this._mouse.x - this._preMouse.x;
+			if(this._isInvert) diffX *= -1;
 			this._ry.value = this._preRY - diffX * .01;
 
 			var diffY = this._mouse.y - this._preMouse.y;
+			if(this._isInvert) diffY *= -1;
 			this._rx.value = this._preRX - diffY * .01;
 
 			if(this._rx.targetValue > Math.PI * .5) this._rx.targetValue = Math
