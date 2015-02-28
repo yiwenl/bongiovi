@@ -4,60 +4,18 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream2')
 var uglify = require('gulp-uglify');
 var closureCompiler = require('gulp-closure-compiler');
-
-
-gulp.task('browserify', function() {
-	var bundleStream = browserify('./js/app.js')
-	.bundle()
-	.on('error', function(err){
-		console.log(err.message);
-		this.end();
-	});
- 
-	bundleStream
-	.pipe(source('bundle.js'))
-	.pipe(gulp.dest('./bundle/'));
-});
-
-
-gulp.task('compile', function() {
-	var bundleStream = browserify('./js/app.js')
-	.bundle()
-	.on('error', function(err){
-		console.warn(err.message);
-		this.end();
-	});
- 
-	bundleStream
-	.pipe(source('bongiovi-compiled.js'))
-	.pipe(gulp.dest('../js/compile'));
-});
-
-
-gulp.task('minify', function() {
-	var bundleStream = browserify('./js/app.js')
-	.bundle()
-	.on('error', function(err){
-		console.warn(err.message);
-		this.end();
-	});
- 
-	bundleStream
-	.pipe(source('bongiovi-min.js'))
-	.pipe(uglify())
-	.pipe(gulp.dest('../js/compile'));
-});
+var sourcemaps = require('gulp-sourcemaps');
 
 
 gulp.task('watch', function() {
-	gulp.watch('js/*.js', ['browserify', browserSync.reload]);
+	gulp.watch('../js/bongiovi/*.js', ['closure', browserSync.reload]);
+	gulp.watch('../js/*.js', ['closure', browserSync.reload]);
+	// gulp.watch('js/*.js', ['browserify', browserSync.reload]);
 });
 
 gulp.task('browser-sync', function() {
 	browserSync({
-			server: {
-				baseDir: "./"
-			},
+			proxy: 'localhost:8888/git/bongiovi/',
 			watchOptions: {
 			debounceDelay: 1000
 		}
@@ -66,12 +24,15 @@ gulp.task('browser-sync', function() {
 
 gulp.task('closure', function() {
   gulp.src('../js/bongiovi/*.js')
-    .pipe(closureCompiler({
-      compilerPath: 'compiler/compiler.jar',
-      fileName: 'bongiovi-min.js'
-    }))
-    .pipe(gulp.dest('../js/compile'));
+	.pipe(closureCompiler({
+	  compilerPath: 'compiler/compiler.jar',
+	  fileName: 'bongiovi-min.js'
+	}))
+	.on('error', function(err){
+		console.log(err.message);
+		this.end();
+	})
+	.pipe(gulp.dest('../js/compile'));
 });
 
-gulp.task('default', ['closure']);
-gulp.task('compileAll', ['minify', 'compile']);
+gulp.task('default', ['closure', 'browser-sync', 'watch']);
