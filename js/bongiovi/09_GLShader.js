@@ -50,6 +50,9 @@
 		this.init();
 	};
 
+	GLShader.defaultVertexShader = defaultVertexShader;
+	GLShader.defaultFragmentShader = defaultFragmentShader;
+
 	var p = GLShader.prototype;
 
 	p.init = function() {
@@ -188,5 +191,4 @@
 	};
 
 	bongiovi.GLShader = GLShader;
-	
 })();
