@@ -8,8 +8,9 @@
 	var p = Scene.prototype;
 
 	p._init = function() {
-		this.camera = new bongiovi.CameraPerspective();
+		this.camera = new bongiovi.SimpleCamera();
 		this.camera.setPerspective(45*Math.PI/180, window.innerWidth/window.innerHeight, 5, 3000);
+		this.camera.lockRotation();
 
 		var eye            = vec3.clone([0, 0, 500]  );
 		var center         = vec3.create( );

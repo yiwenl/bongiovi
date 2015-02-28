@@ -27,6 +27,8 @@
 		this._ry 			= new EaseNumber(0);
 		this._preRX 		= 0;
 		this._preRY 		= 0;
+		this._isLocked 		= false;
+		this._isLockRotation = false;
 
 		this._listenerTarget.addEventListener("mousewheel", this._onWheel.bind(this));
 		this._listenerTarget.addEventListener("DOMMouseScroll", this._onWheel.bind(this));
@@ -40,12 +42,18 @@
 	};
 
 	p.lock = function(value) {
-		value = value || true;
-		this._isLocked = value;
+		if(value == undefined) this._isLocked = true
+		else this._isLocked = value;
+	};
+
+	p.lockRotation = function(value) {
+		if(value == undefined) this._isLockRotation = true
+		else this._isLockRotation = value;
 	};
 
 
 	p._onMouseDown = function(mEvent) {
+		if(this._isLockRotation || this._isLocked) return;
 		this._isMouseDown = true;
 		getMouse(mEvent, this._mouse);
 		getMouse(mEvent, this._preMouse);
@@ -55,6 +63,7 @@
 
 
 	p._onMouseMove = function(mEvent) {
+		if(this._isLockRotation || this._isLocked) return;
 		getMouse(mEvent, this._mouse);
 		if(this._isMouseDown) {
 			var diffX = this._mouse.x - this._preMouse.x;
@@ -69,6 +78,7 @@
 
 
 	p._onMouseUp = function(mEvent) {
+		if(this._isLockRotation || this._isLocked) return;
 		this._isMouseDown = false;
 		getMouse(mEvent, this._mouse);
 	};
