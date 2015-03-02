@@ -3,7 +3,7 @@
 <head>
 	<title>Library - bongiovi</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
-<!-- 
+<!-- --> 
 	<script type="text/javascript" src="js/bongiovi/00_gl-matrix-2.2.2-min.js"></script>
 	<script type="text/javascript" src="js/bongiovi/01_SimpleImageLoader.js"></script>
 	<script type="text/javascript" src="js/bongiovi/01_Utils.js"></script>
@@ -23,10 +23,11 @@
 	<script type="text/javascript" src="js/bongiovi/14_Pass.js"></script>
 	<script type="text/javascript" src="js/bongiovi/15_EffectComposer.js"></script>
 	<script type="text/javascript" src="js/bongiovi/16_MeshUtils.js"></script>
---> 
-<!-- 	--> 
+<!--   	--> 
+<!-- 	
  	<script type="text/javascript" src="js/compile/bongiovi-min.js"></script>
-<!--   	-->
+-->
+	<script type="text/javascript" src="js/ViewSphere.js"></script>
 	<script type="text/javascript" src="js/ViewPlane.js"></script>
 	<script type="text/javascript" src="js/SceneTest.js"></script>
 	
@@ -43,7 +44,7 @@
 		document.body.appendChild(canvas);
 		bongiovi.GL.init(canvas);
 		
-		var imgsToLoad = ["assets/image0.jpg","assets/image1.jpg","assets/image2.jpg","assets/image3.jpg","assets/image3.jpg"];
+		var imgsToLoad = ["assets/image0.jpg","assets/image1.jpg","assets/image2.jpg","assets/image3.jpg","assets/image3.jpg","assets/world.jpg"];
 		bongiovi.SimpleImageLoader.load(imgsToLoad, this, onImageLoaded);
 	}
 
