@@ -65,7 +65,7 @@
 		if(this.idFragment && this.idFragment.indexOf("main(void)") > -1) {
 			this.createFragmentShaderProgram(this.idVertex);
 		} else {
-			this.getShader(this.idFragment, true);	
+			this.getShader(this.idFragment, false);	
 		}
 	};
 
@@ -94,7 +94,8 @@
 		this.gl.compileShader(shader);
 
 		if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-			console.warn(this.gl.getShaderInfoLog(shader));
+			console.warn("Error in Vertex Shader : ", this.idVertex, ":", this.gl.getShaderInfoLog(shader));
+			console.log(aStr);
 			return null;
 		}
 
@@ -115,7 +116,8 @@
 		this.gl.compileShader(shader);
 
 		if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-			console.warn(this.gl.getShaderInfoLog(shader));
+			console.warn("Error in Fragment Shader: ", this.idFragment, ":" , this.gl.getShaderInfoLog(shader));
+			console.log(aStr);
 			return null;
 		}
 
