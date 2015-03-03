@@ -37,11 +37,11 @@ bongiovi.Utils = {};
 	};
 
 	p._checkLimit = function() {
-		if(this._min && this._targetValue < this._min) {
+		if(this._min != undefined && this._targetValue < this._min) {
 			this._targetValue = this._min;
 		} 
 
-		if(this._max && this._targetValue > this._max) {
+		if(this._max != undefined && this._targetValue > this._max) {
 			this._targetValue = this._max;
 		} 
 	};
