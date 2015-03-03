@@ -57,7 +57,6 @@
 		else this._isLockRotation = value;
 	};
 
-
 	p._onMouseDown = function(mEvent) {
 		if(this._isLockRotation || this._isLocked) return;
 		this._isMouseDown = true;
@@ -137,6 +136,23 @@
 
 		return o;
 	}
+
+
+	p.__defineGetter__("rx", function() {
+		return this._rx.targetValue;
+	});
+	 
+	p.__defineSetter__("rx", function(mValue) {
+		this._rx.value = mValue;
+	});
+
+	p.__defineGetter__("ry", function() {
+		return this._ry.targetValue;
+	});
+	 
+	p.__defineSetter__("ry", function(mValue) {
+		this._ry.value = mValue;
+	});
 
 	bongiovi.SimpleCamera = SimpleCamera;
 

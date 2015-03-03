@@ -31,8 +31,8 @@ bongiovi = window.bongiovi || {};
 		aListenerTarget.addEventListener("touchend", function(aEvent) { that._onMouseUp(aEvent); });
 		aListenerTarget.addEventListener("mousemove", function(aEvent) { that._onMouseMove(aEvent); });
 		aListenerTarget.addEventListener("touchmove", function(aEvent) { that._onMouseMove(aEvent); });
-		aListenerTarget.addEventListener("mousewheel", function(aEvent) {	that._onMouseWheel(aEvent); });
-		aListenerTarget.addEventListener("DOMMouseScroll", function(aEvent) {	that._onMouseWheel(aEvent); });
+		// aListenerTarget.addEventListener("mousewheel", function(aEvent) {	that._onMouseWheel(aEvent); });
+		// aListenerTarget.addEventListener("DOMMouseScroll", function(aEvent) {	that._onMouseWheel(aEvent); });
 	};
 
 	var p = SceneRotation.prototype;
