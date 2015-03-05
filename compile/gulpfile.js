@@ -10,8 +10,8 @@ var sourcemaps = require('gulp-sourcemaps');
 gulp.task('watch', function() {
 	gulp.watch('../js/bongiovi/**/*.js', ['closure', browserSync.reload]);
 	gulp.watch('../js/bongiovi/*.js', ['closure', browserSync.reload]);
-	gulp.watch('../assets/shaders/*.vert', [browserSync.reload]);
-	gulp.watch('../assets/shaders/*.frag', [browserSync.reload]);
+	gulp.watch('../assets/shaders/*.vert', ['closure', browserSync.reload]);
+	gulp.watch('../assets/shaders/*.frag', ['closure', browserSync.reload]);
 	gulp.watch('../js/*.js', ['closure', browserSync.reload]);
 	// gulp.watch('js/*.js', ['browserify', browserSync.reload]);
 });
@@ -51,5 +51,5 @@ gulp.task('bongiovi-post', function() {
 	.pipe(gulp.dest('../js/compile'));
 });
 
-gulp.task('closure', ['bongiovi-post']);
+gulp.task('closure', ['bongiovi-post', 'bongiovi']);
 gulp.task('default', ['closure', 'browser-sync', 'watch']);

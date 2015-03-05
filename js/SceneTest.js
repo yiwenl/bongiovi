@@ -32,14 +32,18 @@
 
 		this._passTriangle = new bongiovi.Pass("assets/shaders/triblur.frag", 1024, 1024);
 		// this._passGrey = new bongiovi.Pass("assets/shaders/greyscale.frag", 1024, 1024);
-		this._passGrey = new bongiovi.post.PassGreyscale(.1, window.innerWidth, window.innerHeight);
-		this._passContrast = new bongiovi.post.PassContrast(1.2, window.innerWidth, window.innerHeight);
-		this._passBrightness = new bongiovi.post.PassBrightness(.15, window.innerWidth, window.innerHeight);
+		this._passGrey = new bongiovi.post.PassGreyscale(.71, window.innerWidth, window.innerHeight);
+		this._passContrast = new bongiovi.post.PassContrast(2.2, window.innerWidth, window.innerHeight);
+		this._passBrightness = new bongiovi.post.PassBrightness(.25, window.innerWidth, window.innerHeight);
+
+		this._passTriBlur = new bongiovi.post.PassTriangleBlur(15);
+
 		this._effectComposer = new bongiovi.EffectComposer();
 
+		this._effectComposer.addPass(this._passBrightness);
 		this._effectComposer.addPass(this._passGrey);
 		this._effectComposer.addPass(this._passContrast);
-		this._effectComposer.addPass(this._passBrightness);
+		this._effectComposer.addPass(this._passTriBlur);
 	};
 
 	p.update = function() {

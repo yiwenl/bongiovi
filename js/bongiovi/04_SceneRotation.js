@@ -83,6 +83,7 @@ bongiovi = window.bongiovi || {};
 
 	p._onMouseMove = function(aEvent) {
 		if(this._isLocked) return;
+		if(aEvent.touches) aEvent.preventDefault();
 		this.mouse = this.getMousePos(aEvent);
 	};
 

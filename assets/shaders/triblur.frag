@@ -1,9 +1,7 @@
 precision mediump float;
 varying vec2 vTextureCoord;
 uniform sampler2D texture;
-
-const float radius = 20.0;
-const float width = 1024.0;
+uniform vec2 delta;
 
 float random(vec3 scale, float seed) {
 	return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);
@@ -14,7 +12,6 @@ void main(void) {
 	vec4 color = vec4(0.0);
 	float total = 0.0;
 	float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);
-	vec2 delta = vec2(radius/width, 0.0);
 
 	for (float t = -30.0; t <= 30.0; t++) {
 		float percent = (t + offset - 0.5) / 30.0;

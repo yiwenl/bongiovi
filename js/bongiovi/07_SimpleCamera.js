@@ -70,6 +70,7 @@
 	p._onMouseMove = function(mEvent) {
 		if(this._isLockRotation || this._isLocked) return;
 		getMouse(mEvent, this._mouse);
+		if(mEvent.touches) mEvent.preventDefault();
 		if(this._isMouseDown) {
 			var diffX = this._mouse.x - this._preMouse.x;
 			if(this._isInvert) diffX *= -1;
@@ -87,7 +88,7 @@
 	p._onMouseUp = function(mEvent) {
 		if(this._isLockRotation || this._isLocked) return;
 		this._isMouseDown = false;
-		getMouse(mEvent, this._mouse);
+		// getMouse(mEvent, this._mouse);
 	};
 
 
@@ -128,7 +129,7 @@
 		var o = mTarget || {};
 		if(mEvent.touches) {
 			o.x = mEvent.touches[0].pageX;
-			o.y = mEvent.touches[1].pageY;
+			o.y = mEvent.touches[0].pageY;
 		} else {
 			o.x = mEvent.clientX;
 			o.y = mEvent.clientY;
