@@ -8,7 +8,7 @@
 	var p = ViewSphere.prototype = new bongiovi.View();
 
 	p._init = function() {
-		this.mesh = bongiovi.MeshUtils.createSphere(200, 50);
+		this.mesh = bongiovi.MeshUtils.createSphere(100, 50);
 	};
 
 	p.render = function(texture) {

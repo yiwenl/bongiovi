@@ -74,6 +74,7 @@ bongiovi = window.bongiovi || {};
 
 	p.render = function() {
 		if(this.shaderProgram == null) return;
+		this.setViewport(0, 0, this.W, this.H);
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 		this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
 	};

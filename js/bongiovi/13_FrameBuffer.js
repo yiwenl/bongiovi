@@ -10,7 +10,7 @@
 		this.width     = width;
 		this.height    = height;
 		this.magFilter = options.magFilter || gl.LINEAR;
-		this.minFilter = options.minFilter || gl.LINEAR_MIPMAP_NEAREST;
+		this.minFilter = options.minFilter || gl.LINEAR;
 		this.wrapS     = options.wrapS || gl.MIRRORED_REPEAT;
 		this.wrapT     = options.wrapT || gl.MIRRORED_REPEAT;
 

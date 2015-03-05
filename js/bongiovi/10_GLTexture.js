@@ -12,6 +12,7 @@
 		if(isTexture) {
 			this.texture = source;
 		} else {
+			this._source = source;
 			this.texture   = gl.createTexture();
 			this._isVideo  = (source.tagName == "VIDEO");
 			this.magFilter = options.magFilter || gl.LINEAR;
@@ -53,9 +54,10 @@
 
 
 	p.updateTexture = function(source) {
+		if(source) this._source = source; 
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._source);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
 		if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST)	gl.generateMipmap(gl.TEXTURE_2D);

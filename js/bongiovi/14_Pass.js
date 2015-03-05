@@ -7,13 +7,14 @@
 
 		if(params == undefined) return;
 		if( (typeof params) == "string") {
-			this.view = new bongiovi.ViewCopy("assets/shaders/copy.vert", params);
+			this.view = new bongiovi.ViewCopy(null, params);
 		} else {
 			this.view = params;
 		}
 
 		this.width = width == undefined ? 512 : width;
 		this.height = height == undefined ? 512 : height;
+		
 		this._init();
 	}
 
@@ -26,14 +27,17 @@
 		GL.setViewport(0, 0, this.fbo.width, this.fbo.height);
 		GL.clear(0, 0, 0, 0);
 		this.fbo.unbind();
+		GL.setViewport(0, 0, GL.canvas.width, GL.canvas.height);
 	};
 
 	p.render = function(texture) {
-		GL.setViewport(0, 0, this.fbo.width, this.fbo.height);
+		
 		this.fbo.bind();
+		GL.setViewport(0, 0, this.fbo.width, this.fbo.height);
 		GL.clear(0, 0, 0, 0);
 		this.view.render(texture);
 		this.fbo.unbind();
+		GL.setViewport(0, 0, GL.canvas.width, GL.canvas.height);
 
 		return this.fbo.getTexture();
 	};

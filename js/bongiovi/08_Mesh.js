@@ -20,8 +20,9 @@
 
 	};
 
-	p.bufferVertex = function(aArrayVertices) {
+	p.bufferVertex = function(aArrayVertices, isDynamic) {
 		var vertices = [];
+		var drawType = isDynamic ? this.gl.DYNAMIC_DRAW : this.gl.STATIC_DRAW
 
 		for(var i=0; i<aArrayVertices.length; i++) {
 			for(var j=0; j<aArrayVertices[i].length; j++) vertices.push(aArrayVertices[i][j]);
@@ -42,7 +43,7 @@
 			}
 		}
 
-		this.gl.bufferData(this.gl.ARRAY_BUFFER, this._floatArrayVertex, this.gl.STATIC_DRAW);
+		this.gl.bufferData(this.gl.ARRAY_BUFFER, this._floatArrayVertex, drawType);
 		this.vBufferPos.itemSize = 3;
 	};
 
@@ -59,8 +60,9 @@
 		this.vBufferUV.itemSize = 2;
 	};
 
-	p.bufferData = function(aData, aName, aItemSize) {
+	p.bufferData = function(aData, aName, aItemSize, isDynamic) {
 		var index = -1;
+		var drawType = isDynamic ? this.gl.DYNAMIC_DRAW : this.gl.STATIC_DRAW
 
 		for(var i=0; i<this.extraAttributes.length; i++) {
 			if(this.extraAttributes[i].name == aName) {
@@ -79,16 +81,17 @@
 			var buffer = this.gl.createBuffer();
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
 			var floatArray = new Float32Array(bufferData);
-			this.gl.bufferData(this.gl.ARRAY_BUFFER, floatArray, this.gl.STATIC_DRAW);
+			this.gl.bufferData(this.gl.ARRAY_BUFFER, floatArray, drawType);
 			this.extraAttributes.push({name:aName, data:aData, itemSize: aItemSize, buffer:buffer, floatArray:floatArray});
 		} else {
 			var buffer = this.extraAttributes[index].buffer;
+			// console.debug("Buffer exist", buffer);
 			this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
 			var floatArray = this.extraAttributes[index].floatArray;
 			for(var i=0; i<bufferData.length; i++) {
 				floatArray[i] = bufferData[i];
 			}
-			this.gl.bufferData(this.gl.ARRAY_BUFFER, floatArray, this.gl.STATIC_DRAW);
+			this.gl.bufferData(this.gl.ARRAY_BUFFER, floatArray, drawType);
 		}
 
 	};
