@@ -39,9 +39,9 @@ bongiovi = window.bongiovi || {};
 
 		this.matrix = mat4.create();
 		mat4.identity(this.matrix);
-		this.depthTextureExt 	= this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
-		this.floatTextureExt 	= this.gl.getExtension("OES_texture_float") // Or browser-appropriate prefix
-
+		this.depthTextureExt 		= this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
+		this.floatTextureExt 		= this.gl.getExtension("OES_texture_float") // Or browser-appropriate prefix
+		this.floatTextureLinearExt 	= this.gl.getExtension("OES_texture_float_linear") // Or browser-appropriate prefix
 		this.enableAlphaBlending();
 
 		var that = this;

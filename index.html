@@ -33,6 +33,9 @@
 -->
 	<script type="text/javascript" src="js/ViewSphere.js"></script>
 	<script type="text/javascript" src="js/ViewPlane.js"></script>
+	<script type="text/javascript" src="js/ViewSave.js"></script>
+	<script type="text/javascript" src="js/ViewDepth.js"></script>
+	<script type="text/javascript" src="js/ViewParticles.js"></script>
 	<script type="text/javascript" src="js/SceneTest.js"></script>
 	
 	<script type="text/javascript">
@@ -40,6 +43,10 @@
 	var efIndex;
 	var scene;
 	var images;
+	var params = {
+		numParticles: 32
+	};
+
 
 	function init() {
 		var canvas = document.createElement("canvas");

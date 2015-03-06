@@ -9,6 +9,7 @@ html, body {
 
 	position: absolute;
 	overflow: hidden;
+	background: black;
 }
 
 canvas {
