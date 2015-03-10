@@ -22,10 +22,13 @@ bongiovi = window.bongiovi || {};
 
 	var p = GLTools.prototype;
 
-	p.init = function(aCanvas) {
+	p.init = function(aCanvas, mWidth, mHeight) {
 		this.canvas = aCanvas;
 		this.gl = this.canvas.getContext("experimental-webgl", {antialias:true});
-		this.resize();
+		
+		if(mWidth !== undefined && mHeight !== undefined) {
+			this.setSize(mWidth, mHeight);
+		}
 
 		var size = this.gl.getParameter(this.gl.SAMPLES);
 		var antialias = this.gl.getContextAttributes().antialias;
@@ -44,11 +47,7 @@ bongiovi = window.bongiovi || {};
 		this.floatTextureLinearExt 	= this.gl.getExtension("OES_texture_float_linear") // Or browser-appropriate prefix
 		this.enableAlphaBlending();
 
-		var that = this;
-		window.addEventListener("resize", function() {
-			that.resize();
-		});
-
+		this.setSize(window.innerWidth, window.innerHeight);
 	};
 
 	p.getGL = function() {	return this.gl;	};
@@ -142,6 +141,31 @@ bongiovi = window.bongiovi || {};
 
 	};
 
+	p.setSize = function(mWidth, mHeight) {
+		this._width = mWidth;
+		this._height = mHeight;
+
+		this.canvas.width      = this._width;
+		this.canvas.height     = this._height;
+		this.gl.viewportWidth  = this._width;
+		this.gl.viewportHeight = this._height;
+		this.gl.viewport(0, 0, this._width, this._height);
+		this.aspectRatio       = this._width / this._height;
+
+		this.render();
+	};
+
+
+	p.__defineGetter__("width", function() {
+		return this._width;
+	});
+
+
+	p.__defineGetter__("height", function() {
+		return this._height;
+	});
+	 
+
 	p.resize = function() {
 		this.W 	= window.innerWidth;
 		this.H  = window.innerHeight;
@@ -153,7 +177,7 @@ bongiovi = window.bongiovi || {};
 		this.gl.viewport(0, 0, this.W, this.H);
 		this.aspectRatio       = window.innerWidth/window.innerHeight;
 
-		this.render();
+		// this.render();
 	};
 
 	GLTools.getInstance = function() {

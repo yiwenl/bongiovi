@@ -54,6 +54,7 @@
 		canvas.height = window.innerHeight;
 		document.body.appendChild(canvas);
 		bongiovi.GL.init(canvas);
+		bongiovi.GL.setSize(500, 500);
 		
 		var imgsToLoad = ["assets/image0.jpg","assets/image1.jpg","assets/image2.jpg","assets/image3.jpg","assets/image3.jpg","assets/world.jpg"];
 		bongiovi.SimpleImageLoader.load(imgsToLoad, this, onImageLoaded);

@@ -1,4 +1,6 @@
 (function() {
+	var GL = bongiovi.GL;
+
 	var Scene = function() {
 		this.gl = bongiovi.GLTool.gl;
 		this._children = [];
@@ -9,7 +11,8 @@
 
 	p._init = function() {
 		this.camera = new bongiovi.SimpleCamera();
-		this.camera.setPerspective(45*Math.PI/180, window.innerWidth/window.innerHeight, 5, 3000);
+		console.debug("GL aspectRatio", GL.aspectRatio);
+		this.camera.setPerspective(45*Math.PI/180, GL.aspectRatio, 5, 3000);
 		this.camera.lockRotation();
 
 		var eye            = vec3.clone([0, 0, 500]  );
@@ -50,12 +53,17 @@
 		bongiovi.GLTool.rotate(this.sceneRotation.matrix);
 	};
 
+	p.resize = function() {
+		this._onResize();
+	};
+
 	p.render = function() {
 
 	};
 
 	p._onResize = function(aEvent) {
-		if(this.camera.resize) this.camera.resize(window.innerWidth / window.innerHeight);
+		console.log("Resizing : ", GL.aspectRatio, GL.width, GL.height);
+		if(this.camera.resize) this.camera.resize(GL.aspectRatio);
 	};
 
 	bongiovi.Scene = Scene;

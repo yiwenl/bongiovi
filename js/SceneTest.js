@@ -7,12 +7,15 @@
 	SceneTest = function() {
 		gl = GL.gl;
 		bongiovi.Scene.call(this);
+
 		// this.sceneRotation.lock();
 		// this.camera.lockRotation(false);
 		
 		// this.sceneRotation.inverseControl(true);
 		// this.camera.inverseControl(true);
 		// GL.gl.disable(GL.gl.DEPTH_TEST);
+
+		window.addEventListener("resize", this._onResize.bind(this));
 	}
 
 
@@ -63,8 +66,8 @@
 		// console.log("FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT", gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
 		// console.log("FRAMEBUFFER_INCOMPLETE_DIMENSIONS", gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS);
 		// console.log("FRAMEBUFFER_UNSUPPORTED", gl.FRAMEBUFFER_UNSUPPORTED);
-
-		GL.setViewport(0, 0, GL.canvas.width, GL.canvas.height);
+		console.debug('INIT View :', GL.width, GL.height);
+		GL.setViewport(0, 0, GL.width, GL.height);
 	};
 
 	p.renderParticles = function() {
@@ -77,7 +80,7 @@
 		this._vSave.render();
 		this._fboParticles.unbind();		
 
-		GL.setViewport(0, 0, GL.canvas.width, GL.canvas.height);
+		GL.setViewport(0, 0, GL.width, GL.height);
 		this._vCopy.render(this._fboParticles.getTexture() ) ;
 		GL.setMatrices(this.camera);
 		GL.rotate(this.sceneRotation.matrix);
@@ -86,27 +89,33 @@
 	};
 
 	p.render = function() {
-		this.renderParticles();
-		return;
+		// this.renderParticles();
+		// return;
 		// this._vPlane.render(this.texture);
 
 
-		this._fbo.bind();
+		// this._fbo.bind();
 		var grey = .1;
 		GL.clear(grey, grey, grey, 1.0);
 		this._vSphere.render(this.textureWorld);
-		this._fbo.unbind();
+		// this._fbo.unbind();
 
 
-		GL.setMatrices(this.cameraOtho);
-		GL.rotate(this.rotationFront);
+		// GL.setMatrices(this.cameraOtho);
+		// GL.rotate(this.rotationFront);
 		// this._effectComposer.render(this._fbo.getTexture() ) ;
 		// this._effectComposer.render(this._fbo.getDepthTexture() ) ;
 		// this._vCopy.render(this._fbo.getTexture() );
 
 		// this._vCopy.render(this._fboParticles.getTexture() );
 		// this._vCopy.render(this._effectComposer.getTexture() );
-		this._vDepth.render(this._fbo.getDepthTexture() );
+		// this._vDepth.render(this._fbo.getDepthTexture() );
+	};
+
+
+	p._onResize = function() {
+		// console.log('on Resize');
+		GL.setSize(window.innerWidth/2, window.innerHeight * .5);
 	};
 	
 })();
