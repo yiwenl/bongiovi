@@ -5,16 +5,13 @@ bongiovi = window.bongiovi || {};
 	var instance = null;
 
 	var GLTools = function() {
-		this.aspectRatio = window.innerWidth/window.innerHeight;
+		this.aspectRatio = 1;
 		this.fieldOfView = 45;
 		this.zNear = 5;
 		this.zFar = 3000;
 
 		this.canvas = null;
 		this.gl = null;
-		
-		this.W = 0;
-		this.H = 0;
 
 		this.shader = null;
 		this.shaderProgram = null;
@@ -28,6 +25,8 @@ bongiovi = window.bongiovi || {};
 		
 		if(mWidth !== undefined && mHeight !== undefined) {
 			this.setSize(mWidth, mHeight);
+		} else {
+			this.setSize(window.innerWidth, window.innerHeight);	
 		}
 
 		var size = this.gl.getParameter(this.gl.SAMPLES);
@@ -46,8 +45,7 @@ bongiovi = window.bongiovi || {};
 		this.floatTextureExt 		= this.gl.getExtension("OES_texture_float") // Or browser-appropriate prefix
 		this.floatTextureLinearExt 	= this.gl.getExtension("OES_texture_float_linear") // Or browser-appropriate prefix
 		this.enableAlphaBlending();
-
-		this.setSize(window.innerWidth, window.innerHeight);
+		
 	};
 
 	p.getGL = function() {	return this.gl;	};
@@ -60,6 +58,7 @@ bongiovi = window.bongiovi || {};
 	}
 
 	p.setViewport = function(aX, aY, aW, aH) {
+		// console.log("Set Viewport : ", aX, aY, aW, aH);
 		this.gl.viewport(aX, aY, aW, aH);
 	};
 
@@ -71,12 +70,6 @@ bongiovi = window.bongiovi || {};
 		mat4.copy(this.matrix, aRotation);
 	};
 
-	p.render = function() {
-		if(this.shaderProgram == null) return;
-		this.setViewport(0, 0, this.W, this.H);
-		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-		this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-	};
 
 	p.enableAlphaBlending = function() {
 		this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);	
@@ -149,10 +142,9 @@ bongiovi = window.bongiovi || {};
 		this.canvas.height     = this._height;
 		this.gl.viewportWidth  = this._width;
 		this.gl.viewportHeight = this._height;
+
 		this.gl.viewport(0, 0, this._width, this._height);
 		this.aspectRatio       = this._width / this._height;
-
-		this.render();
 	};
 
 
@@ -165,20 +157,6 @@ bongiovi = window.bongiovi || {};
 		return this._height;
 	});
 	 
-
-	p.resize = function() {
-		this.W 	= window.innerWidth;
-		this.H  = window.innerHeight;
-
-		this.canvas.width      = this.W;
-		this.canvas.height     = this.H;
-		this.gl.viewportWidth  = this.W;
-		this.gl.viewportHeight = this.H;
-		this.gl.viewport(0, 0, this.W, this.H);
-		this.aspectRatio       = window.innerWidth/window.innerHeight;
-
-		// this.render();
-	};
 
 	GLTools.getInstance = function() {
 		if(instance == null) {

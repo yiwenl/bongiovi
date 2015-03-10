@@ -18,6 +18,7 @@ bongiovi = window.bongiovi || {};
 		this._fov = aFov;
 		this._near = aNear;
 		this._far = aFar;
+		this._aspect = aAspectRatio;
 		mat4.perspective(this.projection, aFov, aAspectRatio, aNear, aFar);
 	};
 
@@ -27,7 +28,7 @@ bongiovi = window.bongiovi || {};
 	};
 
 	p.resize = function(aAspectRatio) {
-		console.debug("Reset camera aspect ratio");
+		this._aspect = aAspectRatio;
 		mat4.perspective(this.projection, this._fov, aAspectRatio, this._near, this._far);
 	};
 

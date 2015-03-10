@@ -15,7 +15,7 @@
 		// this.camera.inverseControl(true);
 		// GL.gl.disable(GL.gl.DEPTH_TEST);
 
-		window.addEventListener("resize", this._onResize.bind(this));
+		// window.addEventListener("resize", this._onResize.bind(this));
 	}
 
 
@@ -27,10 +27,8 @@
 		this.texture = new bongiovi.GLTexture(images.image0);
 		this.textureWorld = new bongiovi.GLTexture(images.world);
 
-		this._fbo = new bongiovi.FrameBuffer(window.innerWidth, window.innerHeight);
-		// this._fboParticles = new bongiovi.FrameBuffer(params.numParticles, params.numParticles, {minFilter:gl.NEAREST, magFilter:gl.NEAREST});
-		console.log("Fbo Particle");
-		this._fboParticles = new bongiovi.FrameBuffer(params.numParticles, params.numParticles, {minFilter:gl.NEAREST, magFilter:gl.NEAREST, wrapS:gl.CLAMP_TO_EDGE, wrapT:gl.CLAMP_TO_EDGE});
+		// this._fbo = new bongiovi.FrameBuffer(window.innerWidth, window.innerHeight);
+		// this._fboParticles = new bongiovi.FrameBuffer(params.numParticles, params.numParticles, {minFilter:gl.NEAREST, magFilter:gl.NEAREST, wrapS:gl.CLAMP_TO_EDGE, wrapT:gl.CLAMP_TO_EDGE});
 	};
 
 	p._initViews = function() {
@@ -61,11 +59,6 @@
 		this.errMsg[gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS] = "FRAMEBUFFER_INCOMPLETE_DIMENSIONS";
 		this.errMsg[gl.FRAMEBUFFER_UNSUPPORTED] = "FRAMEBUFFER_UNSUPPORTED";
 
-		// console.log("FRAMEBUFFER_COMPLETE", gl.FRAMEBUFFER_COMPLETE);
-		// console.log("FRAMEBUFFER_INCOMPLETE_ATTACHMENT", gl.FRAMEBUFFER_INCOMPLETE_ATTACHMENT);
-		// console.log("FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT", gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
-		// console.log("FRAMEBUFFER_INCOMPLETE_DIMENSIONS", gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS);
-		// console.log("FRAMEBUFFER_UNSUPPORTED", gl.FRAMEBUFFER_UNSUPPORTED);
 		console.debug('INIT View :', GL.width, GL.height);
 		GL.setViewport(0, 0, GL.width, GL.height);
 	};
@@ -91,12 +84,13 @@
 	p.render = function() {
 		// this.renderParticles();
 		// return;
-		// this._vPlane.render(this.texture);
+		var grey = .1;
+		GL.clear(grey, grey, grey, 1.0);
+		this._vPlane.render(this.texture);
 
 
 		// this._fbo.bind();
-		var grey = .1;
-		GL.clear(grey, grey, grey, 1.0);
+		
 		this._vSphere.render(this.textureWorld);
 		// this._fbo.unbind();
 
@@ -106,6 +100,7 @@
 		// this._effectComposer.render(this._fbo.getTexture() ) ;
 		// this._effectComposer.render(this._fbo.getDepthTexture() ) ;
 		// this._vCopy.render(this._fbo.getTexture() );
+		// this._vCopy.render(this.texture );
 
 		// this._vCopy.render(this._fboParticles.getTexture() );
 		// this._vCopy.render(this._effectComposer.getTexture() );
@@ -114,8 +109,8 @@
 
 
 	p._onResize = function() {
-		console.log('on Resize');
 		GL.setSize(window.innerWidth/2, window.innerHeight * .5);
+		this.resize();
 		this.render();
 	};
 	

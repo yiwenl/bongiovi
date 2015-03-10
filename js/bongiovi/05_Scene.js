@@ -11,7 +11,6 @@
 
 	p._init = function() {
 		this.camera = new bongiovi.SimpleCamera();
-		console.debug("GL aspectRatio", GL.aspectRatio);
 		this.camera.setPerspective(45*Math.PI/180, GL.aspectRatio, 5, 3000);
 		this.camera.lockRotation();
 
@@ -49,12 +48,16 @@
 	p.update = function() {
 		this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 		this.sceneRotation.update();
-		bongiovi.GLTool.setMatrices(this.camera );
-		bongiovi.GLTool.rotate(this.sceneRotation.matrix);
+		GL.setViewport(0, 0, GL.width, GL.height);
+		GL.setMatrices(this.camera );
+		GL.rotate(this.sceneRotation.matrix);
+
 	};
 
 	p.resize = function() {
-		this._onResize();
+		if(this.camera.resize) {
+			this.camera.resize(GL.aspectRatio);
+		}
 	};
 
 	p.render = function() {
@@ -62,8 +65,6 @@
 	};
 
 	p._onResize = function(aEvent) {
-		console.log("Resizing : ", GL.aspectRatio, GL.width, GL.height);
-		if(this.camera.resize) this.camera.resize(GL.aspectRatio);
 	};
 
 	bongiovi.Scene = Scene;
