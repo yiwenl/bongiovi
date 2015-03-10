@@ -27,6 +27,7 @@ bongiovi = window.bongiovi || {};
 	};
 
 	p.resize = function(aAspectRatio) {
+		console.debug("Reset camera aspect ratio");
 		mat4.perspective(this.projection, this._fov, aAspectRatio, this._near, this._far);
 	};
 

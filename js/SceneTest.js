@@ -114,8 +114,9 @@
 
 
 	p._onResize = function() {
-		// console.log('on Resize');
+		console.log('on Resize');
 		GL.setSize(window.innerWidth/2, window.innerHeight * .5);
+		this.render();
 	};
 	
 })();
