@@ -6,6 +6,8 @@
 
 	SceneTest = function() {
 		gl = GL.gl;
+
+		this._rotation = new bongiovi.QuatRotation();
 		bongiovi.Scene.call(this);
 
 		// this.sceneRotation.lock();
@@ -90,7 +92,8 @@
 
 
 		// this._fbo.bind();
-		
+		this._rotation.update();
+		GL.rotate(this._rotation.matrix);
 		this._vSphere.render(this.textureWorld);
 		// this._fbo.unbind();
 
@@ -109,7 +112,7 @@
 
 
 	p._onResize = function() {
-		GL.setSize(window.innerWidth/2, window.innerHeight * .5);
+		GL.setSize(window.innerWidth, window.innerHeight);
 		this.resize();
 		this.render();
 	};
