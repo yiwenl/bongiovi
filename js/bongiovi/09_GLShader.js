@@ -1,30 +1,6 @@
 
 // define(["alfrid/GLTool"], function(GLTool) {
 (function() {
-	var defaultVertexShader = 
-		"precision highp float;"+
-		"attribute vec3 aVertexPosition;"+
-		"attribute vec2 aTextureCoord;"+
-		""+
-		"uniform mat4 uMVMatrix;"+
-		"uniform mat4 uPMatrix;"+
-		""+
-		"varying vec2 vTextureCoord;"+
-		""+
-		"void main(void) {"+
-		"    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);"+
-		"    vTextureCoord = aTextureCoord;"+
-		"}";
-
-	var defaultFragmentShader = 
-		"precision mediump float;"+
-		"varying vec2 vTextureCoord;"+
-		"uniform sampler2D texture;"+
-		""+
-		"void main(void) {"+
-		"    gl_FragColor = texture2D(texture, vTextureCoord);"+
-		"}";
-
 
 	var GLShader = function(aVertexShaderId, aFragmentShaderId) {
 		this.gl = bongiovi.GL.gl;
@@ -40,18 +16,16 @@
 		this._loadedCount = 0;
 
 		if(aVertexShaderId == undefined) {
-			this.createVertexShaderProgram(defaultVertexShader);
+			this.createVertexShaderProgram(bongiovi.ShaderLibs.getShader("copyVert"));
 		}
 
 		if(aFragmentShaderId == undefined) {
-			this.createFragmentShaderProgram(defaultFragmentShader);
+			this.createFragmentShaderProgram(bongiovi.ShaderLibs.getShader("copyFrag"));
 		}
 
 		this.init();
 	};
 
-	GLShader.defaultVertexShader = defaultVertexShader;
-	GLShader.defaultFragmentShader = defaultFragmentShader;
 
 	var p = GLShader.prototype;
 

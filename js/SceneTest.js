@@ -6,7 +6,7 @@
 
 	SceneTest = function() {
 		gl = GL.gl;
-
+		gl.enable(gl.DEPTH_TEST);
 		this._rotation = new bongiovi.QuatRotation();
 		bongiovi.Scene.call(this);
 
@@ -29,7 +29,7 @@
 		this.texture = new bongiovi.GLTexture(images.image0);
 		this.textureWorld = new bongiovi.GLTexture(images.world);
 
-		// this._fbo = new bongiovi.FrameBuffer(window.innerWidth, window.innerHeight);
+		this._fbo = new bongiovi.FrameBuffer(window.innerWidth, window.innerHeight);
 		// this._fboParticles = new bongiovi.FrameBuffer(params.numParticles, params.numParticles, {minFilter:gl.NEAREST, magFilter:gl.NEAREST, wrapS:gl.CLAMP_TO_EDGE, wrapT:gl.CLAMP_TO_EDGE});
 	};
 
@@ -39,7 +39,7 @@
 		this._vSphere = new ViewSphere();
 		this._vParticle = new ViewParticles();
 		this._vSave = new ViewSave();
-		this._vDepth = new ViewDepth();
+		this._vDepth = new bongiovi.ViewDepth();
 
 		this._passTriangle = new bongiovi.Pass("assets/shaders/triblur.frag", 1024, 1024);
 		this._passGrey = new bongiovi.post.PassGreyscale(.71);
@@ -61,7 +61,6 @@
 		this.errMsg[gl.FRAMEBUFFER_INCOMPLETE_DIMENSIONS] = "FRAMEBUFFER_INCOMPLETE_DIMENSIONS";
 		this.errMsg[gl.FRAMEBUFFER_UNSUPPORTED] = "FRAMEBUFFER_UNSUPPORTED";
 
-		console.debug('INIT View :', GL.width, GL.height);
 		GL.setViewport(0, 0, GL.width, GL.height);
 	};
 
@@ -86,24 +85,22 @@
 	p.render = function() {
 		// this.renderParticles();
 		// return;
+
+		this._fbo.bind();
 		var grey = .1;
 		GL.clear(grey, grey, grey, 1.0);
 		this._vPlane.render(this.texture);
-
-
-		// this._fbo.bind();
 		this._rotation.update();
 		GL.rotate(this._rotation.matrix);
 		this._vSphere.render(this.textureWorld);
-		// this._fbo.unbind();
+		this._fbo.unbind();
 
-
-		// GL.setMatrices(this.cameraOtho);
-		// GL.rotate(this.rotationFront);
+		GL.setMatrices(this.cameraOtho);
+		GL.rotate(this.rotationFront);
 		// this._effectComposer.render(this._fbo.getTexture() ) ;
 		// this._effectComposer.render(this._fbo.getDepthTexture() ) ;
 		// this._vCopy.render(this._fbo.getTexture() );
-		// this._vCopy.render(this.texture );
+		this._vDepth.render( this._fbo.getDepthTexture(), this.camera );
 
 		// this._vCopy.render(this._fboParticles.getTexture() );
 		// this._vCopy.render(this._effectComposer.getTexture() );

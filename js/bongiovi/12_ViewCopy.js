@@ -10,10 +10,6 @@
 	var s = SuperClass.prototype;
 
 	p._init = function() {
-		var positions = [];
-		var coords = [];
-		var indices = [0,1,2,0,2,3];
-
 		this.mesh = bongiovi.MeshUtils.createPlane(2, 2, 1);
 	};
 

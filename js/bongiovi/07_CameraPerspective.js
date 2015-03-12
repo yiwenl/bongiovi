@@ -32,6 +32,14 @@ bongiovi = window.bongiovi || {};
 		mat4.perspective(this.projection, this._fov, aAspectRatio, this._near, this._far);
 	};
 
+	p.__defineGetter__("near", function() {
+		return this._near;
+	});
+
+	p.__defineGetter__("far", function() {
+		return this._far;
+	});
+
 	bongiovi.CameraPerspective = CameraPerspective;
 
 })();

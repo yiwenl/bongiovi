@@ -2,7 +2,15 @@
 
 (function() {
 	var gl, GL;
-	var isPowerOfTwo = function(x) {	return !(x == 0) && !(x & (x - 1));	}
+	var _isPowerOfTwo = function(x) {	return !(x == 0) && !(x & (x - 1));	}
+	var isPowerOfTwo = function(obj) {	
+		var w = obj.width || obj.videoWidth;
+		var h = obj.height || obj.videoHeight;
+
+		if(!w || !h) return false;
+
+		return _isPowerOfTwo(w) && _isPowerOfTwo(h);
+	}
 
 	var GLTexture = function(source, isTexture, options) {
 		isTexture = isTexture || false;
@@ -12,23 +20,21 @@
 		if(isTexture) {
 			this.texture = source;
 		} else {
-			this._source = source;
+			this._source   = source;
 			this.texture   = gl.createTexture();
 			this._isVideo  = (source.tagName == "VIDEO");
 			this.magFilter = options.magFilter || gl.LINEAR;
 			this.minFilter = options.minFilter || gl.LINEAR_MIPMAP_NEAREST;
-
+			
 			this.wrapS     = options.wrapS || gl.MIRRORED_REPEAT;
 			this.wrapT     = options.wrapT || gl.MIRRORED_REPEAT;
-
-			var width = source.width || source.videoWidth;
-			var height = source.height || source.videoHeight;
+			var width      = source.width || source.videoWidth;
+			var height     = source.height || source.videoHeight;
 
 			if(width) {
-				if(!isPowerOfTwo(width) || !isPowerOfTwo(height)) {
+				if(!isPowerOfTwo(source)) {
 					this.wrapS = this.wrapT = gl.CLAMP_TO_EDGE;
 					if(this.minFilter == gl.LINEAR_MIPMAP_NEAREST) this.minFilter = gl.LINEAR;
-					console.log(this.minFilter, gl.LINEAR_MIPMAP_NEAREST, gl.LINEAR);
 				} 	
 			} else {
 				this.wrapS = this.wrapT = gl.CLAMP_TO_EDGE;

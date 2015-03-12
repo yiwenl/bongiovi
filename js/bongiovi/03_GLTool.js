@@ -19,9 +19,11 @@ bongiovi = window.bongiovi || {};
 
 	var p = GLTools.prototype;
 
-	p.init = function(aCanvas, mWidth, mHeight) {
-		this.canvas = aCanvas;
-		this.gl = this.canvas.getContext("experimental-webgl", {antialias:true});
+	p.init = function(aCanvas, mWidth, mHeight, parameters) {
+		this.canvas      = aCanvas;
+		var params       = parameters || {};
+		params.antialias = true;
+		this.gl          = this.canvas.getContext("experimental-webgl", params);
 		
 		if(mWidth !== undefined && mHeight !== undefined) {
 			this.setSize(mWidth, mHeight);
@@ -53,12 +55,12 @@ bongiovi = window.bongiovi || {};
 	p.setShader = function(aShader) {
 		this.shader = aShader;
 	};
+
 	p.setShaderProgram = function(aShaderProgram) {
 		this.shaderProgram = aShaderProgram;
 	}
 
 	p.setViewport = function(aX, aY, aW, aH) {
-		// console.log("Set Viewport : ", aX, aY, aW, aH);
 		this.gl.viewport(aX, aY, aW, aH);
 	};
 
@@ -69,7 +71,6 @@ bongiovi = window.bongiovi || {};
 	p.rotate = function(aRotation) {
 		mat4.copy(this.matrix, aRotation);
 	};
-
 
 	p.enableAlphaBlending = function() {
 		this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);	
