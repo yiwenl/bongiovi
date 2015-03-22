@@ -83,24 +83,29 @@
 	};
 
 	p.render = function() {
+
 		// this.renderParticles();
 		// return;
 
-		this._fbo.bind();
-		var grey = .1;
-		GL.clear(grey, grey, grey, 1.0);
-		this._vPlane.render(this.texture);
-		this._rotation.update();
-		GL.rotate(this._rotation.matrix);
+		// this._vPlane.render(this.texture);
 		this._vSphere.render(this.textureWorld);
-		this._fbo.unbind();
 
-		GL.setMatrices(this.cameraOtho);
-		GL.rotate(this.rotationFront);
+		// this._fbo.bind();
+		// var grey = .1;
+		// GL.clear(grey, grey, grey, 1.0);
+		// this._vPlane.render(this.texture);
+		// this._rotation.update();
+		// GL.rotate(this._rotation.matrix);
+		// this._vSphere.render(this.textureWorld);
+		// this._fbo.unbind();
+
+		// GL.setMatrices(this.cameraOtho);
+		// GL.rotate(this.rotationFront);
+
 		// this._effectComposer.render(this._fbo.getTexture() ) ;
 		// this._effectComposer.render(this._fbo.getDepthTexture() ) ;
 		// this._vCopy.render(this._fbo.getTexture() );
-		this._vDepth.render( this._fbo.getDepthTexture(), this.camera );
+		// this._vDepth.render( this._fbo.getDepthTexture(), this.camera );
 
 		// this._vCopy.render(this._fboParticles.getTexture() );
 		// this._vCopy.render(this._effectComposer.getTexture() );

@@ -10,7 +10,7 @@
 	var p = Scene.prototype;
 
 	p._init = function() {
-		this.camera = new bongiovi.SimpleCamera();
+		this.camera = new bongiovi.SimpleCamera(GL.canvas);
 		this.camera.setPerspective(45*Math.PI/180, GL.aspectRatio, 5, 3000);
 		this.camera.lockRotation();
 
@@ -19,7 +19,7 @@
 		var up             = vec3.clone( [0,-1,0] );
 		this.camera.lookAt(eye, center, up);
 		
-		this.sceneRotation = new bongiovi.SceneRotation();
+		this.sceneRotation = new bongiovi.SceneRotation(GL.canvas);
 		this.rotationFront = mat4.create();
 		mat4.identity(this.rotationFront);
 		

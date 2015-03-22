@@ -10,10 +10,8 @@ var sourcemaps = require('gulp-sourcemaps');
 gulp.task('watch', function() {
 	gulp.watch('../js/bongiovi/**/*.js', ['closure', browserSync.reload]);
 	gulp.watch('../js/bongiovi/*.js', ['closure', browserSync.reload]);
-	gulp.watch('../assets/shaders/*.vert', ['closure', browserSync.reload]);
-	gulp.watch('../assets/shaders/*.frag', ['closure', browserSync.reload]);
+	gulp.watch('../assets/shaders/*.*', ['closure', browserSync.reload]);
 	gulp.watch('../js/*.js', ['closure', browserSync.reload]);
-	// gulp.watch('js/*.js', ['browserify', browserSync.reload]);
 });
 
 gulp.task('browser-sync', function() {

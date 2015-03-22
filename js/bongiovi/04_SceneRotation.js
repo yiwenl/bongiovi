@@ -14,7 +14,7 @@ bongiovi = window.bongiovi || {};
 		this._isMouseDown   = false;
 		this._rotation      = quat.clone([0, 0, 1, 0]);
 		this.tempRotation   = quat.clone([0, 0, 0, 0]);
-		this._rotateZMargin = 0;
+		this._rotateZMargin = 80;
 		this.diffX          = 0;
 		this.diffY          = 0;
 		this._currDiffX     = 0;
@@ -156,18 +156,17 @@ bongiovi = window.bongiovi || {};
 		
 		this._currDiffX += (this.diffX - this._currDiffX) * this._easing;
 		this._currDiffY += (this.diffY - this._currDiffY) * this._easing;
-
 		if(this._isRotateZ > 0) {
 			if(this._isRotateZ == 1) {
 				var angle = -this._currDiffX * this._offset; 
 				angle *= (this.preMouse.y < this._rotateZMargin) ? -1 : 1;
 				var _quat = quat.clone( [0, 0, Math.sin(angle), Math.cos(angle) ] );
-				quat.multiply(quat, aTempRotation, _quat);
+				quat.multiply(aTempRotation, _quat, aTempRotation);
 			} else {
 				var angle = -this._currDiffY * this._offset; 
 				angle *= (this.preMouse.x < this._rotateZMargin) ? 1 : -1;
-				var _quat = quat.clone( [0, 0, Math.sin(angle), Math.cos(angle) ] );
-				quat.multiply(quat, aTempRotation, _quat);
+				var _quat = quat.clone( [0, 0, -Math.sin(angle), Math.cos(angle) ] );
+				quat.multiply(aTempRotation, _quat, aTempRotation);
 			}
 		} else {
 			var v = vec3.clone([this._currDiffX, this._currDiffY, 0]);
@@ -180,6 +179,15 @@ bongiovi = window.bongiovi || {};
 		}
 
 	};
+
+	p.__defineGetter__("rotateMargin", function() {
+		return this._rotateZMargin
+	});
+
+
+	p.__defineSetter__("rotateMargin", function(mValue) {
+		this._rotateZMargin = mValue;
+	});
 
 	bongiovi.SceneRotation = SceneRotation;
 	

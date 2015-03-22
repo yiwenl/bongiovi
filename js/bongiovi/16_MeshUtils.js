@@ -67,6 +67,11 @@
 			pos[0] = Math.cos(ry) * t;
 			pos[2] = Math.sin(ry) * t;
 
+			var precision = 10000;
+			pos[0] = Math.floor(pos[0] * precision) / precision;
+			pos[1] = Math.floor(pos[1] * precision) / precision;
+			pos[2] = Math.floor(pos[2] * precision) / precision;
+
 			return pos;
 		}
 

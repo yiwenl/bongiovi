@@ -20,7 +20,7 @@ bongiovi = window.bongiovi || {};
 	var p = GLTools.prototype;
 
 	p.init = function(aCanvas, mWidth, mHeight, parameters) {
-		this.canvas      = aCanvas;
+		this.canvas      = aCanvas || document.createElement("canvas");;
 		var params       = parameters || {};
 		params.antialias = true;
 		this.gl          = this.canvas.getContext("experimental-webgl", params);
