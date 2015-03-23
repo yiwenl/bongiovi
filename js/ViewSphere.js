@@ -2,8 +2,8 @@
 
 (function() {
 	ViewSphere = function() {
-		// bongiovi.View.call(this);
-		bongiovi.View.call(this, "assets/shaders/copyNormal.vert", "assets/shaders/normal.frag");
+		bongiovi.View.call(this);
+		// bongiovi.View.call(this, "assets/shaders/copyNormal.vert", "assets/shaders/normal.frag");
 	}
 
 	var p = ViewSphere.prototype = new bongiovi.View();
