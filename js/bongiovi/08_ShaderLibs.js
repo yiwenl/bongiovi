@@ -96,5 +96,7 @@
 		return this.shaders[mId];
 	}
 
+	ShaderLibs.get = ShaderLibs.getShader;
+
 	bongiovi.ShaderLibs = ShaderLibs;
 })();

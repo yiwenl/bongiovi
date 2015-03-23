@@ -96,7 +96,10 @@ bongiovi = window.bongiovi || {};
 	p.setCameraPos = function(mQuat, speed) {
 		speed = speed || this._easing;
 		this._easing = speed;
-		if(this._slerp > 0) return;
+		if(this._slerp > 0) {
+			this._slerp = 0;
+			quat.copy(this._rotation, this.tempRotation);
+		}
 
 		var tempRotation = quat.clone(this._rotation);
 		this._updateRotation(tempRotation);

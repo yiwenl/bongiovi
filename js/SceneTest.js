@@ -40,6 +40,7 @@
 		this._vParticle = new ViewParticles();
 		this._vSave = new ViewSave();
 		this._vDepth = new bongiovi.ViewDepth();
+		this._vMountains = new ViewMountains();
 
 		this._passTriangle = new bongiovi.Pass("assets/shaders/triblur.frag", 1024, 1024);
 		this._passGrey = new bongiovi.post.PassGreyscale(.71);
@@ -88,7 +89,8 @@
 		// return;
 
 		// this._vPlane.render(this.texture);
-		this._vSphere.render(this.textureWorld);
+		// this._vSphere.render(this.textureWorld);
+		this._vMountains.render();
 
 		// this._fbo.bind();
 		// var grey = .1;

@@ -10,7 +10,7 @@
 
 	p._init = function() {
 		this.mesh = bongiovi.MeshUtils.createSphere(100, 30);
-		this.mesh.computeNormals();
+		// this.mesh.computeNormals();
 	};
 
 	p.render = function(texture) {
