@@ -10,8 +10,8 @@
 		this._rotation = new bongiovi.QuatRotation();
 		bongiovi.Scene.call(this);
 
-		// this.sceneRotation.lock();
-		// this.camera.lockRotation(false);
+		this.sceneRotation.lock();
+		this.camera.lockRotation(false);
 		
 		// this.sceneRotation.inverseControl(true);
 		// this.camera.inverseControl(true);
@@ -40,12 +40,10 @@
 		this._vParticle = new ViewParticles();
 		this._vSave = new ViewSave();
 		this._vDepth = new bongiovi.ViewDepth();
-<<<<<<< Updated upstream
 		this._vMountains = new ViewMountains();
-=======
-		this._vMountain = new ViewMountain();
->>>>>>> Stashed changes
+		this._vLight0 = new ViewLight([1.0, .95, .9]);
 
+/*
 		this._passTriangle = new bongiovi.Pass("assets/shaders/triblur.frag", 1024, 1024);
 		this._passGrey = new bongiovi.post.PassGreyscale(.71);
 		this._passContrast = new bongiovi.post.PassContrast(2.2);
@@ -56,7 +54,7 @@
 		this._effectComposer.addPass(this._passBrightness);
 		this._effectComposer.addPass(this._passGrey);
 		this._effectComposer.addPass(this._passContrast);
-		// this._effectComposer.addPass(this._passTriBlur);
+		this._effectComposer.addPass(this._passTriBlur);
 
 		this.errMsg = [];
 
@@ -67,6 +65,7 @@
 		this.errMsg[gl.FRAMEBUFFER_UNSUPPORTED] = "FRAMEBUFFER_UNSUPPORTED";
 
 		GL.setViewport(0, 0, GL.width, GL.height);
+*/		
 	};
 
 	p.renderParticles = function() {
@@ -87,18 +86,25 @@
 		this._vParticle.render();		
 	};
 
+
+
 	p.render = function() {
+
+		//	LIGHT TESTING
+		var time = new Date().getTime() * .001;
+
 
 		// this.renderParticles();
 		// return;
 
 		// this._vPlane.render(this.texture);
 		// this._vSphere.render(this.textureWorld);
-<<<<<<< Updated upstream
-		this._vMountains.render();
-=======
-		this._vMountain.render();
->>>>>>> Stashed changes
+		var radius = 150;
+		this._vLight0.position[0] = Math.cos(time) * radius;
+		this._vLight0.position[2] = Math.sin(time) * radius;
+		this._vLight0.render();
+
+		this._vMountains.render(this._vLight0.position, this._vLight0.color);
 
 		// this._fbo.bind();
 		// var grey = .1;

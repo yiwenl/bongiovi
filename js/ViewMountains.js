@@ -7,7 +7,8 @@
 
 	ViewMountains = function() {
 		this.lightDirection = [0, 0, 1];
-		bongiovi.View.call(this, "assets/shaders/copyNormal.vert", "assets/shaders/directionalLight.frag");
+		// bongiovi.View.call(this, "assets/shaders/copyNormal.vert", "assets/shaders/light.frag");
+		bongiovi.View.call(this, "assets/shaders/pointLight.vert", "assets/shaders/light.frag");
 	}
 
 	var p = ViewMountains.prototype = new bongiovi.View();
@@ -66,15 +67,11 @@
 	};
 
 
-	p.render = function() {
-		var t = new Date().getTime() * .001;
-		this.lightDirection[0] = Math.cos(t);
-		this.lightDirection[1] = Math.sin(Math.cos(t)) * 2 + 2;
-		this.lightDirection[2] = Math.sin(t);
-
-
+	p.render = function(mLightPosition, mLightColor) {
+		this.lightDirection = mLightPosition || this.lightDirection;
 		this.shader.bind();
-		this.shader.uniform("lightDirection", "uniform3fv", this.lightDirection);
+		this.shader.uniform("lightDirection", "uniform3fv", mLightPosition);
+		this.shader.uniform("lightColor", "uniform3fv", mLightColor);
 		GL.draw(this.mesh);
 	};
 
