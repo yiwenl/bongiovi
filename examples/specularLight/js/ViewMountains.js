@@ -9,8 +9,10 @@
 		this.lightDirection = [0, 0, 1];
 		this.lightRadius = 200;
 		var ambient = .1;
-		this.ambientColor = [ambient, ambient, ambient];
+		this.ambientColor = [ambient, ambient, ambient*1.05];
+		this.specularLightColor = [1, 1, .9];
 		this.count = 0;
+		this.shininess = 10.0;
 		this._cameraPos = vec3.create();
 
 		bongiovi.View.call(this, "../../assets/shaders/specularLight.vert", "../../assets/shaders/specularLight.frag");
@@ -75,6 +77,7 @@
 
 	p.render = function(mLightPosition, mLightColor, mCameraPosition) {
 		this.count += .1;
+		this.shininess = 8 + Math.sin(this.count) * 6.0;
 		// this.lightRadius = 200 + Math.sin(this.count) * 100;
 		vec3.normalize(this._cameraPos, mCameraPosition);
 
@@ -83,8 +86,10 @@
 		this.shader.uniform("lightDirection", "uniform3fv", mLightPosition);
 		this.shader.uniform("lightColor", "uniform3fv", mLightColor);
 		this.shader.uniform("ambientColor", "uniform3fv", this.ambientColor);
+		this.shader.uniform("specularLightColor", "uniform3fv", this.specularLightColor);
 		this.shader.uniform("lightRadius", "uniform1f", this.lightRadius);
 		this.shader.uniform("viewPosition", "uniform3fv", this._cameraPos);
+		this.shader.uniform("shininess", "uniform1f", this.shininess);
 		GL.draw(this.mesh);
 	};
 

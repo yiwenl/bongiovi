@@ -31,6 +31,7 @@
 
 		var radius = 120 + 60 * Math.sin(time) * Math.cos(time);
 		this._vLight0.position[0] = Math.cos(time) * radius;
+		this._vLight0.position[1] = Math.cos(time*.8257349534) * Math.sin(time*.8294728954) * 40 + 40;
 		this._vLight0.position[2] = Math.sin(time) * radius;
 		this._vLight0.render();
 

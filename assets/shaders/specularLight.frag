@@ -6,16 +6,14 @@ varying vec3 vLightDirection;
 
 const float diffuse = .8;
 const float lightAttenuation = 1.0;
-// const vec3 ambientColor = vec3(.2);
-// const float lightRadius = 200.0;
-const vec3 specularLightColor = vec3(1.0);
-const float shininess = 10.0;
-
+// const float shininess = 10.0;
 
 
 uniform vec3 lightColor;
 uniform vec3 ambientColor;
+uniform vec3 specularLightColor;
 uniform float lightRadius;
+uniform float shininess;
 
 
 void main(void) {
