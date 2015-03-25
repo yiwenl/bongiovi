@@ -99,7 +99,7 @@
 
 		// this._vPlane.render(this.texture);
 		// this._vSphere.render(this.textureWorld);
-		var radius = 150;
+		var radius = 120 + 50 * Math.sin(time) * Math.cos(time);
 		this._vLight0.position[0] = Math.cos(time) * radius;
 		this._vLight0.position[2] = Math.sin(time) * radius;
 		this._vLight0.render();

@@ -7,6 +7,8 @@
 	SceneTest = function() {
 		gl = GL.gl;
 		bongiovi.Scene.call(this);
+		this.sceneRotation.lock(true);
+		this.camera.lockRotation(false);
 	}
 
 
@@ -23,14 +25,19 @@
 
 
 	p.render = function() {
+		var grey = .05;
+		GL.clear(grey, grey, grey*.5, 1.0);
 		var time = new Date().getTime() * .001;
 
-		var radius = 120 + 50 * Math.sin(time) * Math.cos(time);
+		var radius = 120 + 60 * Math.sin(time) * Math.cos(time);
 		this._vLight0.position[0] = Math.cos(time) * radius;
 		this._vLight0.position[2] = Math.sin(time) * radius;
 		this._vLight0.render();
 
-		this._vMountains.render(this._vLight0.position, this._vLight0.color);
+
+		// console.log("Camera position : ", this.camera.position);
+
+		this._vMountains.render(this._vLight0.position, this._vLight0.color, this.camera.position);
 	};
 	
 })();

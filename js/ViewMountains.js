@@ -58,7 +58,6 @@
 			}
 		}
 
-
 		this.mesh = new bongiovi.Mesh(positions.length, indices.length, GL.gl.TRIANGLES);
 		this.mesh.bufferVertex(positions);
 		this.mesh.bufferTexCoords(coords);

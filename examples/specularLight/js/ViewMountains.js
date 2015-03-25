@@ -7,8 +7,13 @@
 
 	ViewMountains = function() {
 		this.lightDirection = [0, 0, 1];
-		// bongiovi.View.call(this, "assets/shaders/copyNormal.vert", "assets/shaders/light.frag");
-		bongiovi.View.call(this, "../../assets/shaders/pointLight.vert", "../../assets/shaders/pointLight.frag");
+		this.lightRadius = 200;
+		var ambient = .1;
+		this.ambientColor = [ambient, ambient, ambient];
+		this.count = 0;
+		this._cameraPos = vec3.create();
+
+		bongiovi.View.call(this, "../../assets/shaders/specularLight.vert", "../../assets/shaders/specularLight.frag");
 	}
 
 	var p = ViewMountains.prototype = new bongiovi.View();
@@ -62,15 +67,24 @@
 		this.mesh.bufferVertex(positions);
 		this.mesh.bufferTexCoords(coords);
 		this.mesh.bufferIndices(indices);
+
+		// this.mesh = bongiovi.MeshUtils.createSphere(80, 24);
 		this.mesh.computeNormals();
 	};
 
 
-	p.render = function(mLightPosition, mLightColor) {
+	p.render = function(mLightPosition, mLightColor, mCameraPosition) {
+		this.count += .1;
+		// this.lightRadius = 200 + Math.sin(this.count) * 100;
+		vec3.normalize(this._cameraPos, mCameraPosition);
+
 		this.lightDirection = mLightPosition || this.lightDirection;
 		this.shader.bind();
 		this.shader.uniform("lightDirection", "uniform3fv", mLightPosition);
 		this.shader.uniform("lightColor", "uniform3fv", mLightColor);
+		this.shader.uniform("ambientColor", "uniform3fv", this.ambientColor);
+		this.shader.uniform("lightRadius", "uniform1f", this.lightRadius);
+		this.shader.uniform("viewPosition", "uniform3fv", this._cameraPos);
 		GL.draw(this.mesh);
 	};
 
