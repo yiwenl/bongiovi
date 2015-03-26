@@ -72,6 +72,10 @@ bongiovi = window.bongiovi || {};
 	p.rotate = function(aRotation) {
 		mat4.copy(this.matrix, aRotation);
 		mat4.multiply(this.matrix, this.camera.getMatrix(), this.matrix);
+
+		mat3.fromMat4(this.normalMatrix, this.matrix);
+		mat3.invert(this.normalMatrix, this.normalMatrix);
+		mat3.transpose(this.normalMatrix, this.normalMatrix);
 	};
 
 	p.enableAlphaBlending = function() {
@@ -95,14 +99,8 @@ bongiovi = window.bongiovi || {};
 		// this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.getMatrix() );
 		// this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
 
-		mat3.fromMat4(this.normalMatrix, this.matrix);
-		mat3.invert(this.normalMatrix, this.normalMatrix);
-		mat3.transpose(this.normalMatrix, this.normalMatrix);
-
 		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection );
 		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
-
-		
 
 		// 	VERTEX POSITIONS
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferPos);
