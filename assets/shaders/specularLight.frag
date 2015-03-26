@@ -24,32 +24,19 @@ void main(void) {
 	vec3 nLightDirection  		= normalize(relatedLightPosition);
 	float mappedDist 			= clamp(distanceToLight, 0.0, lightRadius) / lightRadius;
 	
+	//	DIFFUSE	
 	float attenuation 			= 1.0 / (1.0 + mappedDist);
 	vec3 diffuseColor     		= lightColor * diffuse * max(0.0, dot(nLightDirection, vNormal)) * attenuation;
 
 
 	//	SPECULAR
-
 	vec3 specularReflection 	= vec3(.0);
-	// if(dot(vNormal, nLightDirection) > 0.0 ) {
-	// 	vec3 reflection = reflect(-nLightDirection, vNormal);
-	// 	float reflectionWeight = max(dot(reflection, vViewDirection), 0.0);
-	// 	specularReflection = specularLightColor * pow(reflectionWeight, shininess);
-	// }
-
-
-	vec3 incidenceVector = nLightDirection;
+	vec3 incidenceVector = -nLightDirection;
 	vec3 reflectionVector = reflect(incidenceVector, vNormal);
 	vec3 surfaceToCamera = normalize(vViewDirection - vVertexPosition);
-	float cosAngle = max(0.0, dot(surfaceToCamera, reflectionVector));
+	float cosAngle = max(0.0, dot(surfaceToCamera, normalize(reflectionVector)));
 	float specularCoefficient = pow(cosAngle, shininess);
-	specularReflection = specularCoefficient * specularLightColor;
+	specularReflection = specularCoefficient * specularLightColor * attenuation;
 
     gl_FragColor = vec4(color + diffuseColor + specularReflection, 1.0);
-    // vec3 gamma = vec3(1.0/2.2, 1.0/2.2, 1.0/2.2);
-    // gl_FragColor.rgb = pow(gl_FragColor.rgb, gamma);
-
-    // gl_FragColor = vec4(vNormal * .5 + vec3(.5), 1.0);
-    // vec3 vertexColor = normalize(vVertexPosition);
-    // gl_FragColor = vec4(vertexColor * .5 + vec3(.5), 1.0);
 }

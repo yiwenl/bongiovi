@@ -30,6 +30,7 @@
 			var p = [];
 			p[0] = -size * .5 + px * size;
 			p[1] = offset * height - height*.5;
+
 			p[2] = -size * .5 + pz * size;
 
 			return p;

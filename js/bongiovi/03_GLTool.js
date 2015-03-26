@@ -43,6 +43,7 @@ bongiovi = window.bongiovi || {};
 
 		this.matrix = mat4.create();
 		mat4.identity(this.matrix);
+		this.normalMatrix = mat3.create();
 		this.depthTextureExt 		= this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 		this.floatTextureExt 		= this.gl.getExtension("OES_texture_float") // Or browser-appropriate prefix
 		this.floatTextureLinearExt 	= this.gl.getExtension("OES_texture_float_linear") // Or browser-appropriate prefix
@@ -70,6 +71,7 @@ bongiovi = window.bongiovi || {};
 
 	p.rotate = function(aRotation) {
 		mat4.copy(this.matrix, aRotation);
+		mat4.multiply(this.matrix, this.camera.getMatrix(), this.matrix);
 	};
 
 	p.enableAlphaBlending = function() {
@@ -90,8 +92,17 @@ bongiovi = window.bongiovi || {};
 			console.warn("Shader program not ready yet");
 			return;
 		}
-		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.getMatrix() );
+		// this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.getMatrix() );
+		// this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
+
+		mat3.fromMat4(this.normalMatrix, this.matrix);
+		mat3.invert(this.normalMatrix, this.normalMatrix);
+		mat3.transpose(this.normalMatrix, this.normalMatrix);
+
+		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection );
 		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
+
+		
 
 		// 	VERTEX POSITIONS
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferPos);

@@ -23,8 +23,8 @@ bongiovi = window.bongiovi || {};
 	};
 
 	p.getMatrix = function() {
-		mat4.multiply(this.mtxFinal, this.projection, this.matrix);
-		return this.mtxFinal;
+		// mat4.multiply(this.mtxFinal, this.projection, this.matrix);
+		return this.matrix;
 	};
 
 	p.resize = function(aAspectRatio) {

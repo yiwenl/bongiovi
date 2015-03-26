@@ -12,7 +12,7 @@
 		this.ambientColor = [ambient, ambient, ambient*1.05];
 		this.specularLightColor = [1, 1, .9];
 		this.count = 0;
-		this.shininess = 10.0;
+		this.shininess = 32.0;
 		this._cameraPos = vec3.create();
 
 		bongiovi.View.call(this, "../../assets/shaders/specularLight.vert", "../../assets/shaders/specularLight.frag");
@@ -27,28 +27,61 @@
 		var indices = [];
 		var size = 200;
 		var height = 150;
-		var numSeg = 20;
+		var numSeg = 24;
 		var index = 0;
+		var ringSize = 15;
 
-		function getPosition(i, j) {
-			var px = i/numSeg;
-			var pz = j/numSeg;
-			var offset = Math.sin(px * Math.PI) * Math.sin(pz * Math.PI);
+
+		function getPositionWithTR(theta, radius) {
 			var p = [];
-			p[0] = -size * .5 + px * size;
-			p[1] = offset * height - height*.5;
-			p[2] = -size * .5 + pz * size;
+			var rOffset = (radius - 100) / ringSize;
+
+			p[0] = Math.cos(theta) * radius;
+			p[1] = Math.sin(rOffset * Math.PI) * ringSize * .5;
+			p[2] = Math.sin(theta) * radius;			
 
 			return p;
 		}
 
+		function getPosition(i, j) {
+			var theta = i/numSeg/5 * Math.PI * 2.0;
+			var rOffset = j/numSeg;
+			var radius = 100 + ringSize * rOffset;
+			
+			return getPositionWithTR(theta, radius);
+		}
 
-		for(var i=0; i<numSeg; i++) {
+		var m = mat4.create();
+		var axis = vec3.create();
+		var yAxis = vec3.fromValues(0, 1, 0);
+
+		function getBetterPosition(i, j) {
+			var theta = i/numSeg/5 * Math.PI * 2.0;
+			// var alpha = j/numSeg * Math.PI - Math.PI*.5;
+			var alpha = j/numSeg * Math.PI*2.0;
+			var rCenter = 100 + ringSize * .5;
+			var pCenter = vec3.clone(getPositionWithTR(theta, rCenter));
+			var p = vec3.clone(getPositionWithTR(theta, 100));
+			var v = vec3.create();
+			vec3.sub(v, pCenter, p);
+			vec3.cross(axis, v, yAxis);
+			vec3.normalize(axis, axis);
+			mat4.identity(m);
+			mat4.rotate(m, m, alpha, axis);
+			vec3.transformMat4(v, v, m);
+			vec3.add(v, v, pCenter);
+			return v;
+		}
+
+
+		for(var i=0; i<numSeg*5; i++) {
 			for(var j=0; j<numSeg; j++) {
-				positions.push(getPosition(i, j+1));
-				positions.push(getPosition(i+1, j+1));
-				positions.push(getPosition(i+1, j));
-				positions.push(getPosition(i, j));
+				// console.log( getBetterPosition(i, j) );
+
+				positions.push(getBetterPosition(i, j+1));
+				positions.push(getBetterPosition(i+1, j+1));
+				positions.push(getBetterPosition(i+1, j));
+				positions.push(getBetterPosition(i, j));
 
 				coords.push([0, 0]);
 				coords.push([0, 0]);
@@ -77,7 +110,7 @@
 
 	p.render = function(mLightPosition, mLightColor, mCameraPosition) {
 		this.count += .1;
-		this.shininess = 8 + Math.sin(this.count) * 6.0;
+		// this.shininess = 8 + Math.sin(this.count) * 6.0;
 		// this.lightRadius = 200 + Math.sin(this.count) * 100;
 		vec3.normalize(this._cameraPos, mCameraPosition);
 
