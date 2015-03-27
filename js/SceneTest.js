@@ -115,8 +115,9 @@
 		// this._vSphere.render(this.textureWorld);
 		// this._fbo.unbind();
 
-		// GL.setMatrices(this.cameraOtho);
-		// GL.rotate(this.rotationFront);
+		GL.setMatrices(this.cameraOtho);
+		GL.rotate(this.rotationFront);
+		this._vCopy.render(this.texture );
 
 		// this._effectComposer.render(this._fbo.getTexture() ) ;
 		// this._effectComposer.render(this._fbo.getDepthTexture() ) ;

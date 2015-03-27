@@ -16,7 +16,8 @@
 	var s = bongiovi.Scene.prototype;
 
 	p._initTextures = function() {
-		// this._texEnv = new bongiovi.GLTexture(images.hdrEnvironment);
+		this._texEnvLight = new bongiovi.GLTexture(images.hdrEnvironment);
+		this._texEnvLightBlur = new bongiovi.GLTexture(images.hdrEnvironmentBlur);
 		this._texEnv = new bongiovi.GLTexture(images.matcap);
 	};
 
@@ -38,8 +39,11 @@
 		// this._vLight0.position[2] = Math.sin(time) * radius;
 		// this._vLight0.render();
 
+		// GL.setViewport(0, 0, GL.width/2, GL.height/2);
+		this._vMountains.render(this._texEnv, this._texEnvLight, this.camera.position);
 
-		this._vMountains.render(this._texEnv, this.camera.position);
+		// GL.setViewport(GL.width/2, 0, GL.width/2, GL.height/2);
+		// this._vMountains.render(this._texEnv, this._texEnvLightBlur, this.camera.position);
 
 		// GL.setMatrices(this.cameraOtho);
 		// GL.rotate(this.rotationFront);

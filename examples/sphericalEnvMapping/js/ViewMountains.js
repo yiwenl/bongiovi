@@ -29,7 +29,7 @@
 		var height = 150;
 		var numSeg = 24;
 		var index = 0;
-		var ringSize = 15;
+		var ringSize = 25;
 
 
 		function getPositionWithTR(theta, radius) {
@@ -108,13 +108,15 @@
 	};
 
 
-	p.render = function(texture, mCameraPosition) {
+	p.render = function(texture, mTextureLight, mCameraPosition) {
 		this.shader.bind();
 		this.shader.uniform("texture", "uniform1i", 0);
+		this.shader.uniform("textureLight", "uniform1i", 1);
 		this.shader.uniform("viewPosition", "uniform3fv", mCameraPosition);
 		this.shader.uniform("normalMatrix", "uniformMatrix3fv", GL.normalMatrix);
 		
-		texture.bind();
+		texture.bind(0);
+		mTextureLight.bind(1);
 		GL.draw(this.mesh);
 	};
 
