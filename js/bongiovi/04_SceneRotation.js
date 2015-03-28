@@ -97,8 +97,8 @@ bongiovi = window.bongiovi || {};
 		speed = speed || this._easing;
 		this._easing = speed;
 		if(this._slerp > 0) {
-			this._slerp = 0;
-			quat.copy(this._rotation, this.tempRotation);
+			quat.set(this._rotation, this._targetQuat[0], this._targetQuat[1], this._targetQuat[2], this._targetQuat[3]);
+			this._targetQuat = undefined;
 		}
 
 		var tempRotation = quat.clone(this._rotation);
