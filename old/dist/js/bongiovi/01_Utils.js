@@ -10,7 +10,7 @@ bongiovi.Utils = {};
 
 		bongiovi.Scheduler.addEF(this, this._update);
 	}
-
+	
 	var p = EaseNumber.prototype;
 
 

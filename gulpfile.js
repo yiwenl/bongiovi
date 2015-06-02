@@ -3,10 +3,9 @@
 var gulp        = require('gulp');
 var browserSync = require('browser-sync').create();
 var browserify  = require('browserify');
-var source      = require('vinyl-source-stream2')
+var source      = require('vinyl-source-stream')
 var uglify      = require('gulp-uglify');
-var sass        = require('gulp-ruby-sass');
-var prefix      = require('gulp-autoprefixer');
+var exorcist 	= require('exorcist');
 var watchify    = require('watchify');
 var buffer      = require('vinyl-buffer');
 var rename      = require('gulp-rename');
@@ -23,26 +22,27 @@ var bundler = watchify(browserify({
 	debug: true
 }, watchify.args));
 
-gulp.task('browserify', bundle);
-gulp.task('bundle', ['jshint'], bundle);
-
-bundler.on('update', bundle);     
 
 function bundle() {
-    var b = bundler.bundle()
-    	.on('error', logError)
-		.pipe(source('bongiovi.js'))
-		.pipe(buffer())
-		.pipe(uglify())
-		.pipe(gulp.dest('./dist/'))
-		.pipe(gulp.dest('./test/src/js/libs'))
-		.pipe(rename({ extname: '.min.js' }))
-		.pipe(uglify())
-		.pipe(gulp.dest('./dist/'))
-		.pipe(gulp.dest('./test/src/js/libs'))
-      .pipe(reload({stream: true, once: true}));
-    return b;
+    return bundler
+    .bundle()
+	.pipe(exorcist('./dist/bongiovi.js.map'))
+	.on('error', logError)
+	.pipe(source('bongiovi.js'))
+	.pipe(buffer())
+	.pipe(uglify())
+	.pipe(gulp.dest('./dist/'))
+	.pipe(gulp.dest('./test/src/js/libs'))
+	.pipe(rename({ extname: '.min.js' }))
+	.pipe(uglify())
+	.pipe(gulp.dest('./dist/'))
+	.pipe(gulp.dest('./test/src/js/libs'))
+	.pipe(reload({stream: true}));
 }
+
+bundler.on('update', bundle);     
+gulp.task('bundle', ['jshint'], bundle);
+
 
 gulp.task('watch', function() {
 	gulp.watch('src/**/*.js', ['jshint']);

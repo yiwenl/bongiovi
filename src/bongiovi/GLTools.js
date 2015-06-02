@@ -23,6 +23,8 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	var params       = parameters || {};
 	params.antialias = true;
 	this.gl          = this.canvas.getContext("experimental-webgl", params);
+
+	console.log('INIT GL TOOLS : ', this.gl);
 	
 	if(mWidth !== undefined && mHeight !== undefined) {
 		this.setSize(mWidth, mHeight);
