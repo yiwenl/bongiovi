@@ -35,14 +35,14 @@
 
 	var equal = function(mV0, mV1) {
 		return ( (mV0[0] === mV1[0]) && (mV0[1] === mV1[1]) && (mV0[2] === mV1[2]) );
-	}
+	};
 
 
 	var getPrecision = function(mValue, mPrecision) {
 		mPrecision = mPrecision || 100;
 
 		return Math.floor(mValue * mPrecision) / mPrecision;
-	}
+	};
 
 
 	bongiovi.Face = Face;

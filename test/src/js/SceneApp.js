@@ -13,6 +13,7 @@ var p = SceneApp.prototype = new bongiovi.Scene();
 
 p._initViews = function() {
 	console.log('Init Views');
+	this._vAxis = new bongiovi.ViewAxis();
 };
 
 
@@ -22,8 +23,10 @@ p._initTextures = function() {
 
 
 p.render = function() {
-	var grey = .96;
+	var grey = .11;
 	GL.clear(grey, grey, grey, 1.0);
+
+	this._vAxis.render();
 };
 
 module.exports = SceneApp;
