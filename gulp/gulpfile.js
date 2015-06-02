@@ -4,8 +4,6 @@ var browserify = require('browserify');
 var source = require('vinyl-source-stream2')
 var uglify = require('gulp-uglify');
 var closureCompiler = require('gulp-closure-compiler');
-var sourcemaps = require('gulp-sourcemaps');
-
 
 gulp.task('watch', function() {
 	gulp.watch('../js/bongiovi/**/*.js', ['closure', browserSync.reload]);
