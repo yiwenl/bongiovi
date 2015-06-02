@@ -8,15 +8,15 @@ var sourcemaps = require('gulp-sourcemaps');
 
 
 gulp.task('watch', function() {
-	gulp.watch('../js/bongiovi/**/*.js', ['closure', browserSync.reload]);
-	gulp.watch('../js/bongiovi/*.js', ['closure', browserSync.reload]);
-	gulp.watch('../assets/shaders/*.*', ['closure', browserSync.reload]);
-	gulp.watch('../js/*.js', ['closure', browserSync.reload]);
+	gulp.watch('./dist/js/bongiovi/**/*.js', ['closure', browserSync.reload]);
+	gulp.watch('./dist/js/bongiovi/*.js', ['closure', browserSync.reload]);
+	gulp.watch('./dist/assets/shaders/*.*', ['closure', browserSync.reload]);
+	gulp.watch('./dist/js/*.js', ['closure', browserSync.reload]);
 });
 
 gulp.task('browser-sync', function() {
 	browserSync({
-			proxy: 'localhost:8888/git/bongiovi/',
+			proxy: 'localhost:8888/git/bongiovi/dist',
 			watchOptions: {
 			debounceDelay: 1000
 		}
@@ -24,7 +24,7 @@ gulp.task('browser-sync', function() {
 });
 
 gulp.task('bongiovi', function() {
-  gulp.src('../js/bongiovi/*.js')
+  gulp.src('./dist/js/bongiovi/*.js')
 	.pipe(closureCompiler({
 	  compilerPath: 'compiler/compiler.jar',
 	  fileName: 'bongiovi-min.js'
@@ -33,11 +33,11 @@ gulp.task('bongiovi', function() {
 		console.log(err.message);
 		this.end();
 	})
-	.pipe(gulp.dest('../js/compile'));
+	.pipe(gulp.dest('./dist/js/compile'));
 });
 
 gulp.task('bongiovi-post', function() {
-  gulp.src('../js/bongiovi/**/*.js')
+  gulp.src('./dist/js/bongiovi/**/*.js')
 	.pipe(closureCompiler({
 	  compilerPath: 'compiler/compiler.jar',
 	  fileName: 'bongiovi-min-post.js'
@@ -46,7 +46,7 @@ gulp.task('bongiovi-post', function() {
 		console.log(err.message);
 		this.end();
 	})
-	.pipe(gulp.dest('../js/compile'));
+	.pipe(gulp.dest('./dist/js/compile'));
 });
 
 gulp.task('closure', ['bongiovi-post', 'bongiovi']);

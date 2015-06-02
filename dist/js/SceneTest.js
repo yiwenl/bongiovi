@@ -40,6 +40,7 @@
 		this._vParticle = new ViewParticles();
 		this._vSave = new ViewSave();
 		this._vDepth = new bongiovi.ViewDepth();
+		this._vAxis = new bongiovi.ViewAxis();
 		this._vMountains = new ViewMountains();
 		this._vLight0 = new ViewLight([1.0, .95, .9]);
 
@@ -98,13 +99,15 @@
 		// return;
 
 		// this._vPlane.render(this.texture);
-		// this._vSphere.render(this.textureWorld);
-		var radius = 120 + 50 * Math.sin(time) * Math.cos(time);
-		this._vLight0.position[0] = Math.cos(time) * radius;
-		this._vLight0.position[2] = Math.sin(time) * radius;
-		this._vLight0.render();
+		this._vSphere.render(this.textureWorld);
+		this._vAxis.render();
+		
+		// var radius = 120 + 50 * Math.sin(time) * Math.cos(time);
+		// this._vLight0.position[0] = Math.cos(time) * radius;
+		// this._vLight0.position[2] = Math.sin(time) * radius;
+		// this._vLight0.render();
 
-		this._vMountains.render(this._vLight0.position, this._vLight0.color);
+		// this._vMountains.render(this._vLight0.position, this._vLight0.color);
 
 		// this._fbo.bind();
 		// var grey = .1;
@@ -115,9 +118,9 @@
 		// this._vSphere.render(this.textureWorld);
 		// this._fbo.unbind();
 
-		GL.setMatrices(this.cameraOtho);
-		GL.rotate(this.rotationFront);
-		this._vCopy.render(this.texture );
+		// GL.setMatrices(this.cameraOtho);
+		// GL.rotate(this.rotationFront);
+		// this._vCopy.render(this.texture );
 
 		// this._effectComposer.render(this._fbo.getTexture() ) ;
 		// this._effectComposer.render(this._fbo.getDepthTexture() ) ;
