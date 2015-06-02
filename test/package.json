@@ -1,6 +1,6 @@
 {
-  "name": "bongiovi",
-  "version": "1.0.0",
+  "name": "GulpTemplate",
+  "version": "0.0.0",
   "author": "Yi-Wen Lin",
   "devDependencies": {
     "browser-sync": "^2.6.5",
@@ -11,9 +11,6 @@
     "gulp-autoprefixer": "2.1.0",
     "glslify": "2.1.2",
     "vinyl-buffer": "^1.0.0",
-    "gulp-jshint": "^1.10.0",
-    "jshint-stylish": "^1.0.1",
-    "gulp-rename": "^1.2.2",
     "watchify": "^3.2.0",
     "gulp": "3.8.11"
   },
