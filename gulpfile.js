@@ -12,7 +12,10 @@ var buffer      = require('vinyl-buffer');
 var rename      = require('gulp-rename');
 var jshint      = require('gulp-jshint');
 var reload      = browserSync.reload;
-
+// log
+function logError(msg) {
+	console.log( msg.toString() );
+}
 
 var bundler = watchify(browserify({
 	entries:['./src/bongiovi.js'],
@@ -27,6 +30,7 @@ bundler.on('update', bundle);
 
 function bundle() {
     var b = bundler.bundle()
+    	.on('error', logError)
 		.pipe(source('bongiovi.js'))
 		.pipe(buffer())
 		.pipe(uglify())

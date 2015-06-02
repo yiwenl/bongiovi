@@ -12,6 +12,10 @@ var buffer 		= require('vinyl-buffer');
 var reload      = browserSync.reload;
 
 
+function logError(msg) {
+	console.log( msg.toString() );
+}
+
 var bundler = watchify(browserify('./src/js/app.js', watchify.args));
     gulp.task('browserify', bundle);
 
@@ -19,10 +23,11 @@ bundler.on('update', bundle);
 
 function bundle() {
     var b = bundler.bundle()
-      .pipe(source('bundle.js'))
-      .pipe(buffer())
-      .pipe(gulp.dest('./dist/bundle/'))
-      .pipe(reload({stream: true, once: true}));
+		.on('error', logError)
+		.pipe(source('bundle.js'))
+		.pipe(buffer())
+		.pipe(gulp.dest('./dist/bundle/'))
+		.pipe(reload({stream: true, once: true}));
 
 
     return b;

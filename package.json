@@ -15,6 +15,7 @@
     "jshint-stylish": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "watchify": "^3.2.0",
+    "gl-matrix":"2.2.1",
     "gulp": "3.8.11"
   },
   "scripts": {

@@ -1,12 +1,14 @@
 "use strict";
 
+var GLTools = require("./libs/GLTools");
+
 function bongiovi() {
-	console.log('bongiovi : v1.0.0');
-	console.log("test");
-	console.log("test");
-	console.log("test");
-	console.log("test");
 }
 
 
-module.exports = new bongiovi();
+var lib = new bongiovi();
+lib.GL = GLTools;
+lib.GLTools = GLTools;
+
+
+module.exports = lib;
