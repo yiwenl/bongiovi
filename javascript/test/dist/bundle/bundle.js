@@ -1,8 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 // app.js
 
+// window.bongiovi = require("./libs/bongiovi.min");
+window.bongiovi = require("./libs/bongiovi");
+
 (function() {
-	var bongiovi = require("./libs/bongiovi");
 	var SceneApp = require("./SceneApp");
 
 	App = function() {
@@ -17,8 +19,6 @@
 
 
 	p._init = function() {
-		console.log('Init');
-
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
@@ -41,7 +41,7 @@ new App();
 },{"./SceneApp":2,"./libs/bongiovi":4}],2:[function(require,module,exports){
 // SceneApp.js
 
-var bongiovi = require("./libs/bongiovi");
+// var bongiovi = require("./libs/bongiovi");
 var GL = bongiovi.GL;
 var ViewPlane = require("./ViewPlane");
 
@@ -74,11 +74,11 @@ p.render = function() {
 };
 
 module.exports = SceneApp;
-},{"./ViewPlane":3,"./libs/bongiovi":4}],3:[function(require,module,exports){
+},{"./ViewPlane":3}],3:[function(require,module,exports){
 // ViewPlane.js
 
 // var GL = require("./GLTools");
-var bongiovi = require("./libs/bongiovi");
+// var bongiovi = require("./libs/bongiovi");
 var GL, gl;
 
 function ViewPlane() {
@@ -117,7 +117,7 @@ p.render = function(texture) {
 };
 
 module.exports = ViewPlane;
-},{"./libs/bongiovi":4}],4:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongiovi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 "use strict";

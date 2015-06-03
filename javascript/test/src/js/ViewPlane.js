@@ -1,7 +1,7 @@
 // ViewPlane.js
 
 // var GL = require("./GLTools");
-var bongiovi = require("./libs/bongiovi");
+// var bongiovi = require("./libs/bongiovi");
 var GL, gl;
 
 function ViewPlane() {

@@ -27,7 +27,7 @@ var bundler = watchify(browserify({
 function bundle() {
     return bundler
     .bundle()
-	.pipe(exorcist('./dist/bongiovi.js.map'))
+	.pipe(exorcist('./dist/bongiovi.js.map').on('error', logError))
 	.on('error', logError)
 	.pipe(source('bongiovi.js'))
 	.pipe(buffer())

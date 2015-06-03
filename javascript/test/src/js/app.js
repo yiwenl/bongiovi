@@ -1,7 +1,9 @@
 // app.js
 
+// window.bongiovi = require("./libs/bongiovi.min");
+window.bongiovi = require("./libs/bongiovi");
+
 (function() {
-	var bongiovi = require("./libs/bongiovi");
 	var SceneApp = require("./SceneApp");
 
 	App = function() {
@@ -16,8 +18,6 @@
 
 
 	p._init = function() {
-		console.log('Init');
-
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;

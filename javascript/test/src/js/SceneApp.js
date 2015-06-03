@@ -1,6 +1,6 @@
 // SceneApp.js
 
-var bongiovi = require("./libs/bongiovi");
+// var bongiovi = require("./libs/bongiovi");
 var GL = bongiovi.GL;
 var ViewPlane = require("./ViewPlane");
 
