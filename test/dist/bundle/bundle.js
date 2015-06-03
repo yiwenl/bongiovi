@@ -11,8 +11,6 @@
 		} else {
 			window.addEventListener('load', this._init.bind(this));
 		}
-		
-		console.log(bongiovi.ShaderLibs.get("copyVert"));
 	}
 
 	var p = App.prototype;
@@ -7766,47 +7764,11 @@ ShaderLibs.shaders = {};
 
 ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n};";
 
-ShaderLibs.shaders.generalVert = 
-	"precision highp float;"+
-	"attribute vec3 aVertexPosition;"+
-	"attribute vec2 aTextureCoord;"+
-	""+
-	"uniform mat4 uMVMatrix;"+
-	"uniform mat4 uPMatrix;"+
-	"uniform vec3 position;"+
-	"uniform vec3 scale;"+
-	""+
-	"varying vec2 vTextureCoord;"+
-	""+
-	"void main(void) {"+
-	"    vec3 pos = aVertexPosition;"+
-	"    pos *= scale;"+
-	"    pos += position;"+
-	"    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);"+
-	"    vTextureCoord = aTextureCoord;"+
-	"}";
+ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
+ShaderLibs.shaders.copyFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n}";
 
-ShaderLibs.shaders.copyFrag = 
-	"precision highp float;"+
-	"varying vec2 vTextureCoord;"+
-	"uniform sampler2D texture;"+
-	""+
-	"void main(void) {"+
-	"    gl_FragColor = texture2D(texture, vTextureCoord);"+
-	"}";
-
-
-ShaderLibs.shaders.alphaFrag = 
-	"precision highp float;"+
-	"varying vec2 vTextureCoord;"+
-	"uniform sampler2D texture;"+
-	"uniform float opacity;"+
-	""+
-	"void main(void) {"+
-	"    gl_FragColor = texture2D(texture, vTextureCoord);"+
-	"    gl_FragColor.a *= opacity;"+
-	"}";
+ShaderLibs.shaders.alphaFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n    gl_FragColor.a *= opacity;\n}";
 
 
 ShaderLibs.shaders.simpleColorFrag = 
@@ -12019,47 +11981,11 @@ ShaderLibs.shaders = {};
 
 ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n};";
 
-ShaderLibs.shaders.generalVert = 
-	"precision highp float;"+
-	"attribute vec3 aVertexPosition;"+
-	"attribute vec2 aTextureCoord;"+
-	""+
-	"uniform mat4 uMVMatrix;"+
-	"uniform mat4 uPMatrix;"+
-	"uniform vec3 position;"+
-	"uniform vec3 scale;"+
-	""+
-	"varying vec2 vTextureCoord;"+
-	""+
-	"void main(void) {"+
-	"    vec3 pos = aVertexPosition;"+
-	"    pos *= scale;"+
-	"    pos += position;"+
-	"    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);"+
-	"    vTextureCoord = aTextureCoord;"+
-	"}";
+ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
+ShaderLibs.shaders.copyFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n}";
 
-ShaderLibs.shaders.copyFrag = 
-	"precision highp float;"+
-	"varying vec2 vTextureCoord;"+
-	"uniform sampler2D texture;"+
-	""+
-	"void main(void) {"+
-	"    gl_FragColor = texture2D(texture, vTextureCoord);"+
-	"}";
-
-
-ShaderLibs.shaders.alphaFrag = 
-	"precision highp float;"+
-	"varying vec2 vTextureCoord;"+
-	"uniform sampler2D texture;"+
-	"uniform float opacity;"+
-	""+
-	"void main(void) {"+
-	"    gl_FragColor = texture2D(texture, vTextureCoord);"+
-	"    gl_FragColor.a *= opacity;"+
-	"}";
+ShaderLibs.shaders.alphaFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n    gl_FragColor.a *= opacity;\n}";
 
 
 ShaderLibs.shaders.simpleColorFrag = 
