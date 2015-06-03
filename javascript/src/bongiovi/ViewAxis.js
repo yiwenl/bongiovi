@@ -60,7 +60,9 @@ p.render = function() {
 	this.shader.bind();
 	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
 	this.shader.uniform("opacity", "uniform1f", 1);
+	GL.gl.lineWidth(2.0);
 	GL.draw(this.mesh);
+	GL.gl.lineWidth(1.0);
 };
 
 module.exports = ViewAxis;

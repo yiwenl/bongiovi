@@ -16,11 +16,11 @@ var GLShader = function(aVertexShaderId, aFragmentShaderId) {
 	this._isReady        = false;
 	this._loadedCount    = 0;
 
-	if(aVertexShaderId === undefined) {
+	if(aVertexShaderId === undefined || aVertexShaderId === null ) {
 		this.createVertexShaderProgram(ShaderLibs.getShader("copyVert"));
 	}
 
-	if(aFragmentShaderId === undefined) {
+	if(aFragmentShaderId === undefined || aVertexShaderId === null ) {
 		this.createFragmentShaderProgram(ShaderLibs.getShader("copyFrag"));
 	}
 
@@ -109,7 +109,6 @@ p.createFragmentShaderProgram = function(aStr) {
 
 p.attachShaderProgram = function() {
 	this._isReady = true;
-	// console.log("Create shader : ", this.idVertex, this.idFragment);
 	this.shaderProgram = this.gl.createProgram();
 	this.gl.attachShader(this.shaderProgram, this.vertexShader);
 	this.gl.attachShader(this.shaderProgram, this.fragmentShader);

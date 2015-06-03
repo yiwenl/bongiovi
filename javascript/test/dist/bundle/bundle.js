@@ -38,11 +38,12 @@
 
 
 new App();
-},{"./SceneApp":2,"./libs/bongiovi":3}],2:[function(require,module,exports){
+},{"./SceneApp":2,"./libs/bongiovi":4}],2:[function(require,module,exports){
 // SceneApp.js
 
 var bongiovi = require("./libs/bongiovi");
 var GL = bongiovi.GL;
+var ViewPlane = require("./ViewPlane");
 
 function SceneApp() {
 	bongiovi.Scene.call(this);
@@ -55,6 +56,7 @@ var p = SceneApp.prototype = new bongiovi.Scene();
 p._initViews = function() {
 	console.log('Init Views');
 	this._vAxis = new bongiovi.ViewAxis();
+	this._vPlane = new ViewPlane();
 };
 
 
@@ -67,11 +69,55 @@ p.render = function() {
 	var grey = .11;
 	GL.clear(grey, grey, grey, 1.0);
 
+	this._vPlane.render();
 	this._vAxis.render();
 };
 
 module.exports = SceneApp;
-},{"./libs/bongiovi":3}],3:[function(require,module,exports){
+},{"./ViewPlane":3,"./libs/bongiovi":4}],3:[function(require,module,exports){
+// ViewPlane.js
+
+// var GL = require("./GLTools");
+var bongiovi = require("./libs/bongiovi");
+var GL, gl;
+
+function ViewPlane() {
+	GL = bongiovi.GL;
+	bongiovi.View.call(this, null, bongiovi.ShaderLibs.get("simpleColorFrag"));
+}
+
+var p = ViewPlane.prototype = new bongiovi.View();
+p.constructor = ViewPlane;
+
+
+p._init = function() {
+	console.log('init');
+	gl = GL.gl;
+	// var positions = [];
+	// var coords = [];
+	// var indices = []; 
+
+	// this.mesh = new bongiovi.Mesh(positions.length, indices.length, GL.gl.TRIANGLES);
+	// this.mesh.bufferVertex(positions);
+	// this.mesh.bufferTexCoords(coords);
+	// this.mesh.bufferIndices(indices);
+
+	this.mesh = bongiovi.MeshUtils.createPlane(100, 100, 1);
+};
+
+p.render = function(texture) {
+	if(!this.shader.isReady() ) return;
+
+	this.shader.bind();
+	this.shader.uniform("color", "uniform3fv", [1, .5, 0]);
+	this.shader.uniform("opacity", "uniform1f", 1);
+	// this.shader.uniform("texture", "uniform1i", 0);
+	// texture.bind(0);
+	GL.draw(this.mesh);
+};
+
+module.exports = ViewPlane;
+},{"./libs/bongiovi":4}],4:[function(require,module,exports){
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongiovi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 "use strict";
@@ -6600,11 +6646,11 @@ var GLShader = function(aVertexShaderId, aFragmentShaderId) {
 	this._isReady        = false;
 	this._loadedCount    = 0;
 
-	if(aVertexShaderId === undefined) {
+	if(aVertexShaderId === undefined || aVertexShaderId === null ) {
 		this.createVertexShaderProgram(ShaderLibs.getShader("copyVert"));
 	}
 
-	if(aFragmentShaderId === undefined) {
+	if(aFragmentShaderId === undefined || aVertexShaderId === null ) {
 		this.createFragmentShaderProgram(ShaderLibs.getShader("copyFrag"));
 	}
 
@@ -6693,7 +6739,6 @@ p.createFragmentShaderProgram = function(aStr) {
 
 p.attachShaderProgram = function() {
 	this._isReady = true;
-	// console.log("Create shader : ", this.idVertex, this.idFragment);
 	this.shaderProgram = this.gl.createProgram();
 	this.gl.attachShader(this.shaderProgram, this.vertexShader);
 	this.gl.attachShader(this.shaderProgram, this.fragmentShader);
@@ -7762,7 +7807,7 @@ var ShaderLibs = function() { };
 
 ShaderLibs.shaders = {};
 
-ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n};";
+ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
 ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
@@ -8094,7 +8139,9 @@ p.render = function() {
 	this.shader.bind();
 	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
 	this.shader.uniform("opacity", "uniform1f", 1);
+	GL.gl.lineWidth(2.0);
 	GL.draw(this.mesh);
+	GL.gl.lineWidth(1.0);
 };
 
 module.exports = ViewAxis;
@@ -10792,11 +10839,11 @@ var GLShader = function(aVertexShaderId, aFragmentShaderId) {
 	this._isReady        = false;
 	this._loadedCount    = 0;
 
-	if(aVertexShaderId === undefined) {
+	if(aVertexShaderId === undefined || aVertexShaderId === null ) {
 		this.createVertexShaderProgram(ShaderLibs.getShader("copyVert"));
 	}
 
-	if(aFragmentShaderId === undefined) {
+	if(aFragmentShaderId === undefined || aVertexShaderId === null ) {
 		this.createFragmentShaderProgram(ShaderLibs.getShader("copyFrag"));
 	}
 
@@ -10885,7 +10932,6 @@ p.createFragmentShaderProgram = function(aStr) {
 
 p.attachShaderProgram = function() {
 	this._isReady = true;
-	// console.log("Create shader : ", this.idVertex, this.idFragment);
 	this.shaderProgram = this.gl.createProgram();
 	this.gl.attachShader(this.shaderProgram, this.vertexShader);
 	this.gl.attachShader(this.shaderProgram, this.fragmentShader);
@@ -11954,7 +12000,7 @@ var ShaderLibs = function() { };
 
 ShaderLibs.shaders = {};
 
-ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n};";
+ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
 ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
@@ -12286,7 +12332,9 @@ p.render = function() {
 	this.shader.bind();
 	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
 	this.shader.uniform("opacity", "uniform1f", 1);
+	GL.gl.lineWidth(2.0);
 	GL.draw(this.mesh);
+	GL.gl.lineWidth(1.0);
 };
 
 module.exports = ViewAxis;
