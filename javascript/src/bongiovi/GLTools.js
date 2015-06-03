@@ -24,7 +24,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	params.antialias = true;
 	this.gl          = this.canvas.getContext("experimental-webgl", params);
 
-	console.log('INIT GL TOOLS : ', this.gl);
+	console.log('GL TOOLS : ', this.gl);
 	
 	if(mWidth !== undefined && mHeight !== undefined) {
 		this.setSize(mWidth, mHeight);
@@ -45,7 +45,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.depthTextureExt       = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt       = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
-	// this.enableAlphaBlending();
+	this.enableAlphaBlending();
 };
 
 

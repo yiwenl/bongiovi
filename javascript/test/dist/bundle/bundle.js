@@ -6883,7 +6883,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	params.antialias = true;
 	this.gl          = this.canvas.getContext("experimental-webgl", params);
 
-	console.log('INIT GL TOOLS : ', this.gl);
+	console.log('GL TOOLS : ', this.gl);
 	
 	if(mWidth !== undefined && mHeight !== undefined) {
 		this.setSize(mWidth, mHeight);
@@ -6904,7 +6904,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.depthTextureExt       = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt       = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
-	// this.enableAlphaBlending();
+	this.enableAlphaBlending();
 };
 
 
@@ -7770,33 +7770,9 @@ ShaderLibs.shaders.copyFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvary
 
 ShaderLibs.shaders.alphaFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n    gl_FragColor.a *= opacity;\n}";
 
+ShaderLibs.shaders.simpleColorFrag = "#define GLSLIFY 1\n\nprecision highp float;\nuniform vec3 color;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = vec4(color, opacity);\n}";
 
-ShaderLibs.shaders.simpleColorFrag = 
-	"precision highp float;"+
-	"uniform vec3 color;"+
-	"uniform float opacity;"+
-	""+
-	"void main(void) {"+
-	"    gl_FragColor = vec4(color, opacity);"+
-	"}";
-
-
-ShaderLibs.shaders.depthFrag = 
-	"precision highp float;"+
-	"varying vec2 vTextureCoord;"+
-	"uniform sampler2D texture;"+
-	"uniform float n;"+
-	"uniform float f;"+
-	""+
-	"float getDepth(float z) {"+
-	"	return (6.0 * n) / (f + n - z*(f-n));"+
-	"}"+
-	""+
-	"void main(void) {"+
-	"    float r = texture2D(texture, vTextureCoord).r;"+
-	"    float grey = getDepth(r);"+
-	"    gl_FragColor = vec4(grey, grey, grey, 1.0);"+
-	"}";
+ShaderLibs.shaders.depthFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float n;\nuniform float f;\n\nfloat getDepth(float z) {\n\treturn (6.0 * n) / (f + n - z*(f-n));\n}\n\nvoid main(void) {\n    float r = texture2D(texture, vTextureCoord).r;\n    float grey = getDepth(r);\n    gl_FragColor = vec4(grey, grey, grey, 1.0);\n}";
 
 
 ShaderLibs.getShader = function(mId) {
@@ -7804,7 +7780,6 @@ ShaderLibs.getShader = function(mId) {
 };
 
 ShaderLibs.get = ShaderLibs.getShader;
-
 module.exports = ShaderLibs;
 },{}],17:[function(_dereq_,module,exports){
 "use strict";
@@ -11100,7 +11075,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	params.antialias = true;
 	this.gl          = this.canvas.getContext("experimental-webgl", params);
 
-	console.log('INIT GL TOOLS : ', this.gl);
+	console.log('GL TOOLS : ', this.gl);
 	
 	if(mWidth !== undefined && mHeight !== undefined) {
 		this.setSize(mWidth, mHeight);
@@ -11121,7 +11096,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.depthTextureExt       = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt       = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
-	// this.enableAlphaBlending();
+	this.enableAlphaBlending();
 };
 
 
@@ -11987,33 +11962,9 @@ ShaderLibs.shaders.copyFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvary
 
 ShaderLibs.shaders.alphaFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n    gl_FragColor.a *= opacity;\n}";
 
+ShaderLibs.shaders.simpleColorFrag = "#define GLSLIFY 1\n\nprecision highp float;\nuniform vec3 color;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = vec4(color, opacity);\n}";
 
-ShaderLibs.shaders.simpleColorFrag = 
-	"precision highp float;"+
-	"uniform vec3 color;"+
-	"uniform float opacity;"+
-	""+
-	"void main(void) {"+
-	"    gl_FragColor = vec4(color, opacity);"+
-	"}";
-
-
-ShaderLibs.shaders.depthFrag = 
-	"precision highp float;"+
-	"varying vec2 vTextureCoord;"+
-	"uniform sampler2D texture;"+
-	"uniform float n;"+
-	"uniform float f;"+
-	""+
-	"float getDepth(float z) {"+
-	"	return (6.0 * n) / (f + n - z*(f-n));"+
-	"}"+
-	""+
-	"void main(void) {"+
-	"    float r = texture2D(texture, vTextureCoord).r;"+
-	"    float grey = getDepth(r);"+
-	"    gl_FragColor = vec4(grey, grey, grey, 1.0);"+
-	"}";
+ShaderLibs.shaders.depthFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float n;\nuniform float f;\n\nfloat getDepth(float z) {\n\treturn (6.0 * n) / (f + n - z*(f-n));\n}\n\nvoid main(void) {\n    float r = texture2D(texture, vTextureCoord).r;\n    float grey = getDepth(r);\n    gl_FragColor = vec4(grey, grey, grey, 1.0);\n}";
 
 
 ShaderLibs.getShader = function(mId) {
@@ -12021,7 +11972,6 @@ ShaderLibs.getShader = function(mId) {
 };
 
 ShaderLibs.get = ShaderLibs.getShader;
-
 module.exports = ShaderLibs;
 },{}],17:[function(_dereq_,module,exports){
 "use strict";

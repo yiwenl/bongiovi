@@ -13,7 +13,7 @@ ShaderLibs.shaders.copyFrag = glslify("../shaders/copy.frag");
 
 ShaderLibs.shaders.alphaFrag = glslify("../shaders/alpha.frag");
 
-ShaderLibs.shaders.simpleColorFrag = glslify("..shaders/simpleColor.frag");
+ShaderLibs.shaders.simpleColorFrag = glslify("../shaders/simpleColor.frag");
 
 ShaderLibs.shaders.depthFrag = glslify("../shaders/depth.frag");
 
