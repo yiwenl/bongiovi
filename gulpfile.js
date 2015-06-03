@@ -5,11 +5,12 @@ var browserSync = require('browser-sync').create();
 var browserify  = require('browserify');
 var source      = require('vinyl-source-stream')
 var uglify      = require('gulp-uglify');
-var exorcist 	= require('exorcist');
+var exorcist    = require('exorcist');
 var watchify    = require('watchify');
 var buffer      = require('vinyl-buffer');
 var rename      = require('gulp-rename');
 var jshint      = require('gulp-jshint');
+var derequire   = require('gulp-derequire');
 var reload      = browserSync.reload;
 // log
 function logError(msg) {
@@ -30,7 +31,7 @@ function bundle() {
 	.on('error', logError)
 	.pipe(source('bongiovi.js'))
 	.pipe(buffer())
-	.pipe(uglify())
+	.pipe(derequire())
 	.pipe(gulp.dest('./dist/'))
 	.pipe(gulp.dest('./test/src/js/libs'))
 	.pipe(rename({ extname: '.min.js' }))

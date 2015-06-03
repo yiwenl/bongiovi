@@ -11,6 +11,7 @@
 			window.addEventListener('load', this._init.bind(this));
 		}
 		
+		console.log(bongiovi.ShaderLibs.get("copyVert"));
 	}
 
 	var p = App.prototype;
