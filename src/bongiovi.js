@@ -6,6 +6,7 @@ var bongiovi = {
 	GL:GLTools,
 	GLTools:GLTools,
 	Scheduler:require("./bongiovi/Scheduler"),
+	SimpleImageLoader:require("./bongiovi/SimpleImageLoader"),
 	EaseNumber:require("./bongiovi/EaseNumber"),
 	QuatRotation:require("./bongiovi/QuatRotation"),
 	Scene:require("./bongiovi/Scene"),
@@ -21,6 +22,7 @@ var bongiovi = {
 	ViewCopy:require("./bongiovi/ViewCopy"),
 	ViewAxis:require("./bongiovi/ViewAxis"),
 	MeshUtils:require("./bongiovi/MeshUtils"),
+	FrameBuffer:require("./bongiovi/FrameBuffer"),
 	glm:require("gl-matrix")
 };
 
