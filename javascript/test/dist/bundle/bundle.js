@@ -55,8 +55,9 @@ var p = SceneApp.prototype = new bongiovi.Scene();
 
 p._initViews = function() {
 	console.log('Init Views');
-	this._vAxis = new bongiovi.ViewAxis();
+	this._vAxis = new bongiovi.ViewAxis(1);
 	this._vPlane = new ViewPlane();
+	this._vDotPlane = new bongiovi.ViewDotPlane();
 };
 
 
@@ -71,6 +72,7 @@ p.render = function() {
 
 	this._vPlane.render();
 	this._vAxis.render();
+	this._vDotPlane.render();
 };
 
 module.exports = SceneApp;
@@ -143,13 +145,14 @@ var bongiovi = {
 	View:_dereq_("./bongiovi/View"),
 	ViewCopy:_dereq_("./bongiovi/ViewCopy"),
 	ViewAxis:_dereq_("./bongiovi/ViewAxis"),
+	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
 	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
 	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
 	glm:_dereq_("gl-matrix")
 };
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"gl-matrix":2}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -2075,13 +2078,14 @@ var bongiovi = {
 	View:_dereq_("./bongiovi/View"),
 	ViewCopy:_dereq_("./bongiovi/ViewCopy"),
 	ViewAxis:_dereq_("./bongiovi/ViewAxis"),
+	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
 	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
 	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
 	glm:_dereq_("gl-matrix")
 };
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"gl-matrix":2}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -8087,8 +8091,10 @@ var Mesh = _dereq_("./Mesh");
 var vertShader = "precision highp float;attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;attribute vec3 aColor;uniform mat4 uMVMatrix;uniform mat4 uPMatrix;varying vec2 vTextureCoord;varying vec3 vColor;void main(void) {    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);    vTextureCoord = aTextureCoord;    vColor = aColor;}";
 var fragShader = "precision mediump float;varying vec3 vColor;void main(void) {    gl_FragColor = vec4(vColor, 1.0);}";
 
-var ViewAxis = function() {
-	View.call(this, vertShader, fragShader);
+var ViewAxis = function(lineWidth, mFragShader) {
+	this.lineWidth = lineWidth === undefined ? 2.0 : lineWidth;
+	var fs = mFragShader === undefined ? fragShader : mFragShader;
+	View.call(this, vertShader, fs);
 };
 
 var p = ViewAxis.prototype = new View();
@@ -8137,9 +8143,7 @@ p.render = function() {
 	if(!this.shader.isReady()) {return;}
 
 	this.shader.bind();
-	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
-	this.shader.uniform("opacity", "uniform1f", 1);
-	GL.gl.lineWidth(2.0);
+	GL.gl.lineWidth(this.lineWidth);
 	GL.draw(this.mesh);
 	GL.gl.lineWidth(1.0);
 };
@@ -8173,7 +8177,71 @@ p.render = function(aTexture) {
 
 module.exports = ViewCopy;
 
-},{"./GLTools":10,"./MeshUtils":12,"./View":19}]},{},[1])(1)
+},{"./GLTools":10,"./MeshUtils":12,"./View":19}],22:[function(_dereq_,module,exports){
+// ViewDotPlanes.js
+
+"use strict";
+
+var GL = _dereq_("./GLTools");
+var View = _dereq_("./View");
+var ShaderLibs = _dereq_("./ShaderLibs");
+var Mesh = _dereq_("./Mesh");
+
+// var vertShader = "precision highp float;attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;attribute vec3 aColor;uniform mat4 uMVMatrix;uniform mat4 uPMatrix;varying vec2 vTextureCoord;varying vec3 vColor;void main(void) {    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);    vTextureCoord = aTextureCoord;    vColor = aColor;}";
+// var fragShader = "precision mediump float;varying vec3 vColor;void main(void) {    gl_FragColor = vec4(vColor, 1.0);}";
+
+var ViewDotPlanes = function(color, fragShader) {
+	var grey = .75;
+	this.color = color === undefined ? [grey, grey, grey] : color;
+	var fs = fragShader === undefined ? ShaderLibs.get("simpleColorFrag") : fragShader;
+	View.call(this, null, fs);
+};
+
+var p = ViewDotPlanes.prototype = new View();
+
+p._init = function() {
+	var positions = [];
+	var coords = [];
+	var indices = [];
+	var index = 0;
+
+
+	var numDots = 100;
+	var size = 3000;
+	var gap = size / numDots;
+	var i, j;
+
+
+	for(i=-size/2; i<size; i+=gap) {
+		for(j=-size/2; j<size; j+=gap) {
+			positions.push([i, j, 0]);
+			coords.push([0, 0]);
+			indices.push(index);
+			index++;
+
+			positions.push([i, 0, j]);
+			coords.push([0, 0]);
+			indices.push(index);
+			index++;
+		}
+	}
+
+	this.mesh = new Mesh(positions.length, indices.length, GL.gl.DOTS);
+	this.mesh.bufferVertex(positions);
+	this.mesh.bufferTexCoords(coords);
+	this.mesh.bufferIndices(indices);
+};
+
+p.render = function() {
+	this.shader.bind();
+	this.shader.uniform("color", "uniform3fv", this.color);
+	this.shader.uniform("opacity", "uniform1f", 1);
+	GL.draw(this.mesh);
+};
+
+module.exports = ViewDotPlanes;
+
+},{"./GLTools":10,"./Mesh":11,"./ShaderLibs":16,"./View":19}]},{},[1])(1)
 });
 
 ;
@@ -12280,8 +12348,10 @@ var Mesh = _dereq_("./Mesh");
 var vertShader = "precision highp float;attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;attribute vec3 aColor;uniform mat4 uMVMatrix;uniform mat4 uPMatrix;varying vec2 vTextureCoord;varying vec3 vColor;void main(void) {    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);    vTextureCoord = aTextureCoord;    vColor = aColor;}";
 var fragShader = "precision mediump float;varying vec3 vColor;void main(void) {    gl_FragColor = vec4(vColor, 1.0);}";
 
-var ViewAxis = function() {
-	View.call(this, vertShader, fragShader);
+var ViewAxis = function(lineWidth, mFragShader) {
+	this.lineWidth = lineWidth === undefined ? 2.0 : lineWidth;
+	var fs = mFragShader === undefined ? fragShader : mFragShader;
+	View.call(this, vertShader, fs);
 };
 
 var p = ViewAxis.prototype = new View();
@@ -12330,9 +12400,7 @@ p.render = function() {
 	if(!this.shader.isReady()) {return;}
 
 	this.shader.bind();
-	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
-	this.shader.uniform("opacity", "uniform1f", 1);
-	GL.gl.lineWidth(2.0);
+	GL.gl.lineWidth(this.lineWidth);
 	GL.draw(this.mesh);
 	GL.gl.lineWidth(1.0);
 };
@@ -12366,7 +12434,71 @@ p.render = function(aTexture) {
 
 module.exports = ViewCopy;
 
-},{"./GLTools":10,"./MeshUtils":12,"./View":19}]},{},[1])(1)
+},{"./GLTools":10,"./MeshUtils":12,"./View":19}],22:[function(_dereq_,module,exports){
+// ViewDotPlanes.js
+
+"use strict";
+
+var GL = _dereq_("./GLTools");
+var View = _dereq_("./View");
+var ShaderLibs = _dereq_("./ShaderLibs");
+var Mesh = _dereq_("./Mesh");
+
+// var vertShader = "precision highp float;attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;attribute vec3 aColor;uniform mat4 uMVMatrix;uniform mat4 uPMatrix;varying vec2 vTextureCoord;varying vec3 vColor;void main(void) {    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);    vTextureCoord = aTextureCoord;    vColor = aColor;}";
+// var fragShader = "precision mediump float;varying vec3 vColor;void main(void) {    gl_FragColor = vec4(vColor, 1.0);}";
+
+var ViewDotPlanes = function(color, fragShader) {
+	var grey = .75;
+	this.color = color === undefined ? [grey, grey, grey] : color;
+	var fs = fragShader === undefined ? ShaderLibs.get("simpleColorFrag") : fragShader;
+	View.call(this, null, fs);
+};
+
+var p = ViewDotPlanes.prototype = new View();
+
+p._init = function() {
+	var positions = [];
+	var coords = [];
+	var indices = [];
+	var index = 0;
+
+
+	var numDots = 100;
+	var size = 3000;
+	var gap = size / numDots;
+	var i, j;
+
+
+	for(i=-size/2; i<size; i+=gap) {
+		for(j=-size/2; j<size; j+=gap) {
+			positions.push([i, j, 0]);
+			coords.push([0, 0]);
+			indices.push(index);
+			index++;
+
+			positions.push([i, 0, j]);
+			coords.push([0, 0]);
+			indices.push(index);
+			index++;
+		}
+	}
+
+	this.mesh = new Mesh(positions.length, indices.length, GL.gl.DOTS);
+	this.mesh.bufferVertex(positions);
+	this.mesh.bufferTexCoords(coords);
+	this.mesh.bufferIndices(indices);
+};
+
+p.render = function() {
+	this.shader.bind();
+	this.shader.uniform("color", "uniform3fv", this.color);
+	this.shader.uniform("opacity", "uniform1f", 1);
+	GL.draw(this.mesh);
+};
+
+module.exports = ViewDotPlanes;
+
+},{"./GLTools":10,"./Mesh":11,"./ShaderLibs":16,"./View":19}]},{},[1])(1)
 });
 
 

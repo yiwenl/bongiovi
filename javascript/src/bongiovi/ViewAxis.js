@@ -8,8 +8,10 @@ var Mesh = require("./Mesh");
 var vertShader = "precision highp float;attribute vec3 aVertexPosition;attribute vec2 aTextureCoord;attribute vec3 aColor;uniform mat4 uMVMatrix;uniform mat4 uPMatrix;varying vec2 vTextureCoord;varying vec3 vColor;void main(void) {    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);    vTextureCoord = aTextureCoord;    vColor = aColor;}";
 var fragShader = "precision mediump float;varying vec3 vColor;void main(void) {    gl_FragColor = vec4(vColor, 1.0);}";
 
-var ViewAxis = function() {
-	View.call(this, vertShader, fragShader);
+var ViewAxis = function(lineWidth, mFragShader) {
+	this.lineWidth = lineWidth === undefined ? 2.0 : lineWidth;
+	var fs = mFragShader === undefined ? fragShader : mFragShader;
+	View.call(this, vertShader, fs);
 };
 
 var p = ViewAxis.prototype = new View();
@@ -58,9 +60,7 @@ p.render = function() {
 	if(!this.shader.isReady()) {return;}
 
 	this.shader.bind();
-	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
-	this.shader.uniform("opacity", "uniform1f", 1);
-	GL.gl.lineWidth(2.0);
+	GL.gl.lineWidth(this.lineWidth);
 	GL.draw(this.mesh);
 	GL.gl.lineWidth(1.0);
 };

@@ -14,8 +14,9 @@ var p = SceneApp.prototype = new bongiovi.Scene();
 
 p._initViews = function() {
 	console.log('Init Views');
-	this._vAxis = new bongiovi.ViewAxis();
+	this._vAxis = new bongiovi.ViewAxis(1);
 	this._vPlane = new ViewPlane();
+	this._vDotPlane = new bongiovi.ViewDotPlane();
 };
 
 
@@ -30,6 +31,7 @@ p.render = function() {
 
 	this._vPlane.render();
 	this._vAxis.render();
+	this._vDotPlane.render();
 };
 
 module.exports = SceneApp;

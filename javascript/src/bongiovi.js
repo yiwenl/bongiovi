@@ -21,6 +21,7 @@ var bongiovi = {
 	View:require("./bongiovi/View"),
 	ViewCopy:require("./bongiovi/ViewCopy"),
 	ViewAxis:require("./bongiovi/ViewAxis"),
+	ViewDotPlane:require("./bongiovi/ViewDotPlanes"),
 	MeshUtils:require("./bongiovi/MeshUtils"),
 	FrameBuffer:require("./bongiovi/FrameBuffer"),
 	glm:require("gl-matrix")
