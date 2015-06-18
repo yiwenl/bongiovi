@@ -11,7 +11,7 @@ var Mesh = require("./Mesh");
 // var fragShader = "precision mediump float;varying vec3 vColor;void main(void) {    gl_FragColor = vec4(vColor, 1.0);}";
 
 var ViewDotPlanes = function(color, fragShader) {
-	var grey = .75;
+	var grey = 0.75;
 	this.color = color === undefined ? [grey, grey, grey] : color;
 	var fs = fragShader === undefined ? ShaderLibs.get("simpleColorFrag") : fragShader;
 	View.call(this, null, fs);
