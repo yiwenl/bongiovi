@@ -130,6 +130,11 @@ p.bind = function() {
 
 p.isReady = function() {	return this._isReady;	};
 
+
+p.clearUniforms = function() {
+	this.parameters = [];
+};
+
 p.uniform = function(aName, aType, aValue) {
 	if(!this._isReady) {return;}
 
