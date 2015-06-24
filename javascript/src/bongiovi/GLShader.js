@@ -189,10 +189,6 @@ p.uniform = function(aName, aType, aValue) {
 	}
 };
 
-var isArray = function(object) {
-	return Object.prototype.toString.call( object ) === '[object Array]';
-}
-
 p.checkUniform = function(aName, aType, aValue) {
 
 	if(!this.uniformValues[aName]) {

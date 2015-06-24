@@ -6833,10 +6833,6 @@ p.uniform = function(aName, aType, aValue) {
 	}
 };
 
-var isArray = function(object) {
-	return Object.prototype.toString.call( object ) === '[object Array]';
-}
-
 p.checkUniform = function(aName, aType, aValue) {
 
 	if(!this.uniformValues[aName]) {
@@ -7046,10 +7042,10 @@ p.setShaderProgram = function(aShaderProgram) {
 
 p.setViewport = function(aX, aY, aW, aH) {
 	var hasChanged = false;
-	if(aX!=this._viewport[0]) hasChanged = true;
-	if(aY!=this._viewport[1]) hasChanged = true;
-	if(aW!=this._viewport[2]) hasChanged = true;
-	if(aH!=this._viewport[3]) hasChanged = true;
+	if(aX!==this._viewport[0]) {hasChanged = true;}
+	if(aY!==this._viewport[1]) {hasChanged = true;}
+	if(aW!==this._viewport[2]) {hasChanged = true;}
+	if(aH!==this._viewport[3]) {hasChanged = true;}
 
 	if(hasChanged) {
 		this.gl.viewport(aX, aY, aW, aH);
@@ -11210,10 +11206,6 @@ p.uniform = function(aName, aType, aValue) {
 	}
 };
 
-var isArray = function(object) {
-	return Object.prototype.toString.call( object ) === '[object Array]';
-}
-
 p.checkUniform = function(aName, aType, aValue) {
 
 	if(!this.uniformValues[aName]) {
@@ -11423,10 +11415,10 @@ p.setShaderProgram = function(aShaderProgram) {
 
 p.setViewport = function(aX, aY, aW, aH) {
 	var hasChanged = false;
-	if(aX!=this._viewport[0]) hasChanged = true;
-	if(aY!=this._viewport[1]) hasChanged = true;
-	if(aW!=this._viewport[2]) hasChanged = true;
-	if(aH!=this._viewport[3]) hasChanged = true;
+	if(aX!==this._viewport[0]) {hasChanged = true;}
+	if(aY!==this._viewport[1]) {hasChanged = true;}
+	if(aW!==this._viewport[2]) {hasChanged = true;}
+	if(aH!==this._viewport[3]) {hasChanged = true;}
 
 	if(hasChanged) {
 		this.gl.viewport(aX, aY, aW, aH);
