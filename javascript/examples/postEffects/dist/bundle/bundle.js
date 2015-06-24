@@ -8,14 +8,24 @@ window.bongiovi = require("./libs/bongiovi");
 	var SceneApp = require("./SceneApp");
 
 	App = function() {
+		new bongiovi.SimpleImageLoader().load([
+			"assets/image.jpg"
+			], this, this._onImageLoaded);
+	}
+
+	var p = App.prototype;
+
+
+	p._onImageLoaded = function(img) {
+		console.log("Image Loaded : ", img);
+		window.image = img.image;
+
 		if(document.body) {
 			this._init();	
 		} else {
 			window.addEventListener('load', this._init.bind(this));
 		}
-	}
-
-	var p = App.prototype;
+	};
 
 
 	p._init = function() {
@@ -47,6 +57,7 @@ var ViewPlane = require("./ViewPlane");
 
 function SceneApp() {
 	bongiovi.Scene.call(this);
+	window.addEventListener("resize", this.resize.bind(this));
 }
 
 
@@ -54,15 +65,14 @@ var p = SceneApp.prototype = new bongiovi.Scene();
 
 
 p._initViews = function() {
-	console.log('Init Views');
 	this._vAxis = new bongiovi.ViewAxis(1);
-	this._vPlane = new ViewPlane();
 	this._vDotPlane = new bongiovi.ViewDotPlane();
+	this._vPlane = new ViewPlane();
 };
 
 
 p._initTextures = function() {
-	console.log('Init Textures');
+	this.texture = new bongiovi.GLTexture(image);
 };
 
 
@@ -70,22 +80,31 @@ p.render = function() {
 	var grey = .11;
 	GL.clear(grey, grey, grey, 1.0);
 
-	this._vPlane.render();
 	this._vAxis.render();
 	this._vDotPlane.render();
+	this._vPlane.render(this.texture);
+};
+
+p.resize = function() {
+	GL.setSize(window.innerWidth, window.innerHeight);
+	this.camera.resize(GL.aspectRatio);
 };
 
 module.exports = SceneApp;
 },{"./ViewPlane":3}],3:[function(require,module,exports){
 // ViewPlane.js
 
-// var GL = require("./GLTools");
-// var bongiovi = require("./libs/bongiovi");
-var GL, gl;
+var GL = bongiovi.GL;
+var gl;
+
 
 function ViewPlane() {
-	GL = bongiovi.GL;
-	bongiovi.View.call(this, null, bongiovi.ShaderLibs.get("simpleColorFrag"));
+	this.time = Math.random() * 0xFF;
+	// bongiovi.View.call(this);
+	bongiovi.View.call(this, null, "#define GLSLIFY 1\n\nprecision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\n\nvec3 greyscale(vec3 value) {\n\tfloat grey = (value.x + value.y + value.z) / 3.0;\n\treturn vec3(grey);\n}\n\n\nfloat contrast(float value, float scale) {\n\treturn .5 + (value - .5) * scale;\n}\n\n\nvec3 contrast(vec3 value, float scale) {\n\treturn vec3(contrast(value.r, scale), contrast(value.g, scale), contrast(value.b, scale));\n}\n\nvoid main(void) {\n\tvec4 color = texture2D(texture, vTextureCoord);\n\n\tcolor.rgb = greyscale(color.rgb);\n\tcolor.rgb = contrast(color.rgb, 2.0);\n    gl_FragColor = color;\n}");
+	// bongiovi.View.call(this, null, bongiovi.ShaderLibs.get("simpleColorFrag"));.
+
+	new TangledShader(gl, this.shader.fragmentShader, this._onShaderUpdate.bind(this));
 }
 
 var p = ViewPlane.prototype = new bongiovi.View();
@@ -93,28 +112,25 @@ p.constructor = ViewPlane;
 
 
 p._init = function() {
-	console.log('init');
 	gl = GL.gl;
-	// var positions = [];
-	// var coords = [];
-	// var indices = []; 
-
-	// this.mesh = new bongiovi.Mesh(positions.length, indices.length, GL.gl.TRIANGLES);
-	// this.mesh.bufferVertex(positions);
-	// this.mesh.bufferTexCoords(coords);
-	// this.mesh.bufferIndices(indices);
-
 	this.mesh = bongiovi.MeshUtils.createPlane(100, 100, 1);
+	// this.mesh = bongiovi.MeshUtils.createSphere(100, 24);
+
+};
+
+p._onShaderUpdate = function(shader) {
+	this.shader.clearUniforms();
+	this.shader.attachShaderProgram();
 };
 
 p.render = function(texture) {
-	if(!this.shader.isReady() ) return;
-
 	this.shader.bind();
-	this.shader.uniform("color", "uniform3fv", [1, .5, 0]);
-	this.shader.uniform("opacity", "uniform1f", 1);
-	// this.shader.uniform("texture", "uniform1i", 0);
-	// texture.bind(0);
+	this.shader.uniform("texture", "uniform1i", 0);
+	texture.bind(0);
+	// this.time += .01;
+	// this.shader.uniform("color", "uniform3fv", [1, 1, .95]);
+	// this.shader.uniform("opacity", "uniform1f", 1);
+	// this.shader.uniform("time", "uniform1f", this.time);
 	GL.draw(this.mesh);
 };
 
@@ -6630,30 +6646,18 @@ p.getDepthTexture = function() {
 	return this.glDepthTexture;
 };
 
-
-p.destroy = function() {
-	gl.deleteFramebuffer(this.frameBuffer);
-
-	this.glTexture.destroy();
-	if(this.glDepthTexture) {
-		this.glDepthTexture.destroy();
-	}
-};
-
 module.exports = FrameBuffer;
 },{"./GLTexture":9,"./GLTools":10}],8:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
-var gl;
 var ShaderLibs = _dereq_("./ShaderLibs");
 
 var GLShader = function(aVertexShaderId, aFragmentShaderId) {
-	gl              	 = GL.gl;
+	this.gl              = GL.gl;
 	this.idVertex        = aVertexShaderId;
 	this.idFragment      = aFragmentShaderId;
 	this.parameters      = [];
-	this.uniformValues   = {};
 	
 	this.uniformTextures = [];
 	
@@ -6709,14 +6713,14 @@ p.getShader = function(aId, aIsVertexShader) {
 };
 
 p.createVertexShaderProgram = function(aStr) {
-	if(!gl) {	return;	}
-	var shader = gl.createShader(gl.VERTEX_SHADER);
+	if(!this.gl) {	return;	}
+	var shader = this.gl.createShader(this.gl.VERTEX_SHADER);
 
-	gl.shaderSource(shader, aStr);
-	gl.compileShader(shader);
+	this.gl.shaderSource(shader, aStr);
+	this.gl.compileShader(shader);
 
-	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		console.warn("Error in Vertex Shader : ", this.idVertex, ":", gl.getShaderInfoLog(shader));
+	if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+		console.warn("Error in Vertex Shader : ", this.idVertex, ":", this.gl.getShaderInfoLog(shader));
 		console.log(aStr);
 		return null;
 	}
@@ -6732,14 +6736,14 @@ p.createVertexShaderProgram = function(aStr) {
 
 
 p.createFragmentShaderProgram = function(aStr) {
-	if(!gl) {	return;	}
-	var shader = gl.createShader(gl.FRAGMENT_SHADER);
+	if(!this.gl) {	return;	}
+	var shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 
-	gl.shaderSource(shader, aStr);
-	gl.compileShader(shader);
+	this.gl.shaderSource(shader, aStr);
+	this.gl.compileShader(shader);
 
-	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		console.warn("Error in Fragment Shader: ", this.idFragment, ":" , gl.getShaderInfoLog(shader));
+	if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+		console.warn("Error in Fragment Shader: ", this.idFragment, ":" , this.gl.getShaderInfoLog(shader));
 		console.log(aStr);
 		return null;
 	}
@@ -6755,18 +6759,18 @@ p.createFragmentShaderProgram = function(aStr) {
 
 p.attachShaderProgram = function() {
 	this._isReady = true;
-	this.shaderProgram = gl.createProgram();
-	gl.attachShader(this.shaderProgram, this.vertexShader);
-	gl.attachShader(this.shaderProgram, this.fragmentShader);
-	gl.linkProgram(this.shaderProgram);
+	this.shaderProgram = this.gl.createProgram();
+	this.gl.attachShader(this.shaderProgram, this.vertexShader);
+	this.gl.attachShader(this.shaderProgram, this.fragmentShader);
+	this.gl.linkProgram(this.shaderProgram);
 };
 
 p.bind = function() {
 	if(!this._isReady) {return;}
-	gl.useProgram(this.shaderProgram);
+	this.gl.useProgram(this.shaderProgram);
 
-	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
-	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
+	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
+	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
 
 	GL.setShader(this);
 	GL.setShaderProgram(this.shaderProgram);
@@ -6778,8 +6782,7 @@ p.isReady = function() {	return this._isReady;	};
 
 
 p.clearUniforms = function() {
-	this.parameters    = [];
-	this.uniformValues = {};
+	this.parameters = [];
 };
 
 p.uniform = function(aName, aType, aValue) {
@@ -6799,32 +6802,16 @@ p.uniform = function(aName, aType, aValue) {
 	}
 
 	if(!hasUniform) {
-		this.shaderProgram[aName] = gl.getUniformLocation(this.shaderProgram, aName);
+		this.shaderProgram[aName] = this.gl.getUniformLocation(this.shaderProgram, aName);
 		this.parameters.push({name : aName, type: aType, value: aValue, uniformLoc: this.shaderProgram[aName]});
 	} else {
 		this.shaderProgram[aName] = oUniform.uniformLoc;
 	}
 
-	// console.log('Uniform : ', aName);
-
 	if(aType.indexOf("Matrix") === -1) {
-		if(!hasUniform) {
-			gl[aType](this.shaderProgram[aName], aValue);
-			this.uniformValues[aName] = aValue;
-			// console.debug('Set uniform', aName, aType, aValue);
-		} else {
-			if(this.checkUniform(aName, aType, aValue)) {
-				gl[aType](this.shaderProgram[aName], aValue);
-				// console.debug('Set uniform', aName, aType, aValue);
-			}
-		}
+		this.gl[aType](this.shaderProgram[aName], aValue);
 	} else {
-		gl[aType](this.shaderProgram[aName], false, aValue);
-		if(!hasUniform) {
-			gl[aType](this.shaderProgram[aName], aValue);
-			this.uniformValues[aName] = aValue;
-			// console.debug('Set uniform', aName, aType, aValue);
-		}
+		this.gl[aType](this.shaderProgram[aName], false, aValue);
 	}
 
 	if(aType === "uniform1i") {
@@ -6833,44 +6820,8 @@ p.uniform = function(aName, aType, aValue) {
 	}
 };
 
-var isArray = function(object) {
-	return Object.prototype.toString.call( object ) === '[object Array]';
-}
-
-p.checkUniform = function(aName, aType, aValue) {
-
-	if(!this.uniformValues[aName]) {
-		this.uniformValues[aName] = aValue;
-		return true;
-	}
-
-	if(aType === "uniform1i") {
-		this.uniformValues[aName] = aValue;
-		return true;
-	}
-
-	var uniformValue = this.uniformValues[aName];
-	var hasChanged = !(uniformValue === aValue);
-	
-	if(hasChanged) {
-		this.uniformValues[aName] = aValue;
-	}
-	return hasChanged;
-
-};
-
-
 p.unbind = function() {
 
-};
-
-
-p.destroy = function() {
-	gl.detachShader(this.shaderProgram, this.vertexShader);
-	gl.detachShader(this.shaderProgram, this.fragmentShader);
-	gl.deleteShader(this.vertexShader);
-	gl.deleteShader(this.fragmentShader);
-	gl.deleteProgram(this.shaderProgram);
 };
 
 module.exports = GLShader;
@@ -6974,10 +6925,6 @@ p.unbind = function() {
 	gl.bindTexture(gl.TEXTURE_2D, null);
 };
 
-p.destroy = function() {
-	gl.deleteTexture(this.texture);
-};
-
 module.exports = GLTexture;
 },{"./GLTools":10}],10:[function(_dereq_,module,exports){
 // GLTools.js
@@ -7027,10 +6974,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.depthTextureExt       = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt       = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
-
-	this.enabledVertexAttribute = [];
 	this.enableAlphaBlending();
-	this._viewport = [0, 0, this.width, this.height];
 };
 
 
@@ -7045,16 +6989,7 @@ p.setShaderProgram = function(aShaderProgram) {
 };
 
 p.setViewport = function(aX, aY, aW, aH) {
-	var hasChanged = false;
-	if(aX!=this._viewport[0]) hasChanged = true;
-	if(aY!=this._viewport[1]) hasChanged = true;
-	if(aW!=this._viewport[2]) hasChanged = true;
-	if(aH!=this._viewport[3]) hasChanged = true;
-
-	if(hasChanged) {
-		this.gl.viewport(aX, aY, aW, aH);
-		this._viewport = [aX, aY, aW, aH];
-	}
+	this.gl.viewport(aX, aY, aW, aH);
 };
 
 p.setMatrices = function(aCamera) {
@@ -7092,50 +7027,23 @@ p.draw = function(aMesh) {
 		console.warn("Shader program not ready yet");
 		return;
 	}
+	// this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.getMatrix() );
+	// this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
 
-	if(!this.shaderProgram.pMatrixValue) {
-		this.shaderProgram.pMatrixValue = glm.mat4.create();
-		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
-		glm.mat4.copy(this.shaderProgram.pMatrixValue, this.camera.projection || this.camera.getMatrix());
-	} else {
-		var pMatrix = this.camera.projection || this.camera.getMatrix();
-		if(glm.mat4.str(this.shaderProgram.pMatrixValue) !== glm.mat4.str(pMatrix)) {
-			this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
-			glm.mat4.copy(this.shaderProgram.pMatrixValue, pMatrix);
-		}
-	}
-
-	if(!this.shaderProgram.mvMatrixValue) {
-		this.shaderProgram.mvMatrixValue = glm.mat4.create();
-		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
-		glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
-	} else {
-		if(glm.mat4.str(this.shaderProgram.mvMatrixValue) !== glm.mat4.str(this.matrix)) {
-			this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
-			glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
-		}
-	}
-
+	this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
+	this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
 
 	// 	VERTEX POSITIONS
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferPos);
 	var vertexPositionAttribute = getAttribLoc(this.gl, this.shaderProgram, "aVertexPosition");
 	this.gl.vertexAttribPointer(vertexPositionAttribute, aMesh.vBufferPos.itemSize, this.gl.FLOAT, false, 0, 0);
-	if(this.enabledVertexAttribute.indexOf(vertexPositionAttribute) === -1) {
-		this.gl.enableVertexAttribArray(vertexPositionAttribute);	
-		this.enabledVertexAttribute.push(vertexPositionAttribute);
-	}
-	
+	this.gl.enableVertexAttribArray(vertexPositionAttribute);
 
 	//	TEXTURE COORDS
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferUV);
 	var textureCoordAttribute = getAttribLoc(this.gl, this.shaderProgram, "aTextureCoord");
 	this.gl.vertexAttribPointer(textureCoordAttribute, aMesh.vBufferUV.itemSize, this.gl.FLOAT, false, 0, 0);
-	
-	if(this.enabledVertexAttribute.indexOf(textureCoordAttribute) === -1) {
-		this.gl.enableVertexAttribArray(textureCoordAttribute);
-		this.enabledVertexAttribute.push(textureCoordAttribute);
-	}
+	this.gl.enableVertexAttribArray(textureCoordAttribute);
 
 	//	INDICES
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, aMesh.iBuffer);
@@ -7145,11 +7053,7 @@ p.draw = function(aMesh) {
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.extraAttributes[i].buffer);
 		var attrPosition = getAttribLoc(this.gl, this.shaderProgram, aMesh.extraAttributes[i].name);
 		this.gl.vertexAttribPointer(attrPosition, aMesh.extraAttributes[i].itemSize, this.gl.FLOAT, false, 0, 0);
-		// this.gl.enableVertexAttribArray(attrPosition);	
-		if(this.enabledVertexAttribute.indexOf(attrPosition) === -1) {
-			this.gl.enableVertexAttribArray(attrPosition);
-			this.enabledVertexAttribute.push(attrPosition);
-		}	
+		this.gl.enableVertexAttribArray(attrPosition);		
 	}
 
 	//	DRAWING
@@ -7190,12 +7094,9 @@ p.__defineGetter__("width", function() {
 	return this._width;
 });
 
+
 p.__defineGetter__("height", function() {
 	return this._height;
-});
-
-p.__defineGetter__("viewport", function() {
-	return this._viewport;
 });
 
 var instance = null;
@@ -11007,30 +10908,18 @@ p.getDepthTexture = function() {
 	return this.glDepthTexture;
 };
 
-
-p.destroy = function() {
-	gl.deleteFramebuffer(this.frameBuffer);
-
-	this.glTexture.destroy();
-	if(this.glDepthTexture) {
-		this.glDepthTexture.destroy();
-	}
-};
-
 module.exports = FrameBuffer;
 },{"./GLTexture":9,"./GLTools":10}],8:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
-var gl;
 var ShaderLibs = _dereq_("./ShaderLibs");
 
 var GLShader = function(aVertexShaderId, aFragmentShaderId) {
-	gl              	 = GL.gl;
+	this.gl              = GL.gl;
 	this.idVertex        = aVertexShaderId;
 	this.idFragment      = aFragmentShaderId;
 	this.parameters      = [];
-	this.uniformValues   = {};
 	
 	this.uniformTextures = [];
 	
@@ -11086,14 +10975,14 @@ p.getShader = function(aId, aIsVertexShader) {
 };
 
 p.createVertexShaderProgram = function(aStr) {
-	if(!gl) {	return;	}
-	var shader = gl.createShader(gl.VERTEX_SHADER);
+	if(!this.gl) {	return;	}
+	var shader = this.gl.createShader(this.gl.VERTEX_SHADER);
 
-	gl.shaderSource(shader, aStr);
-	gl.compileShader(shader);
+	this.gl.shaderSource(shader, aStr);
+	this.gl.compileShader(shader);
 
-	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		console.warn("Error in Vertex Shader : ", this.idVertex, ":", gl.getShaderInfoLog(shader));
+	if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+		console.warn("Error in Vertex Shader : ", this.idVertex, ":", this.gl.getShaderInfoLog(shader));
 		console.log(aStr);
 		return null;
 	}
@@ -11109,14 +10998,14 @@ p.createVertexShaderProgram = function(aStr) {
 
 
 p.createFragmentShaderProgram = function(aStr) {
-	if(!gl) {	return;	}
-	var shader = gl.createShader(gl.FRAGMENT_SHADER);
+	if(!this.gl) {	return;	}
+	var shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
 
-	gl.shaderSource(shader, aStr);
-	gl.compileShader(shader);
+	this.gl.shaderSource(shader, aStr);
+	this.gl.compileShader(shader);
 
-	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		console.warn("Error in Fragment Shader: ", this.idFragment, ":" , gl.getShaderInfoLog(shader));
+	if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+		console.warn("Error in Fragment Shader: ", this.idFragment, ":" , this.gl.getShaderInfoLog(shader));
 		console.log(aStr);
 		return null;
 	}
@@ -11132,18 +11021,18 @@ p.createFragmentShaderProgram = function(aStr) {
 
 p.attachShaderProgram = function() {
 	this._isReady = true;
-	this.shaderProgram = gl.createProgram();
-	gl.attachShader(this.shaderProgram, this.vertexShader);
-	gl.attachShader(this.shaderProgram, this.fragmentShader);
-	gl.linkProgram(this.shaderProgram);
+	this.shaderProgram = this.gl.createProgram();
+	this.gl.attachShader(this.shaderProgram, this.vertexShader);
+	this.gl.attachShader(this.shaderProgram, this.fragmentShader);
+	this.gl.linkProgram(this.shaderProgram);
 };
 
 p.bind = function() {
 	if(!this._isReady) {return;}
-	gl.useProgram(this.shaderProgram);
+	this.gl.useProgram(this.shaderProgram);
 
-	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
-	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
+	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
+	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
 
 	GL.setShader(this);
 	GL.setShaderProgram(this.shaderProgram);
@@ -11155,8 +11044,7 @@ p.isReady = function() {	return this._isReady;	};
 
 
 p.clearUniforms = function() {
-	this.parameters    = [];
-	this.uniformValues = {};
+	this.parameters = [];
 };
 
 p.uniform = function(aName, aType, aValue) {
@@ -11176,32 +11064,16 @@ p.uniform = function(aName, aType, aValue) {
 	}
 
 	if(!hasUniform) {
-		this.shaderProgram[aName] = gl.getUniformLocation(this.shaderProgram, aName);
+		this.shaderProgram[aName] = this.gl.getUniformLocation(this.shaderProgram, aName);
 		this.parameters.push({name : aName, type: aType, value: aValue, uniformLoc: this.shaderProgram[aName]});
 	} else {
 		this.shaderProgram[aName] = oUniform.uniformLoc;
 	}
 
-	// console.log('Uniform : ', aName);
-
 	if(aType.indexOf("Matrix") === -1) {
-		if(!hasUniform) {
-			gl[aType](this.shaderProgram[aName], aValue);
-			this.uniformValues[aName] = aValue;
-			// console.debug('Set uniform', aName, aType, aValue);
-		} else {
-			if(this.checkUniform(aName, aType, aValue)) {
-				gl[aType](this.shaderProgram[aName], aValue);
-				// console.debug('Set uniform', aName, aType, aValue);
-			}
-		}
+		this.gl[aType](this.shaderProgram[aName], aValue);
 	} else {
-		gl[aType](this.shaderProgram[aName], false, aValue);
-		if(!hasUniform) {
-			gl[aType](this.shaderProgram[aName], aValue);
-			this.uniformValues[aName] = aValue;
-			// console.debug('Set uniform', aName, aType, aValue);
-		}
+		this.gl[aType](this.shaderProgram[aName], false, aValue);
 	}
 
 	if(aType === "uniform1i") {
@@ -11210,44 +11082,8 @@ p.uniform = function(aName, aType, aValue) {
 	}
 };
 
-var isArray = function(object) {
-	return Object.prototype.toString.call( object ) === '[object Array]';
-}
-
-p.checkUniform = function(aName, aType, aValue) {
-
-	if(!this.uniformValues[aName]) {
-		this.uniformValues[aName] = aValue;
-		return true;
-	}
-
-	if(aType === "uniform1i") {
-		this.uniformValues[aName] = aValue;
-		return true;
-	}
-
-	var uniformValue = this.uniformValues[aName];
-	var hasChanged = !(uniformValue === aValue);
-	
-	if(hasChanged) {
-		this.uniformValues[aName] = aValue;
-	}
-	return hasChanged;
-
-};
-
-
 p.unbind = function() {
 
-};
-
-
-p.destroy = function() {
-	gl.detachShader(this.shaderProgram, this.vertexShader);
-	gl.detachShader(this.shaderProgram, this.fragmentShader);
-	gl.deleteShader(this.vertexShader);
-	gl.deleteShader(this.fragmentShader);
-	gl.deleteProgram(this.shaderProgram);
 };
 
 module.exports = GLShader;
@@ -11351,10 +11187,6 @@ p.unbind = function() {
 	gl.bindTexture(gl.TEXTURE_2D, null);
 };
 
-p.destroy = function() {
-	gl.deleteTexture(this.texture);
-};
-
 module.exports = GLTexture;
 },{"./GLTools":10}],10:[function(_dereq_,module,exports){
 // GLTools.js
@@ -11404,10 +11236,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.depthTextureExt       = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt       = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
-
-	this.enabledVertexAttribute = [];
 	this.enableAlphaBlending();
-	this._viewport = [0, 0, this.width, this.height];
 };
 
 
@@ -11422,16 +11251,7 @@ p.setShaderProgram = function(aShaderProgram) {
 };
 
 p.setViewport = function(aX, aY, aW, aH) {
-	var hasChanged = false;
-	if(aX!=this._viewport[0]) hasChanged = true;
-	if(aY!=this._viewport[1]) hasChanged = true;
-	if(aW!=this._viewport[2]) hasChanged = true;
-	if(aH!=this._viewport[3]) hasChanged = true;
-
-	if(hasChanged) {
-		this.gl.viewport(aX, aY, aW, aH);
-		this._viewport = [aX, aY, aW, aH];
-	}
+	this.gl.viewport(aX, aY, aW, aH);
 };
 
 p.setMatrices = function(aCamera) {
@@ -11469,50 +11289,23 @@ p.draw = function(aMesh) {
 		console.warn("Shader program not ready yet");
 		return;
 	}
+	// this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.getMatrix() );
+	// this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
 
-	if(!this.shaderProgram.pMatrixValue) {
-		this.shaderProgram.pMatrixValue = glm.mat4.create();
-		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
-		glm.mat4.copy(this.shaderProgram.pMatrixValue, this.camera.projection || this.camera.getMatrix());
-	} else {
-		var pMatrix = this.camera.projection || this.camera.getMatrix();
-		if(glm.mat4.str(this.shaderProgram.pMatrixValue) !== glm.mat4.str(pMatrix)) {
-			this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
-			glm.mat4.copy(this.shaderProgram.pMatrixValue, pMatrix);
-		}
-	}
-
-	if(!this.shaderProgram.mvMatrixValue) {
-		this.shaderProgram.mvMatrixValue = glm.mat4.create();
-		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
-		glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
-	} else {
-		if(glm.mat4.str(this.shaderProgram.mvMatrixValue) !== glm.mat4.str(this.matrix)) {
-			this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
-			glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
-		}
-	}
-
+	this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
+	this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
 
 	// 	VERTEX POSITIONS
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferPos);
 	var vertexPositionAttribute = getAttribLoc(this.gl, this.shaderProgram, "aVertexPosition");
 	this.gl.vertexAttribPointer(vertexPositionAttribute, aMesh.vBufferPos.itemSize, this.gl.FLOAT, false, 0, 0);
-	if(this.enabledVertexAttribute.indexOf(vertexPositionAttribute) === -1) {
-		this.gl.enableVertexAttribArray(vertexPositionAttribute);	
-		this.enabledVertexAttribute.push(vertexPositionAttribute);
-	}
-	
+	this.gl.enableVertexAttribArray(vertexPositionAttribute);
 
 	//	TEXTURE COORDS
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferUV);
 	var textureCoordAttribute = getAttribLoc(this.gl, this.shaderProgram, "aTextureCoord");
 	this.gl.vertexAttribPointer(textureCoordAttribute, aMesh.vBufferUV.itemSize, this.gl.FLOAT, false, 0, 0);
-	
-	if(this.enabledVertexAttribute.indexOf(textureCoordAttribute) === -1) {
-		this.gl.enableVertexAttribArray(textureCoordAttribute);
-		this.enabledVertexAttribute.push(textureCoordAttribute);
-	}
+	this.gl.enableVertexAttribArray(textureCoordAttribute);
 
 	//	INDICES
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, aMesh.iBuffer);
@@ -11522,11 +11315,7 @@ p.draw = function(aMesh) {
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.extraAttributes[i].buffer);
 		var attrPosition = getAttribLoc(this.gl, this.shaderProgram, aMesh.extraAttributes[i].name);
 		this.gl.vertexAttribPointer(attrPosition, aMesh.extraAttributes[i].itemSize, this.gl.FLOAT, false, 0, 0);
-		// this.gl.enableVertexAttribArray(attrPosition);	
-		if(this.enabledVertexAttribute.indexOf(attrPosition) === -1) {
-			this.gl.enableVertexAttribArray(attrPosition);
-			this.enabledVertexAttribute.push(attrPosition);
-		}	
+		this.gl.enableVertexAttribArray(attrPosition);		
 	}
 
 	//	DRAWING
@@ -11567,12 +11356,9 @@ p.__defineGetter__("width", function() {
 	return this._width;
 });
 
+
 p.__defineGetter__("height", function() {
 	return this._height;
-});
-
-p.__defineGetter__("viewport", function() {
-	return this._viewport;
 });
 
 var instance = null;

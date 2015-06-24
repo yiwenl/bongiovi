@@ -1,13 +1,15 @@
 "use strict";
 
 var GL = require("./GLTools");
+var gl;
 var ShaderLibs = require("./ShaderLibs");
 
 var GLShader = function(aVertexShaderId, aFragmentShaderId) {
-	this.gl              = GL.gl;
+	gl              	 = GL.gl;
 	this.idVertex        = aVertexShaderId;
 	this.idFragment      = aFragmentShaderId;
 	this.parameters      = [];
+	this.uniformValues   = {};
 	
 	this.uniformTextures = [];
 	
@@ -63,14 +65,14 @@ p.getShader = function(aId, aIsVertexShader) {
 };
 
 p.createVertexShaderProgram = function(aStr) {
-	if(!this.gl) {	return;	}
-	var shader = this.gl.createShader(this.gl.VERTEX_SHADER);
+	if(!gl) {	return;	}
+	var shader = gl.createShader(gl.VERTEX_SHADER);
 
-	this.gl.shaderSource(shader, aStr);
-	this.gl.compileShader(shader);
+	gl.shaderSource(shader, aStr);
+	gl.compileShader(shader);
 
-	if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-		console.warn("Error in Vertex Shader : ", this.idVertex, ":", this.gl.getShaderInfoLog(shader));
+	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		console.warn("Error in Vertex Shader : ", this.idVertex, ":", gl.getShaderInfoLog(shader));
 		console.log(aStr);
 		return null;
 	}
@@ -86,14 +88,14 @@ p.createVertexShaderProgram = function(aStr) {
 
 
 p.createFragmentShaderProgram = function(aStr) {
-	if(!this.gl) {	return;	}
-	var shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+	if(!gl) {	return;	}
+	var shader = gl.createShader(gl.FRAGMENT_SHADER);
 
-	this.gl.shaderSource(shader, aStr);
-	this.gl.compileShader(shader);
+	gl.shaderSource(shader, aStr);
+	gl.compileShader(shader);
 
-	if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-		console.warn("Error in Fragment Shader: ", this.idFragment, ":" , this.gl.getShaderInfoLog(shader));
+	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+		console.warn("Error in Fragment Shader: ", this.idFragment, ":" , gl.getShaderInfoLog(shader));
 		console.log(aStr);
 		return null;
 	}
@@ -109,18 +111,18 @@ p.createFragmentShaderProgram = function(aStr) {
 
 p.attachShaderProgram = function() {
 	this._isReady = true;
-	this.shaderProgram = this.gl.createProgram();
-	this.gl.attachShader(this.shaderProgram, this.vertexShader);
-	this.gl.attachShader(this.shaderProgram, this.fragmentShader);
-	this.gl.linkProgram(this.shaderProgram);
+	this.shaderProgram = gl.createProgram();
+	gl.attachShader(this.shaderProgram, this.vertexShader);
+	gl.attachShader(this.shaderProgram, this.fragmentShader);
+	gl.linkProgram(this.shaderProgram);
 };
 
 p.bind = function() {
 	if(!this._isReady) {return;}
-	this.gl.useProgram(this.shaderProgram);
+	gl.useProgram(this.shaderProgram);
 
-	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
-	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = this.gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
+	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
+	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
 
 	GL.setShader(this);
 	GL.setShaderProgram(this.shaderProgram);
@@ -132,7 +134,8 @@ p.isReady = function() {	return this._isReady;	};
 
 
 p.clearUniforms = function() {
-	this.parameters = [];
+	this.parameters    = [];
+	this.uniformValues = {};
 };
 
 p.uniform = function(aName, aType, aValue) {
@@ -152,16 +155,32 @@ p.uniform = function(aName, aType, aValue) {
 	}
 
 	if(!hasUniform) {
-		this.shaderProgram[aName] = this.gl.getUniformLocation(this.shaderProgram, aName);
+		this.shaderProgram[aName] = gl.getUniformLocation(this.shaderProgram, aName);
 		this.parameters.push({name : aName, type: aType, value: aValue, uniformLoc: this.shaderProgram[aName]});
 	} else {
 		this.shaderProgram[aName] = oUniform.uniformLoc;
 	}
 
+	// console.log('Uniform : ', aName);
+
 	if(aType.indexOf("Matrix") === -1) {
-		this.gl[aType](this.shaderProgram[aName], aValue);
+		if(!hasUniform) {
+			gl[aType](this.shaderProgram[aName], aValue);
+			this.uniformValues[aName] = aValue;
+			// console.debug('Set uniform', aName, aType, aValue);
+		} else {
+			if(this.checkUniform(aName, aType, aValue)) {
+				gl[aType](this.shaderProgram[aName], aValue);
+				// console.debug('Set uniform', aName, aType, aValue);
+			}
+		}
 	} else {
-		this.gl[aType](this.shaderProgram[aName], false, aValue);
+		gl[aType](this.shaderProgram[aName], false, aValue);
+		if(!hasUniform) {
+			gl[aType](this.shaderProgram[aName], aValue);
+			this.uniformValues[aName] = aValue;
+			// console.debug('Set uniform', aName, aType, aValue);
+		}
 	}
 
 	if(aType === "uniform1i") {
@@ -170,8 +189,44 @@ p.uniform = function(aName, aType, aValue) {
 	}
 };
 
+var isArray = function(object) {
+	return Object.prototype.toString.call( object ) === '[object Array]';
+}
+
+p.checkUniform = function(aName, aType, aValue) {
+
+	if(!this.uniformValues[aName]) {
+		this.uniformValues[aName] = aValue;
+		return true;
+	}
+
+	if(aType === "uniform1i") {
+		this.uniformValues[aName] = aValue;
+		return true;
+	}
+
+	var uniformValue = this.uniformValues[aName];
+	var hasChanged = !(uniformValue === aValue);
+	
+	if(hasChanged) {
+		this.uniformValues[aName] = aValue;
+	}
+	return hasChanged;
+
+};
+
+
 p.unbind = function() {
 
+};
+
+
+p.destroy = function() {
+	gl.detachShader(this.shaderProgram, this.vertexShader);
+	gl.detachShader(this.shaderProgram, this.fragmentShader);
+	gl.deleteShader(this.vertexShader);
+	gl.deleteShader(this.fragmentShader);
+	gl.deleteProgram(this.shaderProgram);
 };
 
 module.exports = GLShader;

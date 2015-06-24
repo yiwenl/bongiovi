@@ -45,7 +45,10 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.depthTextureExt       = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt       = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
+
+	this.enabledVertexAttribute = [];
 	this.enableAlphaBlending();
+	this._viewport = [0, 0, this.width, this.height];
 };
 
 
@@ -60,7 +63,16 @@ p.setShaderProgram = function(aShaderProgram) {
 };
 
 p.setViewport = function(aX, aY, aW, aH) {
-	this.gl.viewport(aX, aY, aW, aH);
+	var hasChanged = false;
+	if(aX!=this._viewport[0]) hasChanged = true;
+	if(aY!=this._viewport[1]) hasChanged = true;
+	if(aW!=this._viewport[2]) hasChanged = true;
+	if(aH!=this._viewport[3]) hasChanged = true;
+
+	if(hasChanged) {
+		this.gl.viewport(aX, aY, aW, aH);
+		this._viewport = [aX, aY, aW, aH];
+	}
 };
 
 p.setMatrices = function(aCamera) {
@@ -98,23 +110,50 @@ p.draw = function(aMesh) {
 		console.warn("Shader program not ready yet");
 		return;
 	}
-	// this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.getMatrix() );
-	// this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
 
-	this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
-	this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
+	if(!this.shaderProgram.pMatrixValue) {
+		this.shaderProgram.pMatrixValue = glm.mat4.create();
+		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
+		glm.mat4.copy(this.shaderProgram.pMatrixValue, this.camera.projection || this.camera.getMatrix());
+	} else {
+		var pMatrix = this.camera.projection || this.camera.getMatrix();
+		if(glm.mat4.str(this.shaderProgram.pMatrixValue) !== glm.mat4.str(pMatrix)) {
+			this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
+			glm.mat4.copy(this.shaderProgram.pMatrixValue, pMatrix);
+		}
+	}
+
+	if(!this.shaderProgram.mvMatrixValue) {
+		this.shaderProgram.mvMatrixValue = glm.mat4.create();
+		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
+		glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
+	} else {
+		if(glm.mat4.str(this.shaderProgram.mvMatrixValue) !== glm.mat4.str(this.matrix)) {
+			this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
+			glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
+		}
+	}
+
 
 	// 	VERTEX POSITIONS
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferPos);
 	var vertexPositionAttribute = getAttribLoc(this.gl, this.shaderProgram, "aVertexPosition");
 	this.gl.vertexAttribPointer(vertexPositionAttribute, aMesh.vBufferPos.itemSize, this.gl.FLOAT, false, 0, 0);
-	this.gl.enableVertexAttribArray(vertexPositionAttribute);
+	if(this.enabledVertexAttribute.indexOf(vertexPositionAttribute) === -1) {
+		this.gl.enableVertexAttribArray(vertexPositionAttribute);	
+		this.enabledVertexAttribute.push(vertexPositionAttribute);
+	}
+	
 
 	//	TEXTURE COORDS
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferUV);
 	var textureCoordAttribute = getAttribLoc(this.gl, this.shaderProgram, "aTextureCoord");
 	this.gl.vertexAttribPointer(textureCoordAttribute, aMesh.vBufferUV.itemSize, this.gl.FLOAT, false, 0, 0);
-	this.gl.enableVertexAttribArray(textureCoordAttribute);
+	
+	if(this.enabledVertexAttribute.indexOf(textureCoordAttribute) === -1) {
+		this.gl.enableVertexAttribArray(textureCoordAttribute);
+		this.enabledVertexAttribute.push(textureCoordAttribute);
+	}
 
 	//	INDICES
 	this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, aMesh.iBuffer);
@@ -124,7 +163,11 @@ p.draw = function(aMesh) {
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.extraAttributes[i].buffer);
 		var attrPosition = getAttribLoc(this.gl, this.shaderProgram, aMesh.extraAttributes[i].name);
 		this.gl.vertexAttribPointer(attrPosition, aMesh.extraAttributes[i].itemSize, this.gl.FLOAT, false, 0, 0);
-		this.gl.enableVertexAttribArray(attrPosition);		
+		// this.gl.enableVertexAttribArray(attrPosition);	
+		if(this.enabledVertexAttribute.indexOf(attrPosition) === -1) {
+			this.gl.enableVertexAttribArray(attrPosition);
+			this.enabledVertexAttribute.push(attrPosition);
+		}	
 	}
 
 	//	DRAWING
@@ -165,9 +208,12 @@ p.__defineGetter__("width", function() {
 	return this._width;
 });
 
-
 p.__defineGetter__("height", function() {
 	return this._height;
+});
+
+p.__defineGetter__("viewport", function() {
+	return this._viewport;
 });
 
 var instance = null;

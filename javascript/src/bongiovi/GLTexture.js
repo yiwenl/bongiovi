@@ -97,4 +97,8 @@ p.unbind = function() {
 	gl.bindTexture(gl.TEXTURE_2D, null);
 };
 
+p.destroy = function() {
+	gl.deleteTexture(this.texture);
+};
+
 module.exports = GLTexture;

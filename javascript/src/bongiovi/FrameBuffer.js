@@ -115,4 +115,14 @@ p.getDepthTexture = function() {
 	return this.glDepthTexture;
 };
 
+
+p.destroy = function() {
+	gl.deleteFramebuffer(this.frameBuffer);
+
+	this.glTexture.destroy();
+	if(this.glDepthTexture) {
+		this.glDepthTexture.destroy();
+	}
+};
+
 module.exports = FrameBuffer;
