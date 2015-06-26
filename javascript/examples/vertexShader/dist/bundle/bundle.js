@@ -53,8 +53,8 @@ var gl;
 var random = function(min, max) { return min + Math.random() * (max - min);	}
 
 function ViewDots() {
-	// bongiovi.View.call(this, null, bongiovi.ShaderLibs.get("simpleColorFrag"));
-	bongiovi.View.call(this, "#define GLSLIFY 1\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\n\nuniform sampler2D texture;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vColor;\n\nvoid main(void) {\n\n\t// vec3 color = texture2D(texture, aTextureCoord).rgb;\n\tvec3 pos = aVertexPosition;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n    vColor = vec3(1.0);\n    gl_PointSize = 2.0;\n}", "#define GLSLIFY 1\n// video.frag\n\nprecision highp float;\n\nvarying vec3 vColor;\n\nvoid main(void) {\n\tgl_FragColor = vec4(vColor, 1.0);\n}");
+	this.count = Math.random() * 0xFF;
+	bongiovi.View.call(this, "#define GLSLIFY 1\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nuniform float time;\nuniform sampler2D texture;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vColor;\n\nvoid main(void) {\n\n\tvec3 color = vec3(1.0);\n\tvec3 pos = aVertexPosition;\n\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n    vColor = color;\n\n    gl_PointSize = 2.0;\n}", "#define GLSLIFY 1\n// video.frag\n\nprecision highp float;\n\nvarying vec3 vColor;\n\nvoid main(void) {\n\tgl_FragColor = vec4(vColor, 1.0);\n}");
 }
 
 var p = ViewDots.prototype = new bongiovi.View();
@@ -99,8 +99,11 @@ p.render = function(texture) {
 	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
 	this.shader.uniform("texture", "uniform1i", 0);
 	this.shader.uniform("opacity", "uniform1f", 1);
+	this.shader.uniform("time", "uniform1f", this.count);
 	texture.bind(0);
 	GL.draw(this.mesh);
+
+	this.count += .01;
 };
 
 module.exports = ViewDots;

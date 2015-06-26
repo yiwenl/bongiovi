@@ -7,7 +7,7 @@ var glslify = require("glslify");
 var random = function(min, max) { return min + Math.random() * (max - min);	}
 
 function ViewDots() {
-	// bongiovi.View.call(this, null, bongiovi.ShaderLibs.get("simpleColorFrag"));
+	this.count = Math.random() * 0xFF;
 	bongiovi.View.call(this, glslify("../shaders/video.vert"), glslify("../shaders/video.frag"));
 }
 
@@ -53,8 +53,11 @@ p.render = function(texture) {
 	this.shader.uniform("color", "uniform3fv", [1, 1, 1]);
 	this.shader.uniform("texture", "uniform1i", 0);
 	this.shader.uniform("opacity", "uniform1f", 1);
+	this.shader.uniform("time", "uniform1f", this.count);
 	texture.bind(0);
 	GL.draw(this.mesh);
+
+	this.count += .01;
 };
 
 module.exports = ViewDots;
