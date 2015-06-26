@@ -1,0 +1,43 @@
+<!-- index.html -->
+<html>
+<head>
+	<title> Example - Specular Light</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script type="text/javascript" src="../../js/compile/bongiovi-min.js"></script>
+	<script type="text/javascript" src="./js/ViewLight.js"></script>
+	<script type="text/javascript" src="./js/ViewMountains.js"></script>
+	<script type="text/javascript" src="./js/SceneTest.js"></script>
+	<script type="text/javascript">
+		var scene;
+
+		function init() {
+			bongiovi.SimpleImageLoader.load(
+				[	"assets/hdrEnvironment.jpg",
+					"assets/hdrEnvironmentBlur.jpg",
+					"assets/matcap.jpg"
+				], this, this._init3D);
+		}
+
+
+		function _init3D(imgs) {
+			console.log(imgs);
+			window.images = imgs;
+
+			var canvas = document.createElement("canvas");
+			bongiovi.GL.init(canvas);
+			document.body.appendChild(canvas);
+
+			scene = new SceneTest();
+			bongiovi.Scheduler.addEF(this, this.loop);
+		};
+
+
+		function loop() {
+			scene.loop();
+		}
+	</script>
+</head>
+<body onload="init()">
+
+</body>
+</html>

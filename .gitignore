@@ -1,1 +1,4 @@
 node_modules
+cinder/xcode/build
+.DS_Store
+npm-debug.log

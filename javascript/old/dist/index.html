@@ -1,0 +1,85 @@
+<!-- index.html -->
+<html>
+<head>
+	<title>Library - bongiovi</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+<!--	-->  
+	<script type="text/javascript" src="js/bongiovi/00_gl-matrix-2.2.2-min.js"></script>
+	<script type="text/javascript" src="js/bongiovi/01_SimpleImageLoader.js"></script>
+	<script type="text/javascript" src="js/bongiovi/01_Utils.js"></script>
+	<script type="text/javascript" src="js/bongiovi/02_Scheduler.js"></script>
+	<script type="text/javascript" src="js/bongiovi/03_GLTool.js"></script>
+	<script type="text/javascript" src="js/bongiovi/04_QuatRotation.js"></script>
+	<script type="text/javascript" src="js/bongiovi/04_SceneRotation.js"></script>
+	<script type="text/javascript" src="js/bongiovi/05_Scene.js"></script>
+	<script type="text/javascript" src="js/bongiovi/06_Camera.js"></script>
+	<script type="text/javascript" src="js/bongiovi/07_CameraPerspective.js"></script>
+	<script type="text/javascript" src="js/bongiovi/07_SimpleCamera.js"></script>
+	<script type="text/javascript" src="js/bongiovi/08_Face.js"></script>
+	<script type="text/javascript" src="js/bongiovi/08_Mesh.js"></script>
+	<script type="text/javascript" src="js/bongiovi/08_ShaderLibs.js"></script>
+	<script type="text/javascript" src="js/bongiovi/09_GLShader.js"></script>
+	<script type="text/javascript" src="js/bongiovi/10_GLTexture.js"></script>
+	<script type="text/javascript" src="js/bongiovi/11_View.js"></script>
+	<script type="text/javascript" src="js/bongiovi/12_ViewCopy.js"></script>
+	<script type="text/javascript" src="js/bongiovi/12_ViewDepth.js"></script>
+	<script type="text/javascript" src="js/bongiovi/12_ViewAxis.js"></script>
+	<script type="text/javascript" src="js/bongiovi/13_FrameBuffer.js"></script>
+	<script type="text/javascript" src="js/bongiovi/14_Pass.js"></script>
+	<script type="text/javascript" src="js/bongiovi/15_EffectComposer.js"></script>
+	<script type="text/javascript" src="js/bongiovi/16_MeshUtils.js"></script>
+	
+	<script type="text/javascript" src="js/bongiovi/postprocessing/PassGreyscale.js"></script>
+	<script type="text/javascript" src="js/bongiovi/postprocessing/PassContrast.js"></script>
+	<script type="text/javascript" src="js/bongiovi/postprocessing/PassBrightness.js"></script>
+	<script type="text/javascript" src="js/bongiovi/postprocessing/PassTriangleBlur.js"></script>
+<!--   	--> 
+<!--
+ 	<script type="text/javascript" src="js/compile/bongiovi-min-post.js"></script>
+-->
+	<script type="text/javascript" src="js/ViewSphere.js"></script>
+	<script type="text/javascript" src="js/ViewPlane.js"></script>
+	<script type="text/javascript" src="js/ViewSave.js"></script>
+	<script type="text/javascript" src="js/ViewLight.js"></script>
+	<script type="text/javascript" src="js/ViewParticles.js"></script>
+	<script type="text/javascript" src="js/ViewMountains.js"></script>
+	<script type="text/javascript" src="js/SceneTest.js"></script>
+	
+	<script type="text/javascript">
+	var count = 0;
+	var efIndex;
+	var scene;
+	var images;
+	var params = {
+		numParticles: 32
+	};
+
+
+	function init() {
+		var canvas = document.createElement("canvas");
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		document.body.appendChild(canvas);
+		bongiovi.GL.init(canvas);
+		// bongiovi.GL.setSize(500, 500);
+		
+		var imgsToLoad = ["assets/image0.jpg","assets/image1.jpg","assets/image2.jpg","assets/image3.jpg","assets/image3.jpg","assets/world.jpg"];
+		bongiovi.SimpleImageLoader.load(imgsToLoad, this, onImageLoaded);
+	}
+
+	function onImageLoaded(img) {
+		images = img;
+		scene = new SceneTest();
+		bongiovi.Scheduler.addEF(this, loop);
+	}
+
+	function loop() {
+		scene.loop();
+	}
+
+	</script>
+</head>
+<body onload="init()">
+
+</body>
+</html>
