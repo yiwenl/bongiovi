@@ -33,8 +33,6 @@ p._init = function() {
 		extra.push([random(2, 5), random(10, 20)]);
 	}
 
-	console.log('Colors.length', colors.length);
-
 	this.mesh = new bongiovi.Mesh(positions.length, indices.length, GL.gl.POINTS);
 	this.mesh.bufferVertex(positions);
 	this.mesh.bufferTexCoords(coords);
