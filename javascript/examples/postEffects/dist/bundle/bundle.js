@@ -1,4 +1,91 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+// SceneApp.js
+
+// var bongiovi = require("./libs/bongiovi");
+var GL = bongiovi.GL;
+var ViewPlane = require("./ViewPlane");
+
+function SceneApp() {
+	bongiovi.Scene.call(this);
+	window.addEventListener("resize", this.resize.bind(this));
+}
+
+
+var p = SceneApp.prototype = new bongiovi.Scene();
+
+
+p._initViews = function() {
+	this._vAxis = new bongiovi.ViewAxis(1);
+	this._vDotPlane = new bongiovi.ViewDotPlane();
+	this._vPlane = new ViewPlane();
+};
+
+
+p._initTextures = function() {
+	this.texture = new bongiovi.GLTexture(image);
+};
+
+
+p.render = function() {
+	var grey = .11;
+	GL.clear(grey, grey, grey, 1.0);
+
+	this._vAxis.render();
+	this._vDotPlane.render();
+	this._vPlane.render(this.texture);
+};
+
+p.resize = function() {
+	GL.setSize(window.innerWidth, window.innerHeight);
+	this.camera.resize(GL.aspectRatio);
+};
+
+module.exports = SceneApp;
+},{"./ViewPlane":2}],2:[function(require,module,exports){
+// ViewPlane.js
+
+var GL = bongiovi.GL;
+var gl;
+
+
+function ViewPlane() {
+	this.time = Math.random() * 0xFF;
+	// bongiovi.View.call(this);
+	bongiovi.View.call(this, null, "#define GLSLIFY 1\nprecision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\n\nvec3 greyscale(vec3 value) {\n\tfloat grey = (value.x + value.y + value.z) / 3.0;\n\treturn vec3(grey);\n}\n\n\nfloat contrast(float value, float scale) {\n\treturn .5 + (value - .5) * scale;\n}\n\n\nvec3 contrast(vec3 value, float scale) {\n\treturn vec3(contrast(value.r, scale), contrast(value.g, scale), contrast(value.b, scale));\n}\n\nvoid main(void) {\n\tvec4 color = texture2D(texture, vTextureCoord);\n\n\tcolor.rgb = greyscale(color.rgb);\n\tcolor.rgb = contrast(color.rgb, 2.0);\n    gl_FragColor = color;\n}");
+	// bongiovi.View.call(this, null, bongiovi.ShaderLibs.get("simpleColorFrag"));.
+
+	new TangledShader(gl, this.shader.fragmentShader, this._onShaderUpdate.bind(this));
+}
+
+var p = ViewPlane.prototype = new bongiovi.View();
+p.constructor = ViewPlane;
+
+
+p._init = function() {
+	gl = GL.gl;
+	this.mesh = bongiovi.MeshUtils.createPlane(100, 100, 1);
+	// this.mesh = bongiovi.MeshUtils.createSphere(100, 24);
+
+};
+
+p._onShaderUpdate = function(shader) {
+	this.shader.clearUniforms();
+	this.shader.attachShaderProgram();
+};
+
+p.render = function(texture) {
+	this.shader.bind();
+	this.shader.uniform("texture", "uniform1i", 0);
+	texture.bind(0);
+	// this.time += .01;
+	// this.shader.uniform("color", "uniform3fv", [1, 1, .95]);
+	// this.shader.uniform("opacity", "uniform1f", 1);
+	// this.shader.uniform("time", "uniform1f", this.time);
+	GL.draw(this.mesh);
+};
+
+module.exports = ViewPlane;
+},{}],3:[function(require,module,exports){
 // app.js
 
 // window.bongiovi = require("./libs/bongiovi.min");
@@ -48,94 +135,7 @@ window.bongiovi = require("./libs/bongiovi");
 
 
 new App();
-},{"./SceneApp":2,"./libs/bongiovi":4}],2:[function(require,module,exports){
-// SceneApp.js
-
-// var bongiovi = require("./libs/bongiovi");
-var GL = bongiovi.GL;
-var ViewPlane = require("./ViewPlane");
-
-function SceneApp() {
-	bongiovi.Scene.call(this);
-	window.addEventListener("resize", this.resize.bind(this));
-}
-
-
-var p = SceneApp.prototype = new bongiovi.Scene();
-
-
-p._initViews = function() {
-	this._vAxis = new bongiovi.ViewAxis(1);
-	this._vDotPlane = new bongiovi.ViewDotPlane();
-	this._vPlane = new ViewPlane();
-};
-
-
-p._initTextures = function() {
-	this.texture = new bongiovi.GLTexture(image);
-};
-
-
-p.render = function() {
-	var grey = .11;
-	GL.clear(grey, grey, grey, 1.0);
-
-	this._vAxis.render();
-	this._vDotPlane.render();
-	this._vPlane.render(this.texture);
-};
-
-p.resize = function() {
-	GL.setSize(window.innerWidth, window.innerHeight);
-	this.camera.resize(GL.aspectRatio);
-};
-
-module.exports = SceneApp;
-},{"./ViewPlane":3}],3:[function(require,module,exports){
-// ViewPlane.js
-
-var GL = bongiovi.GL;
-var gl;
-
-
-function ViewPlane() {
-	this.time = Math.random() * 0xFF;
-	// bongiovi.View.call(this);
-	bongiovi.View.call(this, null, "#define GLSLIFY 1\n\nprecision mediump float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\n\nvec3 greyscale(vec3 value) {\n\tfloat grey = (value.x + value.y + value.z) / 3.0;\n\treturn vec3(grey);\n}\n\n\nfloat contrast(float value, float scale) {\n\treturn .5 + (value - .5) * scale;\n}\n\n\nvec3 contrast(vec3 value, float scale) {\n\treturn vec3(contrast(value.r, scale), contrast(value.g, scale), contrast(value.b, scale));\n}\n\nvoid main(void) {\n\tvec4 color = texture2D(texture, vTextureCoord);\n\n\tcolor.rgb = greyscale(color.rgb);\n\tcolor.rgb = contrast(color.rgb, 2.0);\n    gl_FragColor = color;\n}");
-	// bongiovi.View.call(this, null, bongiovi.ShaderLibs.get("simpleColorFrag"));.
-
-	new TangledShader(gl, this.shader.fragmentShader, this._onShaderUpdate.bind(this));
-}
-
-var p = ViewPlane.prototype = new bongiovi.View();
-p.constructor = ViewPlane;
-
-
-p._init = function() {
-	gl = GL.gl;
-	this.mesh = bongiovi.MeshUtils.createPlane(100, 100, 1);
-	// this.mesh = bongiovi.MeshUtils.createSphere(100, 24);
-
-};
-
-p._onShaderUpdate = function(shader) {
-	this.shader.clearUniforms();
-	this.shader.attachShaderProgram();
-};
-
-p.render = function(texture) {
-	this.shader.bind();
-	this.shader.uniform("texture", "uniform1i", 0);
-	texture.bind(0);
-	// this.time += .01;
-	// this.shader.uniform("color", "uniform3fv", [1, 1, .95]);
-	// this.shader.uniform("opacity", "uniform1f", 1);
-	// this.shader.uniform("time", "uniform1f", this.time);
-	GL.draw(this.mesh);
-};
-
-module.exports = ViewPlane;
-},{}],4:[function(require,module,exports){
+},{"./SceneApp":1,"./libs/bongiovi":4}],4:[function(require,module,exports){
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongiovi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 "use strict";
@@ -12529,4 +12529,4 @@ module.exports = ViewDotPlanes;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[1]);
+},{}]},{},[3]);

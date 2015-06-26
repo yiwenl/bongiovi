@@ -1,44 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// app.js
-
-// window.bongiovi = require("./libs/bongiovi.min");
-window.bongiovi = require("./libs/bongiovi");
-
-(function() {
-	var SceneApp = require("./SceneApp");
-
-	App = function() {
-		if(document.body) {
-			this._init();	
-		} else {
-			window.addEventListener('load', this._init.bind(this));
-		}
-	}
-
-	var p = App.prototype;
-
-
-	p._init = function() {
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = window.innerWidth;
-		this.canvas.height = window.innerHeight;
-		document.body.appendChild(this.canvas);
-
-		bongiovi.GL.init(this.canvas);
-		this._scene = new SceneApp();
-
-		bongiovi.Scheduler.addEF(this, this.loop);
-	};
-
-	p.loop = function() {
-		this._scene.loop();
-		// bongiovi.GL.clear(1, 0, 0, 1);
-	};
-})();
-
-
-new App();
-},{"./SceneApp":2,"./libs/bongiovi":4}],2:[function(require,module,exports){
 // SceneApp.js
 
 // var bongiovi = require("./libs/bongiovi");
@@ -80,7 +40,7 @@ p.resize = function() {
 };
 
 module.exports = SceneApp;
-},{"./ViewDots":3}],3:[function(require,module,exports){
+},{"./ViewDots":2}],2:[function(require,module,exports){
 // ViewDots.js
 
 var GL = bongiovi.GL;
@@ -91,7 +51,7 @@ var random = function(min, max) { return min + Math.random() * (max - min);	}
 
 function ViewDots() {
 	this.count = Math.random() * 0xFF;
-	bongiovi.View.call(this, "#define GLSLIFY 1\n\n// colorDots.vert\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec3 aColor;\n// attribute vec2 aExtra;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform float time;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vColor;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vColor = aColor;\n    vTextureCoord = aTextureCoord;\n\n    // float size = aExtra.x + sin(aExtra.y + time) * 2.0;\n    // gl_PointSize = size + 1.0;\n}", "#define GLSLIFY 1\n\n// colorDots.frag\n\nprecision highp float;\n\nvarying vec3 vColor;\n\nvoid main(void) {\n\tgl_FragColor = vec4(vColor, 1.0);\n}");
+	bongiovi.View.call(this, "#define GLSLIFY 1\n// colorDots.vert\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec3 aColor;\n// attribute vec2 aExtra;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform float time;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vColor;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vColor = aColor;\n    vTextureCoord = aTextureCoord;\n\n    // float size = aExtra.x + sin(aExtra.y + time) * 2.0;\n    // gl_PointSize = size + 1.0;\n}", "#define GLSLIFY 1\n// colorDots.frag\n\nprecision highp float;\n\nvarying vec3 vColor;\n\nvoid main(void) {\n\tgl_FragColor = vec4(vColor, 1.0);\n}");
 }
 
 var p = ViewDots.prototype = new bongiovi.View();
@@ -134,7 +94,47 @@ p.render = function() {
 };
 
 module.exports = ViewDots;
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+// app.js
+
+// window.bongiovi = require("./libs/bongiovi.min");
+window.bongiovi = require("./libs/bongiovi");
+
+(function() {
+	var SceneApp = require("./SceneApp");
+
+	App = function() {
+		if(document.body) {
+			this._init();	
+		} else {
+			window.addEventListener('load', this._init.bind(this));
+		}
+	}
+
+	var p = App.prototype;
+
+
+	p._init = function() {
+		this.canvas = document.createElement("canvas");
+		this.canvas.width = window.innerWidth;
+		this.canvas.height = window.innerHeight;
+		document.body.appendChild(this.canvas);
+
+		bongiovi.GL.init(this.canvas);
+		this._scene = new SceneApp();
+
+		bongiovi.Scheduler.addEF(this, this.loop);
+	};
+
+	p.loop = function() {
+		this._scene.loop();
+		// bongiovi.GL.clear(1, 0, 0, 1);
+	};
+})();
+
+
+new App();
+},{"./SceneApp":1,"./libs/bongiovi":4}],4:[function(require,module,exports){
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongiovi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 "use strict";
@@ -12528,4 +12528,4 @@ module.exports = ViewDotPlanes;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[1]);
+},{}]},{},[3]);
