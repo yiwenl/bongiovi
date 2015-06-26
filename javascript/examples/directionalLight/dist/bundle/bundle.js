@@ -1,44 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// app.js
-
-// window.bongiovi = require("./libs/bongiovi.min");
-window.bongiovi = require("./libs/bongiovi");
-
-(function() {
-	var SceneApp = require("./SceneApp");
-
-	App = function() {
-		if(document.body) {
-			this._init();	
-		} else {
-			window.addEventListener('load', this._init.bind(this));
-		}
-	}
-
-	var p = App.prototype;
-
-
-	p._init = function() {
-		this.canvas = document.createElement("canvas");
-		this.canvas.width = window.innerWidth;
-		this.canvas.height = window.innerHeight;
-		document.body.appendChild(this.canvas);
-
-		bongiovi.GL.init(this.canvas);
-		this._scene = new SceneApp();
-
-		bongiovi.Scheduler.addEF(this, this.loop);
-	};
-
-	p.loop = function() {
-		this._scene.loop();
-		// bongiovi.GL.clear(1, 0, 0, 1);
-	};
-})();
-
-
-new App();
-},{"./SceneApp":2,"./libs/bongiovi":4}],2:[function(require,module,exports){
 // SceneApp.js
 
 // var bongiovi = require("./libs/bongiovi");
@@ -81,7 +41,7 @@ p.resize = function() {
 };
 
 module.exports = SceneApp;
-},{"./ViewPlane":3}],3:[function(require,module,exports){
+},{"./ViewPlane":2}],2:[function(require,module,exports){
 // ViewPlane.js
 
 var GL = bongiovi.GL;
@@ -95,7 +55,7 @@ function ViewPlane() {
 	bongiovi.View.call(this, glslify("../shaders/directionalLight.vert"), glslify("../shaders/directionalLight.frag"));
 	new TangledShader(gl, this.shader.vertexShader, this._onShaderUpdate.bind(this));
 	/*/
-	bongiovi.View.call(this, "#define GLSLIFY 1\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vNormal;\nvarying vec3 vVertexPosition;\n\nvoid main(void) {\n\tgl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n\tvTextureCoord = aTextureCoord;\n\tvVertexPosition = aVertexPosition;\n\tvNormal = aNormal;\n}", "#define GLSLIFY 1\n\n// directionalLight.frag\n\nprecision highp float;\n\nconst vec3 lightPos = vec3(30.0, 30.0, 30.0);\nconst float lightDist = 100.0;\n\nconst vec3 lightColor = vec3(1.0);\nconst vec3 ambientColor = vec3(.25);\nconst float lightAmt = 1.0;\n\n\nvarying vec3 vNormal;\nvarying vec3 vVertexPosition;\n\nvoid main(void) {\n\tfloat lightFactor = dot(vNormal, normalize(lightPos));\n\tfloat lengthToLight = distance(vVertexPosition, lightPos);\n\tfloat lightOffset = 0.0;\n\tif(lengthToLight < lightDist) {\n\t\tlightOffset = 1.0 - lengthToLight/lightDist;\n\t}\n\n\tvec3 color = ambientColor + lightFactor * lightColor * lightAmt * lightOffset;\n\n\n\tgl_FragColor = vec4(color, 1.0);\n}");
+	bongiovi.View.call(this, "#define GLSLIFY 1\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vNormal;\nvarying vec3 vVertexPosition;\n\nvoid main(void) {\n\tgl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n\tvTextureCoord = aTextureCoord;\n\tvVertexPosition = aVertexPosition;\n\tvNormal = aNormal;\n}", "#define GLSLIFY 1\n// directionalLight.frag\n\nprecision highp float;\n\nconst vec3 lightPos = vec3(30.0, 30.0, 30.0);\nconst float lightDist = 100.0;\n\nconst vec3 lightColor = vec3(1.0);\nconst vec3 ambientColor = vec3(.25);\nconst float lightAmt = 1.0;\n\n\nvarying vec3 vNormal;\nvarying vec3 vVertexPosition;\n\nvoid main(void) {\n\tfloat lightFactor = dot(vNormal, normalize(lightPos));\n\tfloat lengthToLight = distance(vVertexPosition, lightPos);\n\tfloat lightOffset = 0.0;\n\tif(lengthToLight < lightDist) {\n\t\tlightOffset = 1.0 - lengthToLight/lightDist;\n\t}\n\n\tvec3 color = ambientColor + lightFactor * lightColor * lightAmt * lightOffset;\n\n\n\tgl_FragColor = vec4(color, 1.0);\n}");
 	new TangledShader(gl, this.shader.fragmentShader, this._onShaderUpdate.bind(this));
 	//*/
 }
@@ -175,7 +135,47 @@ p.render = function() {
 };
 
 module.exports = ViewPlane;
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+// app.js
+
+// window.bongiovi = require("./libs/bongiovi.min");
+window.bongiovi = require("./libs/bongiovi");
+
+(function() {
+	var SceneApp = require("./SceneApp");
+
+	App = function() {
+		if(document.body) {
+			this._init();	
+		} else {
+			window.addEventListener('load', this._init.bind(this));
+		}
+	}
+
+	var p = App.prototype;
+
+
+	p._init = function() {
+		this.canvas = document.createElement("canvas");
+		this.canvas.width = window.innerWidth;
+		this.canvas.height = window.innerHeight;
+		document.body.appendChild(this.canvas);
+
+		bongiovi.GL.init(this.canvas);
+		this._scene = new SceneApp();
+
+		bongiovi.Scheduler.addEF(this, this.loop);
+	};
+
+	p.loop = function() {
+		this._scene.loop();
+		// bongiovi.GL.clear(1, 0, 0, 1);
+	};
+})();
+
+
+new App();
+},{"./SceneApp":1,"./libs/bongiovi":4}],4:[function(require,module,exports){
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongiovi = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 "use strict";
@@ -12791,4 +12791,4 @@ module.exports = ViewDotPlanes;
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[1]);
+},{}]},{},[3]);
