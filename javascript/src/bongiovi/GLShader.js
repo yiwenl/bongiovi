@@ -202,7 +202,7 @@ p.checkUniform = function(aName, aType, aValue) {
 	}
 
 	var uniformValue = this.uniformValues[aName];
-	var hasChanged = !(uniformValue === aValue);
+	var hasChanged = uniformValue === aValue ? false : true;
 	
 	if(hasChanged) {
 		this.uniformValues[aName] = aValue;
