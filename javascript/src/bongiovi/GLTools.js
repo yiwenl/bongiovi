@@ -22,7 +22,8 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.canvas      = mCanvas || document.createElement("canvas");
 	var params       = parameters || {};
 	params.antialias = true;
-	this.gl          = this.canvas.getContext("experimental-webgl", params);
+
+	this.gl          = this.canvas.getContext("webgl", params) || this.canvas.getContext("experimental-webgl", params);
 
 	console.log('GL TOOLS : ', this.gl);
 	
@@ -39,12 +40,13 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.gl.clearColor( 0, 0, 0, 1 );
 	this.gl.clearDepth( 1 );
 
-	this.matrix                = glm.mat4.create();
+	this.matrix                 = glm.mat4.create();
 	glm.mat4.identity(this.matrix);
-	this.normalMatrix          = glm.mat3.create();
-	this.depthTextureExt       = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
-	this.floatTextureExt       = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
-	this.floatTextureLinearExt = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
+	this.normalMatrix           = glm.mat3.create();
+	this.depthTextureExt        = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
+	this.floatTextureExt        = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
+	this.floatTextureLinearExt  = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
+	this.standardDerivativesExt = this.gl.getExtension("OES_standard_derivatives"); // Or browser-appropriate prefix
 
 	this.enabledVertexAttribute = [];
 	this.enableAlphaBlending();

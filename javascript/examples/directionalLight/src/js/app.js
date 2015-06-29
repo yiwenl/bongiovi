@@ -1,7 +1,7 @@
 // app.js
 
 // window.bongiovi = require("./libs/bongiovi.min");
-window.bongiovi = require("./libs/bongiovi");
+window.bongiovi = require("../../../../dist/bongiovi.min");
 
 (function() {
 	var SceneApp = require("./SceneApp");

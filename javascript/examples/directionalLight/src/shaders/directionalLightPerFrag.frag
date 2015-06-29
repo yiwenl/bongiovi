@@ -1,4 +1,4 @@
-// directionalLight.frag
+#define SHADER_NAME DIRECTIONAL_LIGHTING_PER_FRAG_FRAGMENT
 
 precision highp float;
 

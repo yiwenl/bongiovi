@@ -4,6 +4,14 @@ var GL = require("./GLTools");
 var gl;
 var ShaderLibs = require("./ShaderLibs");
 
+var addLineNumbers = function ( string ) {
+	var lines = string.split( '\n' );
+	for ( var i = 0; i < lines.length; i ++ ) {
+		lines[ i ] = ( i + 1 ) + ': ' + lines[ i ];
+	}
+	return lines.join( '\n' );
+};
+
 var GLShader = function(aVertexShaderId, aFragmentShaderId) {
 	gl              	 = GL.gl;
 	this.idVertex        = aVertexShaderId;
@@ -73,7 +81,7 @@ p.createVertexShaderProgram = function(aStr) {
 
 	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 		console.warn("Error in Vertex Shader : ", this.idVertex, ":", gl.getShaderInfoLog(shader));
-		console.log(aStr);
+		console.log(addLineNumbers(aStr));
 		return null;
 	}
 
@@ -96,7 +104,7 @@ p.createFragmentShaderProgram = function(aStr) {
 
 	if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
 		console.warn("Error in Fragment Shader: ", this.idFragment, ":" , gl.getShaderInfoLog(shader));
-		console.log(aStr);
+		console.log(addLineNumbers(aStr));
 		return null;
 	}
 

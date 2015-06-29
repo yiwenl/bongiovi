@@ -14,8 +14,8 @@ var p = SceneApp.prototype = new bongiovi.Scene();
 
 
 p._initViews = function() {
-	this._vAxis = new bongiovi.ViewAxis(1);
-	this._vDotPlane = new bongiovi.ViewDotPlane();
+	// this._vAxis = new bongiovi.ViewAxis(1);
+	// this._vDotPlane = new bongiovi.ViewDotPlane();
 
 	this._vPlane = new ViewPlane();
 };
@@ -29,8 +29,8 @@ p.render = function() {
 	var grey = .11;
 	GL.clear(grey, grey, grey, 1.0);
 
-	this._vAxis.render();
-	this._vDotPlane.render();
+	// this._vAxis.render();
+	// this._vDotPlane.render();
 	this._vPlane.render();
 };
 

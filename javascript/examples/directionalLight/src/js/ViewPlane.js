@@ -12,7 +12,7 @@ function ViewPlane() {
 	new TangledShader(gl, this.shader.vertexShader, this._onShaderUpdate.bind(this));
 	/*/
 	bongiovi.View.call(this, glslify("../shaders/directionalLightPerFrag.vert"), glslify("../shaders/directionalLightPerFrag.frag"));
-	new TangledShader(gl, this.shader.fragmentShader, this._onShaderUpdate.bind(this));
+	// new TangledShader(gl, this.shader.fragmentShader, this._onShaderUpdate.bind(this));
 	//*/
 }
 
@@ -28,16 +28,16 @@ p._onShaderUpdate = function() {
 
 p._init = function() {
 	var positions = [];
-	var coords = [];
-	var indices = []; 
-	var normals = [];
-	var index = 0;
-
-	var size = 300;
-	var sx = -size * .5;
-	var y = -30;
-	var num = 10;
-	var uvGap = 1/num;
+	var coords    = [];
+	var indices   = []; 
+	var normals   = [];
+	var index     = 0;
+	
+	var size      = 300;
+	var sx        = -size * .5;
+	var y         = -30;
+	var num       = 10;
+	var uvGap     = 1/num;
 
 	function getPos(i, j) {
 		var x = sx + i/num * size;

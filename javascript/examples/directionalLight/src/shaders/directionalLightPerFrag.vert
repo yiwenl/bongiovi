@@ -1,3 +1,5 @@
+#define SHADER_NAME DIRECTIONAL_LIGHTING_PER_FRAG_VERTEX
+
 precision highp float;
 attribute vec3 aVertexPosition;
 attribute vec3 aNormal;
