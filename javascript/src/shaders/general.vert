@@ -1,3 +1,5 @@
+#define SHADER_NAME GENERAL_VERTEX
+
 precision highp float;
 attribute vec3 aVertexPosition;
 attribute vec2 aTextureCoord;

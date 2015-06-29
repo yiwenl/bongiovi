@@ -1,3 +1,5 @@
+#define SHADER_NAME TEXTURE_WITH_ALPHA
+
 precision highp float;
 varying vec2 vTextureCoord;
 uniform sampler2D texture;

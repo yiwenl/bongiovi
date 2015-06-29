@@ -1,3 +1,5 @@
+#define SHADER_NAME SIMPLE_COLOR_FRAGMENT
+
 precision highp float;
 uniform vec3 color;
 uniform float opacity;
