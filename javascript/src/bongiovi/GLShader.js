@@ -183,7 +183,7 @@ p.uniform = function(aName, aType, aValue) {
 			// if(aName == 'position') console.log('Has uniform', this.checkUniform(aName, aType, aValue));
 			if(this.checkUniform(aName, aType, aValue)) {
 				gl[aType](this.shaderProgram[aName], aValue);
-				console.debug('Set uniform', aName, aType, aValue);
+				// console.debug('Set uniform', aName, aType, aValue);
 			}
 		}
 	} else {
