@@ -169,17 +169,21 @@ p.uniform = function(aName, aType, aValue) {
 		this.shaderProgram[aName] = oUniform.uniformLoc;
 	}
 
-	// console.log('Uniform : ', aName);
 
 	if(aType.indexOf("Matrix") === -1) {
 		if(!hasUniform) {
+			var isArray = Array.isArray(aValue);
+			if(isArray) {
+				this.uniformValues[aName] = aValue.concat();
+			} else {
+				this.uniformValues[aName] = aValue;	
+			}
 			gl[aType](this.shaderProgram[aName], aValue);
-			this.uniformValues[aName] = aValue;
-			// console.debug('Set uniform', aName, aType, aValue);
 		} else {
+			// if(aName == 'position') console.log('Has uniform', this.checkUniform(aName, aType, aValue));
 			if(this.checkUniform(aName, aType, aValue)) {
 				gl[aType](this.shaderProgram[aName], aValue);
-				// console.debug('Set uniform', aName, aType, aValue);
+				console.debug('Set uniform', aName, aType, aValue);
 			}
 		}
 	} else {
@@ -198,6 +202,7 @@ p.uniform = function(aName, aType, aValue) {
 };
 
 p.checkUniform = function(aName, aType, aValue) {
+	var isArray = Array.isArray(aValue);
 
 	if(!this.uniformValues[aName]) {
 		this.uniformValues[aName] = aValue;
@@ -210,13 +215,25 @@ p.checkUniform = function(aName, aType, aValue) {
 	}
 
 	var uniformValue = this.uniformValues[aName];
-	var hasChanged = uniformValue === aValue ? false : true;
+	var hasChanged = false;
+
+	for(var i=0; i<uniformValue.length; i++) {
+		if(uniformValue[i] !== aValue[i]) {
+			hasChanged = true;
+			break;
+		}
+	}
 	
 	if(hasChanged) {
-		this.uniformValues[aName] = aValue;
+		if(isArray) {
+			this.uniformValues[aName] = aValue.concat();
+		} else {
+			this.uniformValues[aName] = aValue;	
+		}
+		
 	}
-	return hasChanged;
 
+	return hasChanged;
 };
 
 
