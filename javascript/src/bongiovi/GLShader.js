@@ -217,12 +217,17 @@ p.checkUniform = function(aName, aType, aValue) {
 	var uniformValue = this.uniformValues[aName];
 	var hasChanged = false;
 
-	for(var i=0; i<uniformValue.length; i++) {
-		if(uniformValue[i] !== aValue[i]) {
-			hasChanged = true;
-			break;
-		}
+	if(isArray) {
+		for(var i=0; i<uniformValue.length; i++) {
+			if(uniformValue[i] !== aValue[i]) {
+				hasChanged = true;
+				break;
+			}
+		}	
+	} else {
+		hasChanged = uniformValue !== aValue;
 	}
+	
 	
 	if(hasChanged) {
 		if(isArray) {
