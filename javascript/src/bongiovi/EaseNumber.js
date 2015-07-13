@@ -37,6 +37,10 @@ p.limit = function(mMin, mMax) {
 	this._checkLimit();
 };
 
+p.setEasing = function(mValue) {
+	this._easing = mValue;
+};
+
 p._checkLimit = function() {
 	if(this._min !== undefined && this._targetValue < this._min) {
 		this._targetValue = this._min;

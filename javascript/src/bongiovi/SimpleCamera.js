@@ -7,7 +7,7 @@ var EaseNumber = require("./EaseNumber");
 var SimpleCamera = function(mListenerTarget) {
 	this._listenerTarget = mListenerTarget || window;
 	CameraPerspective.call(this);
-	this._isLocked = false;
+	// this._isLocked = false;
 	this._init();
 };
 
@@ -29,7 +29,8 @@ p._init = function() {
 	this._ry             = new EaseNumber(0);
 	this._preRX          = 0;
 	this._preRY          = 0;
-	this._isLocked       = false;
+	// this._isLocked       = false;
+	this._isLockZoom 	 = false;
 	this._isLockRotation = false;
 	this._isInvert       = false;
 
@@ -54,9 +55,12 @@ p.inverseControl = function(value) {
 
 p.lock = function(value) {
 	if(value === undefined) {
-		this._isLocked = true;
+		// this._isLocked = true;
+		this._isLockZoom = true;
+		this._isLockRotation = true;
 	} else {
-		this._isLocked = value;
+		this._isLockZoom = value;
+		this._isLockRotation = value;
 	}
 };
 
@@ -68,8 +72,12 @@ p.lockRotation = function(value) {
 	}
 };
 
+p.lockZoom = function(value) {
+	this._isLockZoom = value === undefined ? true : value;
+};
+
 p._onMouseDown = function(mEvent) {
-	if(this._isLockRotation || this._isLocked) {return;}
+	if(this._isLockRotation) {return;}
 	this._isMouseDown = true;
 	getMouse(mEvent, this._mouse);
 	getMouse(mEvent, this._preMouse);
@@ -79,7 +87,7 @@ p._onMouseDown = function(mEvent) {
 
 
 p._onMouseMove = function(mEvent) {
-	if(this._isLockRotation || this._isLocked) {return;}
+	if(this._isLockRotation) {return;}
 	getMouse(mEvent, this._mouse);
 	if(mEvent.touches) {mEvent.preventDefault();}
 	if(this._isMouseDown) {
@@ -97,14 +105,14 @@ p._onMouseMove = function(mEvent) {
 
 
 p._onMouseUp = function() {
-	if(this._isLockRotation || this._isLocked) {return;}
+	if(this._isLockRotation) {return;}
 	this._isMouseDown = false;
 	// getMouse(mEvent, this._mouse);
 };
 
 
 p._onWheel = function(aEvent) {
-	if(this._isLocked) {	return;	}
+	if(this._isLockZoom) {	return;	}
 	var w = aEvent.wheelDelta;
 	var d = aEvent.detail;
 	var value = 0;
