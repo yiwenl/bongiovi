@@ -23,7 +23,10 @@ p._initViews = function() {
 	this._fbo = new bongiovi.FrameBuffer(GL.width, GL.height);
 	this._passGreyscale = new bongiovi.post.PassGreyscale(GL.width, GL.height);
 	this._passRGB = new bongiovi.post.Pass(this._vRGB, GL.width, GL.height);
-	// this._passRGB = 
+
+	this._composer = new bongiovi.post.EffectComposer();
+	this._composer.addPass(this._passGreyscale);
+	this._composer.addPass(this._passRGB);
 };
 
 
@@ -50,8 +53,11 @@ p.render = function() {
 
 	// this._passGreyscale.render(this._fbo.getTexture());
 	// this._vCopy.render(this._passGreyscale.getTexture());
-	this._passRGB.render(this._fbo.getTexture());
-	this._vCopy.render(this._passRGB.getTexture());
+	// this._passRGB.render(this._fbo.getTexture());
+	// this._vCopy.render(this._passRGB.getTexture());
+	
+	this._composer.render(this._fbo.getTexture());
+	this._vCopy.render(this._composer.getTexture());
 };
 
 module.exports = SceneApp;

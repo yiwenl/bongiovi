@@ -65,7 +65,10 @@ p._initViews = function() {
 	this._fbo = new bongiovi.FrameBuffer(GL.width, GL.height);
 	this._passGreyscale = new bongiovi.post.PassGreyscale(GL.width, GL.height);
 	this._passRGB = new bongiovi.post.Pass(this._vRGB, GL.width, GL.height);
-	// this._passRGB = 
+
+	this._composer = new bongiovi.post.EffectComposer();
+	this._composer.addPass(this._passGreyscale);
+	this._composer.addPass(this._passRGB);
 };
 
 
@@ -92,8 +95,11 @@ p.render = function() {
 
 	// this._passGreyscale.render(this._fbo.getTexture());
 	// this._vCopy.render(this._passGreyscale.getTexture());
-	this._passRGB.render(this._fbo.getTexture());
-	this._vCopy.render(this._passRGB.getTexture());
+	// this._passRGB.render(this._fbo.getTexture());
+	// this._vCopy.render(this._passRGB.getTexture());
+	
+	this._composer.render(this._fbo.getTexture());
+	this._vCopy.render(this._composer.getTexture());
 };
 
 module.exports = SceneApp;
@@ -190,12 +196,13 @@ var bongiovi = {
 
 	post: {
 		Pass:_dereq_("./bongiovi/post/Pass"),
+		EffectComposer:_dereq_("./bongiovi/post/EffectComposer"),
 		PassGreyscale:_dereq_("./bongiovi/post/PassGreyscale")
 	}
 };
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"./bongiovi/post/Pass":23,"./bongiovi/post/PassGreyscale":24,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"./bongiovi/post/EffectComposer":23,"./bongiovi/post/Pass":24,"./bongiovi/post/PassGreyscale":25,"gl-matrix":2}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -2131,12 +2138,13 @@ var bongiovi = {
 
 	post: {
 		Pass:_dereq_("./bongiovi/post/Pass"),
+		EffectComposer:_dereq_("./bongiovi/post/EffectComposer"),
 		PassGreyscale:_dereq_("./bongiovi/post/PassGreyscale")
 	}
 };
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"./bongiovi/post/Pass":23,"./bongiovi/post/PassGreyscale":24,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"./bongiovi/post/EffectComposer":23,"./bongiovi/post/Pass":24,"./bongiovi/post/PassGreyscale":25,"gl-matrix":2}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -8457,6 +8465,38 @@ module.exports = ViewDotPlanes;
 },{"./GLTools":10,"./Mesh":11,"./ShaderLibs":16,"./View":19}],23:[function(_dereq_,module,exports){
 "use strict";
 
+var Pass = _dereq_("./Pass");
+
+var EffectComposer = function() {
+	this._passes = [];
+}
+
+var p = EffectComposer.prototype = new Pass();
+
+
+p.addPass = function(pass) {
+	this._passes.push(pass);
+};
+
+
+p.render = function(texture) {
+	this.texture = texture;
+	for(var i=0; i<this._passes.length; i++) {
+		this.texture = this._passes[i].render(this.texture);
+	}
+
+	return this.texture;
+};
+
+p.getTexture = function() {
+	return this.texture;	
+};
+
+
+module.exports =EffectComposer;
+},{"./Pass":24}],24:[function(_dereq_,module,exports){
+"use strict";
+
 var gl,GL = _dereq_("../GLTools");
 var ViewCopy = _dereq_("../ViewCopy");
 var FrameBuffer = _dereq_("../FrameBuffer");
@@ -8513,7 +8553,7 @@ p.getFbo = function() {
 };
 
 module.exports = Pass;
-},{"../FrameBuffer":7,"../GLTools":10,"../ViewCopy":21}],24:[function(_dereq_,module,exports){
+},{"../FrameBuffer":7,"../GLTools":10,"../ViewCopy":21}],25:[function(_dereq_,module,exports){
 // PassGreyscale.js
 
 "use strict";
@@ -8527,7 +8567,7 @@ var PassGreyscale = function(mWidth, mHeight, mFboParams) {
 var p = PassGreyscale.prototype = new Pass();
 
 module.exports = PassGreyscale;
-},{"./Pass":23}]},{},[1])(1)
+},{"./Pass":24}]},{},[1])(1)
 });
 
 ;
@@ -12949,6 +12989,38 @@ module.exports = ViewDotPlanes;
 },{"./GLTools":10,"./Mesh":11,"./ShaderLibs":16,"./View":19}],23:[function(_dereq_,module,exports){
 "use strict";
 
+var Pass = _dereq_("./Pass");
+
+var EffectComposer = function() {
+	this._passes = [];
+}
+
+var p = EffectComposer.prototype = new Pass();
+
+
+p.addPass = function(pass) {
+	this._passes.push(pass);
+};
+
+
+p.render = function(texture) {
+	this.texture = texture;
+	for(var i=0; i<this._passes.length; i++) {
+		this.texture = this._passes[i].render(this.texture);
+	}
+
+	return this.texture;
+};
+
+p.getTexture = function() {
+	return this.texture;	
+};
+
+
+module.exports =EffectComposer;
+},{"./Pass":24}],24:[function(_dereq_,module,exports){
+"use strict";
+
 var gl,GL = _dereq_("../GLTools");
 var ViewCopy = _dereq_("../ViewCopy");
 var FrameBuffer = _dereq_("../FrameBuffer");
@@ -13005,7 +13077,7 @@ p.getFbo = function() {
 };
 
 module.exports = Pass;
-},{"../FrameBuffer":7,"../GLTools":10,"../ViewCopy":21}],24:[function(_dereq_,module,exports){
+},{"../FrameBuffer":7,"../GLTools":10,"../ViewCopy":21}],25:[function(_dereq_,module,exports){
 // PassGreyscale.js
 
 "use strict";
@@ -13019,7 +13091,7 @@ var PassGreyscale = function(mWidth, mHeight, mFboParams) {
 var p = PassGreyscale.prototype = new Pass();
 
 module.exports = PassGreyscale;
-},{"./Pass":23}]},{},[1])(1)
+},{"./Pass":24}]},{},[1])(1)
 });
 
 

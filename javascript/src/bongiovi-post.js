@@ -31,6 +31,7 @@ var bongiovi = {
 
 	post: {
 		Pass:require("./bongiovi/post/Pass"),
+		EffectComposer:require("./bongiovi/post/EffectComposer"),
 		PassGreyscale:require("./bongiovi/post/PassGreyscale")
 	}
 };
