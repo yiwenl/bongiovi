@@ -45,6 +45,36 @@ bundler.on('update', bundle);
 gulp.task('bundle', ['jshint'], bundle);
 
 
+//	post 
+
+var bundlerPost = watchify(browserify({
+	entries:['./src/bongiovi-post.js'],
+	standalone: 'bongiovi-post',
+	debug: true
+}, watchify.args));
+
+
+function bundlePost() {
+    return bundlerPost
+    .bundle()
+	.pipe(exorcist('./dist/bongiovi-post.js.map').on('error', logError))
+	.on('error', logError)
+	.pipe(source('bongiovi-post.js'))
+	.pipe(buffer())
+	.pipe(derequire())
+	.pipe(gulp.dest('./dist/'))
+	.pipe(gulp.dest('./test/src/js/libs'))
+	.pipe(rename({ extname: '.min.js' }))
+	.pipe(uglify())
+	.pipe(gulp.dest('./dist/'))
+	.pipe(gulp.dest('./test/src/js/libs'))
+	.pipe(reload({stream: true}));
+}
+
+bundlerPost.on('update', bundlePost);
+gulp.task('bundlePost', ['jshint'], bundlePost);
+
+
 gulp.task('watch', function() {
 	gulp.watch('src/**/*.js', ['jshint']);
 });
@@ -57,4 +87,4 @@ gulp.task('jshint', function() {
   .pipe(jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('default', ['bundle', 'watch']);
+gulp.task('default', ['bundle', 'watch', 'bundlePost']);

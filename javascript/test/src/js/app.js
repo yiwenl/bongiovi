@@ -1,12 +1,13 @@
 // app.js
 
 // window.bongiovi = require("./libs/bongiovi.min");
-window.bongiovi = require("./libs/bongiovi");
+window.bongiovi = require("./libs/bongiovi-post");
 
 (function() {
 	var SceneApp = require("./SceneApp");
 
 	App = function() {
+		console.log(bongiovi.post.Pass, bongiovi.post.PassGreyscale);
 		if(document.body) {
 			this._init();	
 		} else {

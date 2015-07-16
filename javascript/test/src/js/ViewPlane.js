@@ -14,7 +14,6 @@ p.constructor = ViewPlane;
 
 
 p._init = function() {
-	console.log('init');
 	gl = GL.gl;
 	// var positions = [];
 	// var coords = [];
