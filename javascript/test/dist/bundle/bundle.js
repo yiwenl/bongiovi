@@ -8143,7 +8143,7 @@ p._onMouseMove = function(mEvent) {
 		if(this._isInvert) {diffY *= -1;}
 		this._rx.value = this._preRX - diffY * 0.01;
 
-		if(this._rx.targetValue > Math.PI * 0.5) {this._rx.targetValue = Math;	}
+		// if(this._rx.targetValue > Math.PI * 0.5) {this._rx.targetValue = Math;	}
 	}
 };
 
@@ -12667,7 +12667,7 @@ p._onMouseMove = function(mEvent) {
 		if(this._isInvert) {diffY *= -1;}
 		this._rx.value = this._preRX - diffY * 0.01;
 
-		if(this._rx.targetValue > Math.PI * 0.5) {this._rx.targetValue = Math;	}
+		// if(this._rx.targetValue > Math.PI * 0.5) {this._rx.targetValue = Math;	}
 	}
 };
 
