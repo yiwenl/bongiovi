@@ -13,8 +13,13 @@ CameraControl::CameraControl(CameraPersp* camera) : _camera(camera) {
 }
 
 void CameraControl::_init() {
-    radius = new EaseNumber(500.0, .1f);
-    cout << radius->getValue() << endl;
+    radius          = new EaseNumber(500.0, .1f);
+    rx              = new EaseNumber(0);
+    ry              = new EaseNumber(0);
+    rx->limit(-M_PI/2, M_PI/2);
+    _preRx          = 0;
+    _preRy          = 0;
+
     eye             = Vec3f( 0.0f, 0.0f, radius->getValue() );
     center			= Vec3f::zero();
     up				= Vec3f::yAxis();

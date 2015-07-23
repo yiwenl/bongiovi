@@ -30,11 +30,8 @@ private:
     void	mouseDrag( ci::app::MouseEvent &event );
     void	mouseWheel( ci::app::MouseEvent &event );
     
-
-    
     ci::signals::scoped_connection	mCbMouseDown, mCbMouseDrag, mCbMouseUp, mCbMouseMove, mCbMouseWheel, mCbUpdate;
     
-    EaseNumber *radius;
     
     bool    _lookZoom = false;
     bool    _lockRotation = false;
@@ -43,6 +40,8 @@ public:
 
     CameraControl();
     CameraControl(CameraPersp* camera);
+    EaseNumber          *radius, *rx, *ry;
+    float               _preRx, _preRy;
     Vec3f				eye, center, up;
     
     void lockZoom(bool mValue) {
