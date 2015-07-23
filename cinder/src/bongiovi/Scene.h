@@ -13,6 +13,7 @@
 #include "cinder/Camera.h"
 #include "SceneQuat.h"
 #include "cinder/App/App.h"
+#include "CameraControl.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -26,6 +27,7 @@ namespace bongiovi {
         void update();
         float				cameraDistance;
         SceneQuat*          sceneQuat;
+        CameraControl*      cameraControl;
         
         void	mouseDown( ci::app::MouseEvent &event );
         void	mouseUp( ci::app::MouseEvent &event );
@@ -33,7 +35,7 @@ namespace bongiovi {
         void	mouseDrag( ci::app::MouseEvent &event );
         void	mouseWheel( ci::app::MouseEvent &event );
         void	windowDraw();
-        Vec3f				_eye, _center, _up;
+        Vec3f				eye, center, up;
         
         protected :
         app::WindowRef           _window;

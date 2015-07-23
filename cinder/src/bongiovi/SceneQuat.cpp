@@ -29,6 +29,7 @@ SceneQuat::SceneQuat()
 
 
 void SceneQuat::mouseDown(Vec2i mousePos) {
+    if(_isLocked) return;
     _isMouseDown = true;
     
     _z = _preZ;
@@ -40,17 +41,20 @@ void SceneQuat::mouseDown(Vec2i mousePos) {
 
 
 void SceneQuat::mouseUp(Vec2i mousePos) {
+    if(_isLocked) return;
     _isMouseDown = false;
     _mouse = mousePos;
 }
 
 
 void SceneQuat::mouseMove(Vec2i mousePos) {
+    if(_isLocked) return;
     _mouse = mousePos;
 }
 
 
 void SceneQuat::mouseDrag(Vec2i mousePos) {
+   if(_isLocked) return;
     _mouse = mousePos;
 }
 

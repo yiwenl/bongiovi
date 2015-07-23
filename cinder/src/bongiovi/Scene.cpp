@@ -21,9 +21,9 @@ Scene::Scene(app::WindowRef window) : _window(window){
     sceneQuat       = new SceneQuat();
     
     cameraDistance  = 500.0f;
-	_eye			= Vec3f( 0.0f, 0.0f, cameraDistance );
-	_center			= Vec3f::zero();
-	_up				= Vec3f::yAxis();
+	eye			= Vec3f( 0.0f, 0.0f, cameraDistance );
+	center			= Vec3f::zero();
+	up				= Vec3f::yAxis();
 	_camera->setPerspective( 45.0f, ci::app::getWindowAspectRatio(), 5.0f, 5000.0f );
     _cameraOrtho->setOrtho( -1, 1, 1, -1, -1, 1 );
 
@@ -33,6 +33,8 @@ Scene::Scene(app::WindowRef window) : _window(window){
     mCbMouseMove    = _window->getSignalMouseMove().connect( std::bind( &Scene::mouseMove, this, std::placeholders::_1 ) );
     mCbMouseWheel   = _window->getSignalMouseWheel().connect( std::bind( &Scene::mouseWheel, this, std::placeholders::_1 ) );
     mCbUpdate       = _window->getSignalDraw().connect( std::bind(&Scene::windowDraw, this));
+    
+    cameraControl = new CameraControl(_camera);
 };
 
 
@@ -65,8 +67,9 @@ void Scene::windowDraw() {
 
 void Scene::update() {
     sceneQuat->update();
-    _eye = Vec3f( 0.0f, 0.0f, cameraDistance );
-	_camera->lookAt( _eye, _center, _up );
+//    eye = Vec3f( 0.0f, 0.0f, cameraDistance );
+//	_camera->lookAt( eye, center, up );
+//    cameraControl->update();
 	gl::setMatrices( *_camera );
     gl::rotate(sceneQuat->quat);
 }

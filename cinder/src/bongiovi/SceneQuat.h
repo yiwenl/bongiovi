@@ -23,10 +23,14 @@ namespace bongiovi {
         void mouseMove(Vec2i);
         void update();
         Quatf quat;
+        void lock(bool mValue) {
+            _isLocked = mValue;
+        }
         
         private :
         void _updateRotation();
         bool _isMouseDown;
+        bool _isLocked;
         Quatf _tempRotation;
         Vec2f _currDiff;
         Vec2f _diff;

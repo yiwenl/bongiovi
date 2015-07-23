@@ -16,6 +16,7 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		6EFAA4CFC8A940809268530E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8242D4BD2AB24EADB9C91F33 /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		DA2624561B61571D00CB911D /* CameraControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2624541B61571D00CB911D /* CameraControl.cpp */; };
 		DA4A49601B1F1BAF00DD91A7 /* BitmapUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4A494C1B1F1BAF00DD91A7 /* BitmapUtils.cpp */; };
 		DA4A49611B1F1BAF00DD91A7 /* EffectComposer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4A494E1B1F1BAF00DD91A7 /* EffectComposer.cpp */; };
 		DA4A49621B1F1BAF00DD91A7 /* MathUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4A49501B1F1BAF00DD91A7 /* MathUtils.cpp */; };
@@ -50,6 +51,9 @@
 		8242D4BD2AB24EADB9C91F33 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		8CACDFE219EB40A7B4C115EA /* cinderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = cinderApp.cpp; path = ../src/cinderApp.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* cinder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cinder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA2624531B61526400CB911D /* EaseNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EaseNumber.h; sourceTree = "<group>"; };
+		DA2624541B61571D00CB911D /* CameraControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraControl.cpp; sourceTree = "<group>"; };
+		DA2624551B61571D00CB911D /* CameraControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraControl.h; sourceTree = "<group>"; };
 		DA4A494C1B1F1BAF00DD91A7 /* BitmapUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BitmapUtils.cpp; sourceTree = "<group>"; };
 		DA4A494D1B1F1BAF00DD91A7 /* BitmapUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitmapUtils.h; sourceTree = "<group>"; };
 		DA4A494E1B1F1BAF00DD91A7 /* EffectComposer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EffectComposer.cpp; sourceTree = "<group>"; };
@@ -192,6 +196,7 @@
 		DA4A494B1B1F1BAF00DD91A7 /* bongiovi */ = {
 			isa = PBXGroup;
 			children = (
+				DA2624531B61526400CB911D /* EaseNumber.h */,
 				DA4A494C1B1F1BAF00DD91A7 /* BitmapUtils.cpp */,
 				DA4A494D1B1F1BAF00DD91A7 /* BitmapUtils.h */,
 				DA4A494E1B1F1BAF00DD91A7 /* EffectComposer.cpp */,
@@ -214,6 +219,8 @@
 				DA4A495F1B1F1BAF00DD91A7 /* ViewCopy.h */,
 				DA4A49711B1F1DC800DD91A7 /* ViewAxis.cpp */,
 				DA4A49721B1F1DC800DD91A7 /* ViewAxis.h */,
+				DA2624541B61571D00CB911D /* CameraControl.cpp */,
+				DA2624551B61571D00CB911D /* CameraControl.h */,
 			);
 			name = bongiovi;
 			path = ../src/bongiovi;
@@ -288,6 +295,7 @@
 				DA4A49691B1F1BAF00DD91A7 /* ViewCopy.cpp in Sources */,
 				DA4A49671B1F1BAF00DD91A7 /* View.cpp in Sources */,
 				DA4A49641B1F1BAF00DD91A7 /* Scene.cpp in Sources */,
+				DA2624561B61571D00CB911D /* CameraControl.cpp in Sources */,
 				DA4A49731B1F1DC800DD91A7 /* ViewAxis.cpp in Sources */,
 				DA4A49631B1F1BAF00DD91A7 /* MeshUtils.cpp in Sources */,
 				DA4A49601B1F1BAF00DD91A7 /* BitmapUtils.cpp in Sources */,
