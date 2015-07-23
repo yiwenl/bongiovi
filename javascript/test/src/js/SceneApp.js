@@ -3,6 +3,7 @@
 var GL = bongiovi.GL;
 var ViewPlane = require("./ViewPlane");
 var ViewRGB = require("./ViewRgbSeparate");
+var glslify = require("glslify");
 
 function SceneApp() {
 	bongiovi.Scene.call(this);
@@ -23,10 +24,11 @@ p._initViews = function() {
 	this._fbo = new bongiovi.FrameBuffer(GL.width, GL.height);
 	this._passGreyscale = new bongiovi.post.PassGreyscale(GL.width, GL.height);
 	this._passRGB = new bongiovi.post.Pass(this._vRGB, GL.width, GL.height);
+	this._passRGB2 = new bongiovi.post.Pass(glslify("../shaders/rgb.frag"));
 
 	this._composer = new bongiovi.post.EffectComposer();
 	this._composer.addPass(this._passGreyscale);
-	this._composer.addPass(this._passRGB);
+	this._composer.addPass(this._passRGB2);
 };
 
 

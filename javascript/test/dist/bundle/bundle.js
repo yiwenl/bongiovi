@@ -46,6 +46,7 @@ var GL = bongiovi.GL;
 var ViewPlane = require("./ViewPlane");
 var ViewRGB = require("./ViewRgbSeparate");
 
+
 function SceneApp() {
 	bongiovi.Scene.call(this);
 }
@@ -65,10 +66,11 @@ p._initViews = function() {
 	this._fbo = new bongiovi.FrameBuffer(GL.width, GL.height);
 	this._passGreyscale = new bongiovi.post.PassGreyscale(GL.width, GL.height);
 	this._passRGB = new bongiovi.post.Pass(this._vRGB, GL.width, GL.height);
+	this._passRGB2 = new bongiovi.post.Pass("#define GLSLIFY 1\n\n// rgb.frag\n\nprecision highp float;\n\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\nvoid main(void) {\n\tconst float shift = .01;\n\tvec4 color = texture2D(texture, vTextureCoord);\n\tcolor.r = texture2D(texture, vTextureCoord-vec2(shift, 0.0)).r;\n\tcolor.b = texture2D(texture, vTextureCoord+vec2(shift, 0.0)).b;\n\n\tgl_FragColor = color;\n}");
 
 	this._composer = new bongiovi.post.EffectComposer();
 	this._composer.addPass(this._passGreyscale);
-	this._composer.addPass(this._passRGB);
+	this._composer.addPass(this._passRGB2);
 };
 
 
