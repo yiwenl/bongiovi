@@ -13,6 +13,7 @@ SceneApp::SceneApp(app::WindowRef window) : Scene(window) {
     initViews();
     
 //    sceneQuat->lock(true);
+//    cameraControl->lockRotation(false);
 }
 
 
