@@ -12,7 +12,7 @@ SceneApp::SceneApp(app::WindowRef window) : Scene(window) {
     initTextures();
     initViews();
     
-    sceneQuat->lock(true);
+//    sceneQuat->lock(true);
 }
 
 

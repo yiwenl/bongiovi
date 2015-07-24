@@ -35,6 +35,7 @@ Scene::Scene(app::WindowRef window) : _window(window){
     mCbUpdate       = _window->getSignalDraw().connect( std::bind(&Scene::windowDraw, this));
     
     cameraControl = new CameraControl(_camera);
+    cameraControl->lockRotation(true);
 };
 
 

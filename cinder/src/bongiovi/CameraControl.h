@@ -35,6 +35,8 @@ private:
     
     bool    _lookZoom = false;
     bool    _lockRotation = false;
+    Vec2i   _preMouse;
+    Vec2i   _mouse;
     
 public:
 
@@ -43,6 +45,7 @@ public:
     EaseNumber          *radius, *rx, *ry;
     float               _preRx, _preRy;
     Vec3f				eye, center, up;
+
     
     void lockZoom(bool mValue) {
         _lookZoom = mValue;
@@ -50,6 +53,10 @@ public:
     
     void lockRotation(bool mValue) {
         _lockRotation = mValue;
+    }
+    
+    void lock(bool mValue) {
+        _lookZoom = _lockRotation = mValue;
     }
     
     void	update();

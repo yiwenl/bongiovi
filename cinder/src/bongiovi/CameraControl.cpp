@@ -15,7 +15,7 @@ CameraControl::CameraControl(CameraPersp* camera) : _camera(camera) {
 void CameraControl::_init() {
     radius          = new EaseNumber(500.0, .1f);
     rx              = new EaseNumber(0);
-    ry              = new EaseNumber(0);
+    ry              = new EaseNumber(M_PI*.5);
     rx->limit(-M_PI/2, M_PI/2);
     _preRx          = 0;
     _preRy          = 0;
@@ -37,24 +37,42 @@ void CameraControl::_init() {
 
 
 void CameraControl::mouseDown( MouseEvent &event ) {
+    if(_lockRotation) return;
+    _preMouse = event.getPos();
+    _preRy = rx->getTargetValue();
+    _preRy = ry->getTargetValue();
 }
 
 void CameraControl::mouseUp( MouseEvent &event ) {
+    if(_lockRotation) return;
 }
 
 void CameraControl::mouseMove( MouseEvent &event ) {
+    if(_lockRotation) return;
 }
 
 void CameraControl::mouseDrag( MouseEvent &event ) {
+    if(_lockRotation) return;
+    _mouse = event.getPos();
+    
+    float diffX = -(_mouse.x - _preMouse.x);
+    float diffY = -(_mouse.y - _preMouse.y);
+    
+    ry->setValue(_preRy - diffX * .01f);
+    rx->setValue(_preRx - diffY * .01f);
+    
 }
 
 void CameraControl::mouseWheel( MouseEvent &event ) {
     if(_lookZoom) return;
     radius->add(event.getWheelIncrement());
-    cout << radius->getValue() << endl;
 }
 
 void CameraControl::update() {
-    eye = Vec3f( 0.0f, 0.0f, radius->getValue() );
+    eye.y = sin(rx->getValue()) * radius->getValue();
+    float tr = cos(rx->getValue()) * radius->getValue();
+    eye.x = cos(ry->getValue()) * tr;
+    eye.z = sin(ry->getValue()) * tr;
+
     _camera->lookAt(eye, center, up);
 }
