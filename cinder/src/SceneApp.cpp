@@ -25,10 +25,12 @@ void SceneApp::initViews() {
     cout << "Init Views" << endl;
     
     _vAxis = new ViewAxis();
+    _vDotPlane = new ViewDotPlane();
 }
 
 void SceneApp::render() {
 //    gl::clear(Colorf(.96f, .96f, .96f));
     
     _vAxis->render();
+    _vDotPlane->render();
 }

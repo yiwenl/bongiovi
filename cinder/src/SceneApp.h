@@ -17,6 +17,7 @@
 #include "Scene.h"
 #include "ViewCopy.h"
 #include "ViewAxis.h"
+#include "ViewDotPlane.h"
 
 using namespace bongiovi;
 using namespace ci;
@@ -34,6 +35,7 @@ public:
 private:
     ViewCopy*               _vCopy;
     ViewAxis*               _vAxis;
+    ViewDotPlane*           _vDotPlane;
 };
 
 

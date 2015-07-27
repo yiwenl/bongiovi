@@ -25,6 +25,7 @@ void cinderApp::setup()
     setFrameRate(60);
     srand (time(NULL));
     
+    gl::disableVerticalSync();
     _scene = new SceneApp(getWindow());
 }
 
