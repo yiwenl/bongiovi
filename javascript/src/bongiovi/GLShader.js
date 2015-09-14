@@ -189,7 +189,7 @@ p.uniform = function(aName, aType, aValue) {
 	} else {
 		gl[aType](this.shaderProgram[aName], false, aValue);
 		if(!hasUniform) {
-			gl[aType](this.shaderProgram[aName], aValue);
+			gl[aType](this.shaderProgram[aName], false, aValue);
 			this.uniformValues[aName] = aValue;
 			// console.debug('Set uniform', aName, aType, aValue);
 		}
