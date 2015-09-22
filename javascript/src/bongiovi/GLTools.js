@@ -19,13 +19,15 @@ function GLTools() {
 var p = GLTools.prototype;
 
 p.init = function(mCanvas, mWidth, mHeight, parameters) {
-	this.canvas      = mCanvas || document.createElement("canvas");
+	if(this.canvas === null) {
+		this.canvas      = mCanvas || document.createElement("canvas");
+	}
 	var params       = parameters || {};
 	params.antialias = true;
 
 	this.gl          = this.canvas.getContext("webgl", params) || this.canvas.getContext("experimental-webgl", params);
-
 	console.log('GL TOOLS : ', this.gl);
+	
 	
 	if(mWidth !== undefined && mHeight !== undefined) {
 		this.setSize(mWidth, mHeight);
