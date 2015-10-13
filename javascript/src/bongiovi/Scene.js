@@ -79,7 +79,6 @@ p.render = function() {
 };
 
 p._onResize = function() {
-	this.cameraOrthoScreen.lookAt(eye, center, up);
 	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 };
 
