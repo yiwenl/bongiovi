@@ -12,6 +12,7 @@ var bongiovi = {
 	Scene:require("./bongiovi/Scene"),
 	Camera:require("./bongiovi/Camera"),
 	SimpleCamera:require("./bongiovi/SimpleCamera"),
+	CameraOrtho:require("./bongiovi/CameraOrtho"),
 	CameraPerspective:require("./bongiovi/CameraPerspective"),
 	Mesh:require("./bongiovi/Mesh"),
 	Face:require("./bongiovi/Face"),

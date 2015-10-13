@@ -3,6 +3,7 @@
 var GL = require("./GLTools");
 var QuatRotation = require("./QuatRotation");
 var Camera = require("./Camera");
+var CameraOrtho = require("./CameraOrtho");
 var SimpleCamera = require("./SimpleCamera");
 var glm = require("gl-matrix");
 
@@ -30,6 +31,12 @@ p._init = function() {
 	glm.mat4.identity(this.rotationFront);
 	
 	this.cameraOtho    = new Camera();
+	this.cameraOrtho    = new CameraOrtho();
+
+	var W = window.innerWidth;
+	var H = window.innerHeight;
+	this.cameraOrtho.ortho(-1, 1, 1, -1);
+	console.log(this.cameraOrtho.matrix, this.cameraOrtho.projection);
 
 	// In SuperClass should call following functions.
 	this._initTextures();

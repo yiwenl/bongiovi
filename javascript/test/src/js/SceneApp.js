@@ -51,7 +51,9 @@ p.render = function() {
 
 	GL.clear(0, 0, 0, 0);
 	GL.setMatrices(this.cameraOtho);
+	// GL.setMatrices(this.cameraOrtho);
 	GL.rotate(this.rotationFront);
+	// GL.rotate(this.sceneRotation.matrix);
 
 	// this._passGreyscale.render(this._fbo.getTexture());
 	// this._vCopy.render(this._passGreyscale.getTexture());
