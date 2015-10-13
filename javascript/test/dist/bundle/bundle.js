@@ -115,8 +115,8 @@ p.render = function() {
 	this._fbo.unbind();
 
 	GL.clear(0, 0, 0, 0);
-	GL.setMatrices(this.cameraOtho);
-	// GL.setMatrices(this.cameraOrtho);
+	// GL.setMatrices(this.cameraOtho);
+	GL.setMatrices(this.cameraOrtho);
 	GL.rotate(this.rotationFront);
 	// GL.rotate(this.sceneRotation.matrix);
 
@@ -8048,7 +8048,6 @@ module.exports = QuatRotation;
 
 var GL = _dereq_("./GLTools");
 var QuatRotation = _dereq_("./QuatRotation");
-var Camera = _dereq_("./Camera");
 var CameraOrtho = _dereq_("./CameraOrtho");
 var SimpleCamera = _dereq_("./SimpleCamera");
 var glm = _dereq_("gl-matrix");
@@ -8067,22 +8066,24 @@ p._init = function() {
 	this.camera.setPerspective(45*Math.PI/180, GL.aspectRatio, 5, 3000);
 	this.camera.lockRotation();
 
-	var eye            = glm.vec3.clone([0, 0, 500]  );
-	var center         = glm.vec3.create( );
-	var up             = glm.vec3.clone( [0,-1,0] );
+	var eye                = glm.vec3.clone([0, 0, 500]  );
+	var center             = glm.vec3.create( );
+	var up                 = glm.vec3.clone( [0,-1,0] );
 	this.camera.lookAt(eye, center, up);
 	
-	this.sceneRotation = new QuatRotation(GL.canvas);
-	this.rotationFront = glm.mat4.create();
+	this.sceneRotation     = new QuatRotation(GL.canvas);
+	this.rotationFront     = glm.mat4.create();
 	glm.mat4.identity(this.rotationFront);
 	
-	this.cameraOtho    = new Camera();
-	this.cameraOrtho    = new CameraOrtho();
+	this.cameraOrtho       = new CameraOrtho();
+	this.cameraOrthoScreen = new CameraOrtho();
+	this.cameraOtho        = this.cameraOrtho;
 
-	var W = window.innerWidth;
-	var H = window.innerHeight;
-	this.cameraOrtho.ortho(-1, 1, 1, -1);
-	console.log(this.cameraOrtho.matrix, this.cameraOrtho.projection);
+	this.cameraOrtho.lookAt(eye, center, up);
+	this.cameraOrtho.ortho( 1, -1, 1, -1);
+
+	this.cameraOrthoScreen.lookAt(eye, center, up);
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 
 	// In SuperClass should call following functions.
 	this._initTextures();
@@ -8114,9 +8115,9 @@ p.update = function() {
 };
 
 p.resize = function() {
-	if(this.camera.resize) {
-		this.camera.resize(GL.aspectRatio);
-	}
+	// if(this.camera.resize) {
+	// 	this.camera.resize(GL.aspectRatio);
+	// }
 };
 
 p.render = function() {
@@ -8124,10 +8125,12 @@ p.render = function() {
 };
 
 p._onResize = function() {
+	this.cameraOrthoScreen.lookAt(eye, center, up);
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 };
 
 module.exports = Scene;
-},{"./Camera":4,"./CameraOrtho":5,"./GLTools":13,"./QuatRotation":16,"./SimpleCamera":20,"gl-matrix":2}],18:[function(_dereq_,module,exports){
+},{"./CameraOrtho":5,"./GLTools":13,"./QuatRotation":16,"./SimpleCamera":20,"gl-matrix":2}],18:[function(_dereq_,module,exports){
 // Scheduler.js
 
 "use strict";
@@ -12788,7 +12791,6 @@ module.exports = QuatRotation;
 
 var GL = _dereq_("./GLTools");
 var QuatRotation = _dereq_("./QuatRotation");
-var Camera = _dereq_("./Camera");
 var CameraOrtho = _dereq_("./CameraOrtho");
 var SimpleCamera = _dereq_("./SimpleCamera");
 var glm = _dereq_("gl-matrix");
@@ -12807,22 +12809,24 @@ p._init = function() {
 	this.camera.setPerspective(45*Math.PI/180, GL.aspectRatio, 5, 3000);
 	this.camera.lockRotation();
 
-	var eye            = glm.vec3.clone([0, 0, 500]  );
-	var center         = glm.vec3.create( );
-	var up             = glm.vec3.clone( [0,-1,0] );
+	var eye                = glm.vec3.clone([0, 0, 500]  );
+	var center             = glm.vec3.create( );
+	var up                 = glm.vec3.clone( [0,-1,0] );
 	this.camera.lookAt(eye, center, up);
 	
-	this.sceneRotation = new QuatRotation(GL.canvas);
-	this.rotationFront = glm.mat4.create();
+	this.sceneRotation     = new QuatRotation(GL.canvas);
+	this.rotationFront     = glm.mat4.create();
 	glm.mat4.identity(this.rotationFront);
 	
-	this.cameraOtho    = new Camera();
-	this.cameraOrtho    = new CameraOrtho();
+	this.cameraOrtho       = new CameraOrtho();
+	this.cameraOrthoScreen = new CameraOrtho();
+	this.cameraOtho        = this.cameraOrtho;
 
-	var W = window.innerWidth;
-	var H = window.innerHeight;
-	this.cameraOrtho.ortho(-1, 1, 1, -1);
-	console.log(this.cameraOrtho.matrix, this.cameraOrtho.projection);
+	this.cameraOrtho.lookAt(eye, center, up);
+	this.cameraOrtho.ortho( 1, -1, 1, -1);
+
+	this.cameraOrthoScreen.lookAt(eye, center, up);
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 
 	// In SuperClass should call following functions.
 	this._initTextures();
@@ -12854,9 +12858,9 @@ p.update = function() {
 };
 
 p.resize = function() {
-	if(this.camera.resize) {
-		this.camera.resize(GL.aspectRatio);
-	}
+	// if(this.camera.resize) {
+	// 	this.camera.resize(GL.aspectRatio);
+	// }
 };
 
 p.render = function() {
@@ -12864,10 +12868,12 @@ p.render = function() {
 };
 
 p._onResize = function() {
+	this.cameraOrthoScreen.lookAt(eye, center, up);
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 };
 
 module.exports = Scene;
-},{"./Camera":4,"./CameraOrtho":5,"./GLTools":13,"./QuatRotation":16,"./SimpleCamera":20,"gl-matrix":2}],18:[function(_dereq_,module,exports){
+},{"./CameraOrtho":5,"./GLTools":13,"./QuatRotation":16,"./SimpleCamera":20,"gl-matrix":2}],18:[function(_dereq_,module,exports){
 // Scheduler.js
 
 "use strict";
