@@ -5,9 +5,10 @@ window.bongiovi = require("./libs/bongiovi-post");
 
 (function() {
 	var SceneApp = require("./SceneApp");
+	var Dispatcher = require("./Dispatcher");
 
 	App = function() {
-		console.log(bongiovi.post.Pass, bongiovi.post.PassGreyscale);
+		// console.log(bongiovi.post.Pass, bongiovi.post.PassGreyscale);
 		if(document.body) {
 			this._init();	
 		} else {
@@ -19,6 +20,10 @@ window.bongiovi = require("./libs/bongiovi-post");
 
 
 	p._init = function() {
+		var dispatcher = new Dispatcher();
+		dispatcher.addEventListener("onTick", function(e){
+			// console.log('on Tick : ', e.detail);
+		});
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;

@@ -4,7 +4,7 @@ var Pass = require("./Pass");
 
 var EffectComposer = function() {
 	this._passes = [];
-}
+};
 
 var p = EffectComposer.prototype = new Pass();
 
