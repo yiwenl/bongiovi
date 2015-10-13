@@ -6,9 +6,10 @@ window.bongiovi = require("./libs/bongiovi-post");
 
 (function() {
 	var SceneApp = require("./SceneApp");
+	var Dispatcher = require("./Dispatcher");
 
 	App = function() {
-		console.log(bongiovi.post.Pass, bongiovi.post.PassGreyscale);
+		// console.log(bongiovi.post.Pass, bongiovi.post.PassGreyscale);
 		if(document.body) {
 			this._init();	
 		} else {
@@ -20,6 +21,10 @@ window.bongiovi = require("./libs/bongiovi-post");
 
 
 	p._init = function() {
+		var dispatcher = new Dispatcher();
+		dispatcher.addEventListener("onTick", function(e){
+			// console.log('on Tick : ', e.detail);
+		});
 		this.canvas = document.createElement("canvas");
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
@@ -39,7 +44,25 @@ window.bongiovi = require("./libs/bongiovi-post");
 
 
 new App();
-},{"./SceneApp":2,"./libs/bongiovi-post":5}],2:[function(require,module,exports){
+},{"./Dispatcher":2,"./SceneApp":3,"./libs/bongiovi-post":6}],2:[function(require,module,exports){
+// Dispatcher.js
+
+function Dispatcher() {
+	this.count = 0;
+	bongiovi.Scheduler.addEF(this, this.loop, null, 1000);
+}
+
+
+var p = Dispatcher.prototype = new bongiovi.EventDispatcher();
+
+
+p.loop = function() {
+	this.dispatchCustomEvent("onTick", this.count++);
+};
+
+
+module.exports = Dispatcher;
+},{}],3:[function(require,module,exports){
 // SceneApp.js
 
 var GL = bongiovi.GL;
@@ -105,7 +128,7 @@ p.render = function() {
 };
 
 module.exports = SceneApp;
-},{"./ViewPlane":3,"./ViewRgbSeparate":4}],3:[function(require,module,exports){
+},{"./ViewPlane":4,"./ViewRgbSeparate":5}],4:[function(require,module,exports){
 // ViewPlane.js
 
 // var GL = require("./GLTools");
@@ -147,7 +170,7 @@ p.render = function(texture) {
 };
 
 module.exports = ViewPlane;
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // ViewRgbSeparate.js
 
 var GL, gl;
@@ -162,7 +185,7 @@ var p = ViewRgbSeparate.prototype = new bongiovi.ViewCopy();
 p.constructor = ViewRgbSeparate;
 
 module.exports = ViewRgbSeparate;
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongioviPost = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // bongiovi-post.js
@@ -194,6 +217,7 @@ var bongiovi = {
 	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
 	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
 	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
+	EventDispatcher:_dereq_("./bongiovi/EventDispatcher"),
 	glm:_dereq_("gl-matrix"),
 
 	post: {
@@ -204,7 +228,7 @@ var bongiovi = {
 };
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"./bongiovi/post/EffectComposer":23,"./bongiovi/post/Pass":24,"./bongiovi/post/PassGreyscale":25,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/EventDispatcher":6,"./bongiovi/Face":7,"./bongiovi/FrameBuffer":8,"./bongiovi/GLShader":9,"./bongiovi/GLTexture":10,"./bongiovi/GLTools":11,"./bongiovi/Mesh":12,"./bongiovi/MeshUtils":13,"./bongiovi/QuatRotation":14,"./bongiovi/Scene":15,"./bongiovi/Scheduler":16,"./bongiovi/ShaderLibs":17,"./bongiovi/SimpleCamera":18,"./bongiovi/SimpleImageLoader":19,"./bongiovi/View":20,"./bongiovi/ViewAxis":21,"./bongiovi/ViewCopy":22,"./bongiovi/ViewDotPlanes":23,"./bongiovi/post/EffectComposer":24,"./bongiovi/post/Pass":25,"./bongiovi/post/PassGreyscale":26,"gl-matrix":2}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -2136,6 +2160,7 @@ var bongiovi = {
 	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
 	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
 	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
+	EventDispatcher:_dereq_("./bongiovi/EventDispatcher"),
 	glm:_dereq_("gl-matrix"),
 
 	post: {
@@ -2146,7 +2171,7 @@ var bongiovi = {
 };
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/Face":6,"./bongiovi/FrameBuffer":7,"./bongiovi/GLShader":8,"./bongiovi/GLTexture":9,"./bongiovi/GLTools":10,"./bongiovi/Mesh":11,"./bongiovi/MeshUtils":12,"./bongiovi/QuatRotation":13,"./bongiovi/Scene":14,"./bongiovi/Scheduler":15,"./bongiovi/ShaderLibs":16,"./bongiovi/SimpleCamera":17,"./bongiovi/SimpleImageLoader":18,"./bongiovi/View":19,"./bongiovi/ViewAxis":20,"./bongiovi/ViewCopy":21,"./bongiovi/ViewDotPlanes":22,"./bongiovi/post/EffectComposer":23,"./bongiovi/post/Pass":24,"./bongiovi/post/PassGreyscale":25,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/EventDispatcher":6,"./bongiovi/Face":7,"./bongiovi/FrameBuffer":8,"./bongiovi/GLShader":9,"./bongiovi/GLTexture":10,"./bongiovi/GLTools":11,"./bongiovi/Mesh":12,"./bongiovi/MeshUtils":13,"./bongiovi/QuatRotation":14,"./bongiovi/Scene":15,"./bongiovi/Scheduler":16,"./bongiovi/ShaderLibs":17,"./bongiovi/SimpleCamera":18,"./bongiovi/SimpleImageLoader":19,"./bongiovi/View":20,"./bongiovi/ViewAxis":21,"./bongiovi/ViewCopy":22,"./bongiovi/ViewDotPlanes":23,"./bongiovi/post/EffectComposer":24,"./bongiovi/post/Pass":25,"./bongiovi/post/PassGreyscale":26,"gl-matrix":2}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -6535,7 +6560,134 @@ p.__defineSetter__("value", function(mValue) {
 
 
 module.exports = EaseNumber;
-},{"./Scheduler":15}],6:[function(_dereq_,module,exports){
+},{"./Scheduler":16}],6:[function(_dereq_,module,exports){
+// EventDispatcher.js
+
+"use strict";
+
+var supportsCustomEvents = true;
+try {
+	var newTestCustomEvent = document.createEvent("CustomEvent");
+	newTestCustomEvent = null;
+} catch(e){
+	supportsCustomEvents = false;
+}
+
+function EventDispatcher() {
+	this._eventListeners = null;
+}
+
+
+var p = EventDispatcher.prototype;
+
+
+p.addEventListener = function(aEventType, aFunction) {
+
+	if(this._eventListeners === null) {
+		this._eventListeners = {};
+	}
+	if(!this._eventListeners[aEventType]){
+		this._eventListeners[aEventType] = [];
+	}
+	this._eventListeners[aEventType].push(aFunction);
+	
+	return this;
+};
+
+p.removeEventListener = function(aEventType, aFunction) {
+	if(this._eventListeners === null) {
+		this._eventListeners = {};
+	}
+	var currentArray = this._eventListeners[aEventType];
+	
+	if (typeof(currentArray) === "undefined") {
+		// console.warn("EventDispatcher :: removeEventListener :: Tried to remove an event handler (for " + aEventType +") that doesn't exist");
+		return this;
+	}
+	
+	var currentArrayLength = currentArray.length;
+	for(var i = 0; i < currentArrayLength; i++){
+		if(currentArray[i] === aFunction){
+			currentArray.splice(i, 1);
+			i--;
+			currentArrayLength--;
+		}
+	}
+	return this;
+};
+
+p.dispatchEvent = function(aEvent) {
+	if(this._eventListeners === null) {
+		this._eventListeners = {};
+	}
+	var eventType = aEvent.type;
+	
+	try {
+		if(aEvent.target === null) {
+			aEvent.target = this;
+		}
+		aEvent.currentTarget = this;
+	}
+	catch(theError) {
+		// console.error("Couldn't set targets for current event. " + aEvent.message);
+		//MENOTE: sometimes Firefox can't set the target
+		var newEvent = {"type" : eventType, "detail" : aEvent.detail, "dispatcher" : this };
+		return this.dispatchEvent(newEvent);
+	}
+	
+	//console.log(eventType, this._eventListeners[eventType], this._eventListeners[eventType].length);
+	var currentEventListeners = this._eventListeners[eventType];
+	if(currentEventListeners !== null && currentEventListeners !== undefined) {
+		var currentArray = this._copyArray(currentEventListeners);
+		var currentArrayLength = currentArray.length;
+		for(var i = 0; i < currentArrayLength; i++){
+			var currentFunction = currentArray[i];
+			//console.log(currentFunction);
+			//console.log(eventType, i, currentArray.length);
+			currentFunction.call(this, aEvent);
+		}
+	}
+	return this;
+};
+
+p.dispatchCustomEvent = function(aEventType, aDetail) {
+	var newEvent;
+	if (supportsCustomEvents){
+		newEvent = document.createEvent("CustomEvent");
+		newEvent.dispatcher = this;
+		newEvent.initCustomEvent(aEventType, false, false, aDetail);
+	}
+	else {
+		newEvent = {"type" : aEventType, "detail" : aDetail, "dispatcher" : this };
+	}
+	return this.dispatchEvent(newEvent);
+};
+
+p._destroy = function() {
+	if(this._eventListeners !== null) {
+		for(var objectName in this._eventListeners) {
+			var currentArray = this._eventListeners[objectName];
+			var currentArrayLength = currentArray.length;
+			for(var i = 0; i < currentArrayLength; i++) {
+				currentArray[i] = null;
+			}
+			delete this._eventListeners[objectName];
+		}
+		this._eventListeners = null;
+	}
+};
+
+p._copyArray = function(aArray) {
+	var currentArray = new Array(aArray.length);
+	var currentArrayLength = currentArray.length;
+	for(var i = 0; i < currentArrayLength; i++) {
+		currentArray[i] = aArray[i];
+	}
+	return currentArray;
+};
+
+module.exports = EventDispatcher;
+},{}],7:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -6577,7 +6729,7 @@ var equal = function(mV0, mV1) {
 };
 
 module.exports = Face;
-},{"gl-matrix":2}],7:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],8:[function(_dereq_,module,exports){
 "use strict";
 
 var gl, GL = _dereq_("./GLTools");
@@ -6708,7 +6860,7 @@ p.destroy = function() {
 };
 
 module.exports = FrameBuffer;
-},{"./GLTexture":9,"./GLTools":10}],8:[function(_dereq_,module,exports){
+},{"./GLTexture":10,"./GLTools":11}],9:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -6967,7 +7119,7 @@ p.destroy = function() {
 };
 
 module.exports = GLShader;
-},{"./GLTools":10,"./ShaderLibs":16}],9:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./ShaderLibs":17}],10:[function(_dereq_,module,exports){
 // GLTexture.js
 "use strict";
 
@@ -7072,7 +7224,7 @@ p.destroy = function() {
 };
 
 module.exports = GLTexture;
-},{"./GLTools":10}],10:[function(_dereq_,module,exports){
+},{"./GLTools":11}],11:[function(_dereq_,module,exports){
 // GLTools.js
 "use strict";
 
@@ -7306,7 +7458,7 @@ GLTools.getInstance = function() {
 
 
 module.exports = GLTools.getInstance();
-},{"gl-matrix":2}],11:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],12:[function(_dereq_,module,exports){
 "use strict";
 
 var Face = _dereq_("./Face");
@@ -7480,7 +7632,7 @@ p._generateFaces = function() {
 };
 
 module.exports = Mesh;
-},{"./Face":6,"./GLTools":10,"gl-matrix":2}],12:[function(_dereq_,module,exports){
+},{"./Face":7,"./GLTools":11,"gl-matrix":2}],13:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -7598,7 +7750,7 @@ MeshUtils.createSphere = function(size, numSegments) {
 
 
 module.exports = MeshUtils;
-},{"./GLTools":10,"./Mesh":11}],13:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./Mesh":12}],14:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -7791,7 +7943,7 @@ p._updateRotation = function(aTempRotation) {
 
 
 module.exports = QuatRotation;
-},{"gl-matrix":2}],14:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],15:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -7868,7 +8020,7 @@ p._onResize = function() {
 };
 
 module.exports = Scene;
-},{"./Camera":3,"./GLTools":10,"./QuatRotation":13,"./SimpleCamera":17,"gl-matrix":2}],15:[function(_dereq_,module,exports){
+},{"./Camera":3,"./GLTools":11,"./QuatRotation":14,"./SimpleCamera":18,"gl-matrix":2}],16:[function(_dereq_,module,exports){
 // Scheduler.js
 
 "use strict";
@@ -8020,7 +8172,7 @@ Scheduler.getInstance = function() {
 };
 
 module.exports = Scheduler.getInstance();
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 "use strict";
 
 
@@ -8028,7 +8180,7 @@ var ShaderLibs = function() { };
 
 ShaderLibs.shaders = {};
 
-ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\n#define SHADER_NAME BASIC_VERTEXXXX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main() {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
+ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
 ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
@@ -8047,7 +8199,7 @@ ShaderLibs.getShader = function(mId) {
 
 ShaderLibs.get = ShaderLibs.getShader;
 module.exports = ShaderLibs;
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -8230,7 +8382,7 @@ p.__defineSetter__("ry", function(mValue) {
 });
 
 module.exports = SimpleCamera;
-},{"./CameraPerspective":4,"./EaseNumber":5,"gl-matrix":2}],18:[function(_dereq_,module,exports){
+},{"./CameraPerspective":4,"./EaseNumber":5,"gl-matrix":2}],19:[function(_dereq_,module,exports){
 "use strict";
 
 var SimpleImageLoader = function() {
@@ -8281,7 +8433,7 @@ p._onImageLoaded = function() {
 };
 
 module.exports = SimpleImageLoader;
-},{}],19:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 // View.js
 "use strict";
 
@@ -8305,7 +8457,7 @@ p.render = function() {
 module.exports = View;
 
 
-},{"./GLShader":8}],20:[function(_dereq_,module,exports){
+},{"./GLShader":9}],21:[function(_dereq_,module,exports){
 // ViewAxis.js
 
 "use strict";
@@ -8375,7 +8527,7 @@ p.render = function() {
 
 module.exports = ViewAxis;
 
-},{"./GLTools":10,"./Mesh":11,"./View":19}],21:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./Mesh":12,"./View":20}],22:[function(_dereq_,module,exports){
 "use strict";
 
 var View = _dereq_("./View");
@@ -8404,7 +8556,7 @@ p.render = function(aTexture) {
 
 module.exports = ViewCopy;
 
-},{"./GLTools":10,"./MeshUtils":12,"./View":19}],22:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./MeshUtils":13,"./View":20}],23:[function(_dereq_,module,exports){
 // ViewDotPlanes.js
 
 "use strict";
@@ -8468,7 +8620,7 @@ p.render = function() {
 
 module.exports = ViewDotPlanes;
 
-},{"./GLTools":10,"./Mesh":11,"./ShaderLibs":16,"./View":19}],23:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./Mesh":12,"./ShaderLibs":17,"./View":20}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var Pass = _dereq_("./Pass");
@@ -8500,7 +8652,7 @@ p.getTexture = function() {
 
 
 module.exports =EffectComposer;
-},{"./Pass":24}],24:[function(_dereq_,module,exports){
+},{"./Pass":25}],25:[function(_dereq_,module,exports){
 "use strict";
 
 var gl,GL = _dereq_("../GLTools");
@@ -8559,7 +8711,7 @@ p.getFbo = function() {
 };
 
 module.exports = Pass;
-},{"../FrameBuffer":7,"../GLTools":10,"../ViewCopy":21}],25:[function(_dereq_,module,exports){
+},{"../FrameBuffer":8,"../GLTools":11,"../ViewCopy":22}],26:[function(_dereq_,module,exports){
 // PassGreyscale.js
 
 "use strict";
@@ -8573,7 +8725,7 @@ var PassGreyscale = function(mWidth, mHeight, mFboParams) {
 var p = PassGreyscale.prototype = new Pass();
 
 module.exports = PassGreyscale;
-},{"./Pass":24}]},{},[1])(1)
+},{"./Pass":25}]},{},[1])(1)
 });
 
 ;
@@ -11063,7 +11215,134 @@ p.__defineSetter__("value", function(mValue) {
 
 
 module.exports = EaseNumber;
-},{"./Scheduler":15}],6:[function(_dereq_,module,exports){
+},{"./Scheduler":16}],6:[function(_dereq_,module,exports){
+// EventDispatcher.js
+
+"use strict";
+
+var supportsCustomEvents = true;
+try {
+	var newTestCustomEvent = document.createEvent("CustomEvent");
+	newTestCustomEvent = null;
+} catch(e){
+	supportsCustomEvents = false;
+}
+
+function EventDispatcher() {
+	this._eventListeners = null;
+}
+
+
+var p = EventDispatcher.prototype;
+
+
+p.addEventListener = function(aEventType, aFunction) {
+
+	if(this._eventListeners === null) {
+		this._eventListeners = {};
+	}
+	if(!this._eventListeners[aEventType]){
+		this._eventListeners[aEventType] = [];
+	}
+	this._eventListeners[aEventType].push(aFunction);
+	
+	return this;
+};
+
+p.removeEventListener = function(aEventType, aFunction) {
+	if(this._eventListeners === null) {
+		this._eventListeners = {};
+	}
+	var currentArray = this._eventListeners[aEventType];
+	
+	if (typeof(currentArray) === "undefined") {
+		// console.warn("EventDispatcher :: removeEventListener :: Tried to remove an event handler (for " + aEventType +") that doesn't exist");
+		return this;
+	}
+	
+	var currentArrayLength = currentArray.length;
+	for(var i = 0; i < currentArrayLength; i++){
+		if(currentArray[i] === aFunction){
+			currentArray.splice(i, 1);
+			i--;
+			currentArrayLength--;
+		}
+	}
+	return this;
+};
+
+p.dispatchEvent = function(aEvent) {
+	if(this._eventListeners === null) {
+		this._eventListeners = {};
+	}
+	var eventType = aEvent.type;
+	
+	try {
+		if(aEvent.target === null) {
+			aEvent.target = this;
+		}
+		aEvent.currentTarget = this;
+	}
+	catch(theError) {
+		// console.error("Couldn't set targets for current event. " + aEvent.message);
+		//MENOTE: sometimes Firefox can't set the target
+		var newEvent = {"type" : eventType, "detail" : aEvent.detail, "dispatcher" : this };
+		return this.dispatchEvent(newEvent);
+	}
+	
+	//console.log(eventType, this._eventListeners[eventType], this._eventListeners[eventType].length);
+	var currentEventListeners = this._eventListeners[eventType];
+	if(currentEventListeners !== null && currentEventListeners !== undefined) {
+		var currentArray = this._copyArray(currentEventListeners);
+		var currentArrayLength = currentArray.length;
+		for(var i = 0; i < currentArrayLength; i++){
+			var currentFunction = currentArray[i];
+			//console.log(currentFunction);
+			//console.log(eventType, i, currentArray.length);
+			currentFunction.call(this, aEvent);
+		}
+	}
+	return this;
+};
+
+p.dispatchCustomEvent = function(aEventType, aDetail) {
+	var newEvent;
+	if (supportsCustomEvents){
+		newEvent = document.createEvent("CustomEvent");
+		newEvent.dispatcher = this;
+		newEvent.initCustomEvent(aEventType, false, false, aDetail);
+	}
+	else {
+		newEvent = {"type" : aEventType, "detail" : aDetail, "dispatcher" : this };
+	}
+	return this.dispatchEvent(newEvent);
+};
+
+p._destroy = function() {
+	if(this._eventListeners !== null) {
+		for(var objectName in this._eventListeners) {
+			var currentArray = this._eventListeners[objectName];
+			var currentArrayLength = currentArray.length;
+			for(var i = 0; i < currentArrayLength; i++) {
+				currentArray[i] = null;
+			}
+			delete this._eventListeners[objectName];
+		}
+		this._eventListeners = null;
+	}
+};
+
+p._copyArray = function(aArray) {
+	var currentArray = new Array(aArray.length);
+	var currentArrayLength = currentArray.length;
+	for(var i = 0; i < currentArrayLength; i++) {
+		currentArray[i] = aArray[i];
+	}
+	return currentArray;
+};
+
+module.exports = EventDispatcher;
+},{}],7:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -11105,7 +11384,7 @@ var equal = function(mV0, mV1) {
 };
 
 module.exports = Face;
-},{"gl-matrix":2}],7:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],8:[function(_dereq_,module,exports){
 "use strict";
 
 var gl, GL = _dereq_("./GLTools");
@@ -11236,7 +11515,7 @@ p.destroy = function() {
 };
 
 module.exports = FrameBuffer;
-},{"./GLTexture":9,"./GLTools":10}],8:[function(_dereq_,module,exports){
+},{"./GLTexture":10,"./GLTools":11}],9:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -11495,7 +11774,7 @@ p.destroy = function() {
 };
 
 module.exports = GLShader;
-},{"./GLTools":10,"./ShaderLibs":16}],9:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./ShaderLibs":17}],10:[function(_dereq_,module,exports){
 // GLTexture.js
 "use strict";
 
@@ -11600,7 +11879,7 @@ p.destroy = function() {
 };
 
 module.exports = GLTexture;
-},{"./GLTools":10}],10:[function(_dereq_,module,exports){
+},{"./GLTools":11}],11:[function(_dereq_,module,exports){
 // GLTools.js
 "use strict";
 
@@ -11834,7 +12113,7 @@ GLTools.getInstance = function() {
 
 
 module.exports = GLTools.getInstance();
-},{"gl-matrix":2}],11:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],12:[function(_dereq_,module,exports){
 "use strict";
 
 var Face = _dereq_("./Face");
@@ -12008,7 +12287,7 @@ p._generateFaces = function() {
 };
 
 module.exports = Mesh;
-},{"./Face":6,"./GLTools":10,"gl-matrix":2}],12:[function(_dereq_,module,exports){
+},{"./Face":7,"./GLTools":11,"gl-matrix":2}],13:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -12126,7 +12405,7 @@ MeshUtils.createSphere = function(size, numSegments) {
 
 
 module.exports = MeshUtils;
-},{"./GLTools":10,"./Mesh":11}],13:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./Mesh":12}],14:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -12319,7 +12598,7 @@ p._updateRotation = function(aTempRotation) {
 
 
 module.exports = QuatRotation;
-},{"gl-matrix":2}],14:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],15:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -12396,7 +12675,7 @@ p._onResize = function() {
 };
 
 module.exports = Scene;
-},{"./Camera":3,"./GLTools":10,"./QuatRotation":13,"./SimpleCamera":17,"gl-matrix":2}],15:[function(_dereq_,module,exports){
+},{"./Camera":3,"./GLTools":11,"./QuatRotation":14,"./SimpleCamera":18,"gl-matrix":2}],16:[function(_dereq_,module,exports){
 // Scheduler.js
 
 "use strict";
@@ -12548,7 +12827,7 @@ Scheduler.getInstance = function() {
 };
 
 module.exports = Scheduler.getInstance();
-},{}],16:[function(_dereq_,module,exports){
+},{}],17:[function(_dereq_,module,exports){
 "use strict";
 
 
@@ -12556,7 +12835,7 @@ var ShaderLibs = function() { };
 
 ShaderLibs.shaders = {};
 
-ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\n#define SHADER_NAME BASIC_VERTEXXXX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main() {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
+ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
 ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
 
@@ -12575,7 +12854,7 @@ ShaderLibs.getShader = function(mId) {
 
 ShaderLibs.get = ShaderLibs.getShader;
 module.exports = ShaderLibs;
-},{}],17:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -12758,7 +13037,7 @@ p.__defineSetter__("ry", function(mValue) {
 });
 
 module.exports = SimpleCamera;
-},{"./CameraPerspective":4,"./EaseNumber":5,"gl-matrix":2}],18:[function(_dereq_,module,exports){
+},{"./CameraPerspective":4,"./EaseNumber":5,"gl-matrix":2}],19:[function(_dereq_,module,exports){
 "use strict";
 
 var SimpleImageLoader = function() {
@@ -12809,7 +13088,7 @@ p._onImageLoaded = function() {
 };
 
 module.exports = SimpleImageLoader;
-},{}],19:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 // View.js
 "use strict";
 
@@ -12833,7 +13112,7 @@ p.render = function() {
 module.exports = View;
 
 
-},{"./GLShader":8}],20:[function(_dereq_,module,exports){
+},{"./GLShader":9}],21:[function(_dereq_,module,exports){
 // ViewAxis.js
 
 "use strict";
@@ -12903,7 +13182,7 @@ p.render = function() {
 
 module.exports = ViewAxis;
 
-},{"./GLTools":10,"./Mesh":11,"./View":19}],21:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./Mesh":12,"./View":20}],22:[function(_dereq_,module,exports){
 "use strict";
 
 var View = _dereq_("./View");
@@ -12932,7 +13211,7 @@ p.render = function(aTexture) {
 
 module.exports = ViewCopy;
 
-},{"./GLTools":10,"./MeshUtils":12,"./View":19}],22:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./MeshUtils":13,"./View":20}],23:[function(_dereq_,module,exports){
 // ViewDotPlanes.js
 
 "use strict";
@@ -12996,7 +13275,7 @@ p.render = function() {
 
 module.exports = ViewDotPlanes;
 
-},{"./GLTools":10,"./Mesh":11,"./ShaderLibs":16,"./View":19}],23:[function(_dereq_,module,exports){
+},{"./GLTools":11,"./Mesh":12,"./ShaderLibs":17,"./View":20}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var Pass = _dereq_("./Pass");
@@ -13028,7 +13307,7 @@ p.getTexture = function() {
 
 
 module.exports =EffectComposer;
-},{"./Pass":24}],24:[function(_dereq_,module,exports){
+},{"./Pass":25}],25:[function(_dereq_,module,exports){
 "use strict";
 
 var gl,GL = _dereq_("../GLTools");
@@ -13087,7 +13366,7 @@ p.getFbo = function() {
 };
 
 module.exports = Pass;
-},{"../FrameBuffer":7,"../GLTools":10,"../ViewCopy":21}],25:[function(_dereq_,module,exports){
+},{"../FrameBuffer":8,"../GLTools":11,"../ViewCopy":22}],26:[function(_dereq_,module,exports){
 // PassGreyscale.js
 
 "use strict";
@@ -13101,7 +13380,7 @@ var PassGreyscale = function(mWidth, mHeight, mFboParams) {
 var p = PassGreyscale.prototype = new Pass();
 
 module.exports = PassGreyscale;
-},{"./Pass":24}]},{},[1])(1)
+},{"./Pass":25}]},{},[1])(1)
 });
 
 

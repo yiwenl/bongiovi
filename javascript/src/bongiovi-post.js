@@ -27,6 +27,7 @@ var bongiovi = {
 	ViewDotPlane:require("./bongiovi/ViewDotPlanes"),
 	MeshUtils:require("./bongiovi/MeshUtils"),
 	FrameBuffer:require("./bongiovi/FrameBuffer"),
+	EventDispatcher:require("./bongiovi/EventDispatcher"),
 	glm:require("gl-matrix"),
 
 	post: {
