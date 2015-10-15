@@ -26,6 +26,7 @@ var bongiovi = {
 	MeshUtils:require("./bongiovi/MeshUtils"),
 	FrameBuffer:require("./bongiovi/FrameBuffer"),
 	EventDispatcher:require("./bongiovi/EventDispatcher"),
+	ObjLoader:require("./bongiovi/ObjLoader"),
 	glm:require("gl-matrix")
 };
 
