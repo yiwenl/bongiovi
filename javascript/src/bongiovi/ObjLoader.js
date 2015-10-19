@@ -18,10 +18,13 @@ p._clearAll = function() {
 	this._callback      = null;
 	this._callbackError = null;
 	this._mesh          = [];	
+	this._drawingType 	= "";
 };
 
-p.load = function(url, callback, callbackError, ignoreNormals) {
+p.load = function(url, callback, callbackError, ignoreNormals, drawingType) {
 	this._clearAll();
+	if(!gl) gl = GL.gl;
+	this._drawingType = drawingType === undefined ? gl.TRIANGLES : drawingType;
 	this._ignoreNormals = ignoreNormals === undefined ? true : ignoreNormals;
 
 	this._callback = callback;
@@ -40,8 +43,9 @@ p._onXHTPState = function(e) {
 };
 
 
-p.parse = function(objStr, callback, callbackError, ignoreNormals) {
+p.parse = function(objStr, callback, callbackError, ignoreNormals, drawingType) {
 	this._clearAll();
+	this._drawingType = drawingType === undefined ? gl.TRIANGLES : drawingType;
 	this._ignoreNormals = ignoreNormals === undefined ? true : ignoreNormals;
 
 	this._parseObj(objStr);
@@ -263,7 +267,7 @@ p._parseObj = function(objStr) {
 p._generateMeshes = function(o) {
 	gl = GL.gl;
 
-	var mesh = new Mesh(o.positions.length, o.indices.length, GL.gl.TRIANGLES);
+	var mesh = new Mesh(o.positions.length, o.indices.length, this._drawingType);
 	mesh.bufferVertex(o.positions);
 	mesh.bufferTexCoords(o.coords);
 	mesh.bufferIndices(o.indices);
@@ -276,6 +280,6 @@ p._generateMeshes = function(o) {
 	}
 };
 
-var loader = new ObjLoader();
+// var loader = new ObjLoader();
 
-module.exports = loader;
+module.exports = ObjLoader;
