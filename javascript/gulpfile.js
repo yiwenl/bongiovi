@@ -34,6 +34,19 @@ function bundle() {
 	.pipe(derequire())
 	.pipe(gulp.dest('./dist/'))
 	.pipe(gulp.dest('./test/src/js/libs'))
+	.pipe(reload({stream: true}));
+}
+
+function bundleProd() {
+    return bundler
+    .bundle()
+	.pipe(exorcist('./dist/bongiovi.js.map').on('error', logError))
+	.on('error', logError)
+	.pipe(source('bongiovi.js'))
+	.pipe(buffer())
+	.pipe(derequire())
+	.pipe(gulp.dest('./dist/'))
+	.pipe(gulp.dest('./test/src/js/libs'))
 	.pipe(rename({ extname: '.min.js' }))
 	.pipe(uglify())
 	.pipe(gulp.dest('./dist/'))
@@ -43,6 +56,7 @@ function bundle() {
 
 bundler.on('update', bundle);     
 gulp.task('bundle', ['jshint'], bundle);
+gulp.task('bundleProd', ['jshint'], bundleProd);
 
 
 //	post 
@@ -64,6 +78,19 @@ function bundlePost() {
 	.pipe(derequire())
 	.pipe(gulp.dest('./dist/'))
 	.pipe(gulp.dest('./test/src/js/libs'))
+	.pipe(reload({stream: true}));
+}
+
+function bundlePostProd() {
+    return bundlerPost
+    .bundle()
+	.pipe(exorcist('./dist/bongiovi-post.js.map').on('error', logError))
+	.on('error', logError)
+	.pipe(source('bongiovi-post.js'))
+	.pipe(buffer())
+	.pipe(derequire())
+	.pipe(gulp.dest('./dist/'))
+	.pipe(gulp.dest('./test/src/js/libs'))
 	.pipe(rename({ extname: '.min.js' }))
 	.pipe(uglify())
 	.pipe(gulp.dest('./dist/'))
@@ -71,20 +98,25 @@ function bundlePost() {
 	.pipe(reload({stream: true}));
 }
 
-bundlerPost.on('update', bundlePost);
+// bundlerPost.on('update', bundlePost);
 gulp.task('bundlePost', ['jshint'], bundlePost);
+gulp.task('bundlePostProd', ['jshint'], bundlePostProd);
 
 
 gulp.task('watch', function() {
 	gulp.watch('src/**/*.js', ['jshint']);
 });
 
-gulp.task('jshint', function() {
-  return gulp.src([
-      'src/**/*.js'
-  ])
-  .pipe(jshint())
-  .pipe(jshint.reporter('jshint-stylish'));
-});
+var lint = function() {
+	return gulp.src([
+	    'src/**/*.js'
+	])
+	.pipe(jshint())
+	.pipe(jshint.reporter('jshint-stylish'));	
+}
+
+gulp.task('jshint', lint);
+gulp.task('lint', lint);
 
 gulp.task('default', ['bundle', 'watch', 'bundlePost']);
+gulp.task('build', ['bundleProd', 'bundlePostProd']);
