@@ -4,26 +4,41 @@ var GL = require("./GLTools");
 var Mesh = require("./Mesh");
 var MeshUtils = {};
 
-MeshUtils.createPlane = function(width, height, numSegments) {
+MeshUtils.createPlane = function(width, height, numSegments, axis) {
+	axis          = axis === undefined ? "xy" : axis;
 	var positions = [];
-	var coords = [];
-	var indices = [];
+	var coords    = [];
+	var indices   = [];
 
-	var gapX = width/numSegments;
-	var gapY = height/numSegments;
+	var gapX  = width/numSegments;
+	var gapY  = height/numSegments;
 	var gapUV = 1/numSegments;
 	var index = 0;
-	var sx = -width * 0.5;
-	var sy = -height * 0.5;
+	var sx    = -width * 0.5;
+	var sy    = -height * 0.5;
 
 	for(var i=0; i<numSegments; i++) {
 		for (var j=0; j<numSegments; j++) {
 			var tx = gapX * i + sx;
 			var ty = gapY * j + sy;
-			positions.push([tx, 		ty, 	0]);
-			positions.push([tx+gapX, 	ty, 	0]);
-			positions.push([tx+gapX, 	ty+gapY, 	0]);
-			positions.push([tx, 		ty+gapY, 	0]);
+
+			if(axis === 'xz') {
+				positions.push([tx, 		0, 	ty+gapY	]);
+				positions.push([tx+gapX, 	0, 	ty+gapY	]);
+				positions.push([tx+gapX, 	0, 	ty	]);
+				positions.push([tx, 		0, 	ty	]);	
+			} else if(axis === 'yz') {
+				positions.push([0, tx, 		ty]);
+				positions.push([0, tx+gapX, ty]);
+				positions.push([0, tx+gapX, ty+gapY]);
+				positions.push([0, tx, 		ty+gapY]);	
+			} else {
+				positions.push([tx, 		ty, 	0]);
+				positions.push([tx+gapX, 	ty, 	0]);
+				positions.push([tx+gapX, 	ty+gapY, 	0]);
+				positions.push([tx, 		ty+gapY, 	0]);	
+			} 
+			
 
 			var u = i/numSegments;
 			var v = j/numSegments;

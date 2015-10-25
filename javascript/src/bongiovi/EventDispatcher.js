@@ -66,8 +66,6 @@ p.dispatchEvent = function(aEvent) {
 		aEvent.currentTarget = this;
 	}
 	catch(theError) {
-		// console.error("Couldn't set targets for current event. " + aEvent.message);
-		//MENOTE: sometimes Firefox can't set the target
 		var newEvent = {"type" : eventType, "detail" : aEvent.detail, "dispatcher" : this };
 		return this.dispatchEvent(newEvent);
 	}

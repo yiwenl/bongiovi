@@ -1,11 +1,8 @@
 // app.js
-window.bongiovi = require("./libs/bongiovi.js");
-window.Sono     = require("./libs/sono.min.js");
-var dat         = require("dat-gui");
-
-window.params = {
-	numParticles:512
-};
+// window.bongiovi = require("./libs/bongiovi.js");
+// window.bongiovi = require("../../../../dist/bongiovi.js");
+window.bongiovi = require("../../../../dist/bongiovi.min.js");
+var dat = require("dat-gui");
 
 (function() {
 	var SceneApp = require("./SceneApp");
