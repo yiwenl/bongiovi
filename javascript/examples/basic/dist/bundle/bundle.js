@@ -9,13 +9,24 @@ var dat = require("dat-gui");
 	var SceneApp = require("./SceneApp");
 
 	App = function() {
+
+		var loader = new bongiovi.SimpleImageLoader();
+		loader.load([
+			"assets/gold.jpg"
+			], this, this._onImageLoaded);
+	}
+
+	var p = App.prototype;
+
+	p._onImageLoaded = function(img) {
+		window.images = img;
+		console.log(images);
+
 		if(document.body) this._init();
 		else {
 			window.addEventListener("load", this._init.bind(this));
 		}
-	}
-
-	var p = App.prototype;
+	};
 
 	p._init = function() {
 		this.canvas = document.createElement("canvas");
@@ -7523,11 +7534,13 @@ var GL = _dereq_("./GLTools");
 var Mesh = _dereq_("./Mesh");
 var MeshUtils = {};
 
-MeshUtils.createPlane = function(width, height, numSegments, axis) {
+MeshUtils.createPlane = function(width, height, numSegments, withNormals, axis) {
 	axis          = axis === undefined ? "xy" : axis;
+	withNormals   = withNormals === undefined ? false : withNormals;
 	var positions = [];
 	var coords    = [];
 	var indices   = [];
+	var normals   = [];
 
 	var gapX  = width/numSegments;
 	var gapY  = height/numSegments;
@@ -7546,16 +7559,31 @@ MeshUtils.createPlane = function(width, height, numSegments, axis) {
 				positions.push([tx+gapX, 	0, 	ty+gapY	]);
 				positions.push([tx+gapX, 	0, 	ty	]);
 				positions.push([tx, 		0, 	ty	]);	
+
+				normals.push([0, 1, 0]);
+				normals.push([0, 1, 0]);
+				normals.push([0, 1, 0]);
+				normals.push([0, 1, 0]);
 			} else if(axis === 'yz') {
 				positions.push([0, tx, 		ty]);
 				positions.push([0, tx+gapX, ty]);
 				positions.push([0, tx+gapX, ty+gapY]);
 				positions.push([0, tx, 		ty+gapY]);	
+
+				normals.push([1, 0, 0]);
+				normals.push([1, 0, 0]);
+				normals.push([1, 0, 0]);
+				normals.push([1, 0, 0]);
 			} else {
 				positions.push([tx, 		ty, 	0]);
 				positions.push([tx+gapX, 	ty, 	0]);
 				positions.push([tx+gapX, 	ty+gapY, 	0]);
 				positions.push([tx, 		ty+gapY, 	0]);	
+
+				normals.push([0, 0, 1]);
+				normals.push([0, 0, 1]);
+				normals.push([0, 0, 1]);
+				normals.push([0, 0, 1]);
 			} 
 
 			var u = i/numSegments;
@@ -7580,21 +7608,27 @@ MeshUtils.createPlane = function(width, height, numSegments, axis) {
 	mesh.bufferVertex(positions);
 	mesh.bufferTexCoords(coords);
 	mesh.bufferIndices(indices);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
 
 	return mesh;
 };
 
-MeshUtils.createSphere = function(size, numSegments) {
+MeshUtils.createSphere = function(size, numSegments, withNormals) {
+	withNormals   = withNormals === undefined ? false : withNormals;
 	var positions = [];
-	var coords = [];
-	var indices = [];
-	var index = 0;
-	var gapUV = 1/numSegments;
+	var coords    = [];
+	var indices   = [];
+	var normals   = [];
+	var index     = 0;
+	var gapUV     = 1/numSegments;
 
-	var getPosition = function(i, j) {	//	rx : -90 ~ 90 , ry : 0 ~ 360
+	var getPosition = function(i, j, isNormal) {	//	rx : -90 ~ 90 , ry : 0 ~ 360
+		isNormal = isNormal === undefined ? false : isNormal;
 		var rx = i/numSegments * Math.PI - Math.PI * 0.5;
 		var ry = j/numSegments * Math.PI * 2;
-		var r = size;
+		var r = isNormal ? 1 : size;
 		var pos = [];
 		pos[1] = Math.sin(rx) * r;
 		var t = Math.cos(rx) * r;
@@ -7616,6 +7650,14 @@ MeshUtils.createSphere = function(size, numSegments) {
 			positions.push(getPosition(i+1, j));
 			positions.push(getPosition(i+1, j+1));
 			positions.push(getPosition(i, j+1));
+
+			if(withNormals) {
+				normals.push(getPosition(i, j, true));
+				normals.push(getPosition(i+1, j, true));
+				normals.push(getPosition(i+1, j+1, true));
+				normals.push(getPosition(i, j+1, true));	
+			}
+			
 
 			var u = j/numSegments;
 			var v = i/numSegments;
@@ -7642,12 +7684,17 @@ MeshUtils.createSphere = function(size, numSegments) {
 	mesh.bufferVertex(positions);
 	mesh.bufferTexCoords(coords);
 	mesh.bufferIndices(indices);
+	console.log('With normals :', withNormals);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
 
 	return mesh;
 };
 
 
-MeshUtils.createCube = function(w,h,d) {
+MeshUtils.createCube = function(w,h,d, withNormals) {
+	withNormals   = withNormals === undefined ? false : withNormals;
 	h = h || w;
 	d = d || w;
 
@@ -7655,11 +7702,11 @@ MeshUtils.createCube = function(w,h,d) {
 	var y = h/2;
 	var z = d/2;
 
-
 	var positions = [];
-	var coords = [];
-	var indices = []; 
-	var count = 0;
+	var coords    = [];
+	var indices   = []; 
+	var normals   = []; 
+	var count     = 0;
 
 
 	// BACK
@@ -7667,6 +7714,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x,  y, -z]);
 	positions.push([ x, -y, -z]);
 	positions.push([-x, -y, -z]);
+
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
 
 	coords.push([0, 0]);
 	coords.push([1, 0]);
@@ -7688,6 +7740,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x, -y,  z]);
 	positions.push([ x, -y, -z]);
 
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+
 	coords.push([0, 0]);
 	coords.push([1, 0]);
 	coords.push([1, 1]);
@@ -7707,6 +7764,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([-x,  y,  z]);
 	positions.push([-x, -y,  z]);
 	positions.push([ x, -y,  z]);
+
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
 
 	coords.push([0, 0]);
 	coords.push([1, 0]);
@@ -7729,6 +7791,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([-x, -y, -z]);
 	positions.push([-x, -y,  z]);
 
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+
 	coords.push([0, 0]);
 	coords.push([1, 0]);
 	coords.push([1, 1]);
@@ -7748,6 +7815,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x,  y,  z]);
 	positions.push([ x,  y, -z]);
 	positions.push([-x,  y, -z]);
+
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
 
 	coords.push([0, 0]);
 	coords.push([1, 0]);
@@ -7769,6 +7841,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x, -y,  z]);
 	positions.push([-x, -y,  z]);
 
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+
 	coords.push([0, 0]);
 	coords.push([1, 0]);
 	coords.push([1, 1]);
@@ -7788,6 +7865,9 @@ MeshUtils.createCube = function(w,h,d) {
 	mesh.bufferVertex(positions);
 	mesh.bufferTexCoords(coords);
 	mesh.bufferIndices(indices);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
 
 	return mesh;
 };
@@ -8519,16 +8599,24 @@ var ShaderLibs = function() { };
 ShaderLibs.shaders = {};
 
 ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
+ShaderLibs.shaders.copyNormalVert = "#define GLSLIFY 1\n\n// copyWithNormals.vert\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vNormal;\nvarying vec3 vVertex;\n\nvoid main(void) {\n\tgl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n\tvTextureCoord = aTextureCoord;\n\tvNormal       = aNormal;\n\tvVertex \t  = aVertexPosition;\n}";
 
 ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
+ShaderLibs.shaders.generalNormalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec3 vVertex;\nvarying vec3 vNormal;\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n\tvec3 pos      = aVertexPosition;\n\tpos           *= scale;\n\tpos           += position;\n\tgl_Position   = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n\tvTextureCoord = aTextureCoord;\n\t\n\tvNormal       = aNormal;\n\tvVertex       = pos;\n}";
+ShaderLibs.shaders.generalWithNormalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec3 vVertex;\nvarying vec3 vNormal;\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n\tvec3 pos      = aVertexPosition;\n\tpos           *= scale;\n\tpos           += position;\n\tgl_Position   = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n\tvTextureCoord = aTextureCoord;\n\t\n\tvNormal       = aNormal;\n\tvVertex       = pos;\n}";
 
 ShaderLibs.shaders.copyFrag = "#define GLSLIFY 1\n\n#define SHADER_NAME SIMPLE_TEXTURE\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n}\n";
+
 
 ShaderLibs.shaders.alphaFrag = "#define GLSLIFY 1\n\n#define SHADER_NAME TEXTURE_WITH_ALPHA\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n    gl_FragColor.a *= opacity;\n}";
 
 ShaderLibs.shaders.simpleColorFrag = "#define GLSLIFY 1\n\n#define SHADER_NAME SIMPLE_COLOR_FRAGMENT\n\nprecision highp float;\nuniform vec3 color;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = vec4(color, opacity);\n}";
 
 ShaderLibs.shaders.depthFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float n;\nuniform float f;\n\nfloat getDepth(float z) {\n\treturn (6.0 * n) / (f + n - z*(f-n));\n}\n\nvoid main(void) {\n    float r = texture2D(texture, vTextureCoord).r;\n    float grey = getDepth(r);\n    gl_FragColor = vec4(grey, grey, grey, 1.0);\n}";
+
+ShaderLibs.shaders.simpleCopyLighting = "#define GLSLIFY 1\n\n#define SHADER_NAME SIMPLE_TEXTURE_LIGHTING\n\nprecision highp float;\n\nuniform vec3 ambient;\nuniform vec3 lightPosition;\nuniform vec3 lightColor;\nuniform float lightWeight;\n\nuniform sampler2D texture;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vVertex;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec3 L        = normalize(lightPosition-vVertex);\n\tfloat lambert = max(dot(vNormal, L), .0);\n\tvec3 light    = ambient + lightColor * lambert * lightWeight;\n\tvec4 color \t  = texture2D(texture, vTextureCoord);\n\tcolor.rgb \t  *= light;\n\t\n\tgl_FragColor  = color;\n}";
+ShaderLibs.shaders.simpleColorLighting = "#define GLSLIFY 1\n\n// simpleColorLighting.frag\n\n#define SHADER_NAME SIMPLE_COLOR_LIGHTING\n\nprecision highp float;\n\nuniform vec3 ambient;\nuniform vec3 lightPosition;\nuniform vec3 lightColor;\nuniform float lightWeight;\n\nuniform vec3 color;\nuniform float opacity;\n\nvarying vec3 vVertex;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec3 L        = normalize(lightPosition-vVertex);\n\tfloat lambert = max(dot(vNormal, L), .0);\n\tvec3 light    = ambient + lightColor * lambert * lightWeight;\n\t\n\tgl_FragColor  = vec4(color * light, opacity);\n}";
+
 
 
 ShaderLibs.getShader = function(mId) {
@@ -12571,11 +12659,13 @@ var GL = _dereq_("./GLTools");
 var Mesh = _dereq_("./Mesh");
 var MeshUtils = {};
 
-MeshUtils.createPlane = function(width, height, numSegments, axis) {
+MeshUtils.createPlane = function(width, height, numSegments, withNormals, axis) {
 	axis          = axis === undefined ? "xy" : axis;
+	withNormals   = withNormals === undefined ? false : withNormals;
 	var positions = [];
 	var coords    = [];
 	var indices   = [];
+	var normals   = [];
 
 	var gapX  = width/numSegments;
 	var gapY  = height/numSegments;
@@ -12594,16 +12684,31 @@ MeshUtils.createPlane = function(width, height, numSegments, axis) {
 				positions.push([tx+gapX, 	0, 	ty+gapY	]);
 				positions.push([tx+gapX, 	0, 	ty	]);
 				positions.push([tx, 		0, 	ty	]);	
+
+				normals.push([0, 1, 0]);
+				normals.push([0, 1, 0]);
+				normals.push([0, 1, 0]);
+				normals.push([0, 1, 0]);
 			} else if(axis === 'yz') {
 				positions.push([0, tx, 		ty]);
 				positions.push([0, tx+gapX, ty]);
 				positions.push([0, tx+gapX, ty+gapY]);
 				positions.push([0, tx, 		ty+gapY]);	
+
+				normals.push([1, 0, 0]);
+				normals.push([1, 0, 0]);
+				normals.push([1, 0, 0]);
+				normals.push([1, 0, 0]);
 			} else {
 				positions.push([tx, 		ty, 	0]);
 				positions.push([tx+gapX, 	ty, 	0]);
 				positions.push([tx+gapX, 	ty+gapY, 	0]);
 				positions.push([tx, 		ty+gapY, 	0]);	
+
+				normals.push([0, 0, 1]);
+				normals.push([0, 0, 1]);
+				normals.push([0, 0, 1]);
+				normals.push([0, 0, 1]);
 			} 
 
 			var u = i/numSegments;
@@ -12628,21 +12733,27 @@ MeshUtils.createPlane = function(width, height, numSegments, axis) {
 	mesh.bufferVertex(positions);
 	mesh.bufferTexCoords(coords);
 	mesh.bufferIndices(indices);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
 
 	return mesh;
 };
 
-MeshUtils.createSphere = function(size, numSegments) {
+MeshUtils.createSphere = function(size, numSegments, withNormals) {
+	withNormals   = withNormals === undefined ? false : withNormals;
 	var positions = [];
-	var coords = [];
-	var indices = [];
-	var index = 0;
-	var gapUV = 1/numSegments;
+	var coords    = [];
+	var indices   = [];
+	var normals   = [];
+	var index     = 0;
+	var gapUV     = 1/numSegments;
 
-	var getPosition = function(i, j) {	//	rx : -90 ~ 90 , ry : 0 ~ 360
+	var getPosition = function(i, j, isNormal) {	//	rx : -90 ~ 90 , ry : 0 ~ 360
+		isNormal = isNormal === undefined ? false : isNormal;
 		var rx = i/numSegments * Math.PI - Math.PI * 0.5;
 		var ry = j/numSegments * Math.PI * 2;
-		var r = size;
+		var r = isNormal ? 1 : size;
 		var pos = [];
 		pos[1] = Math.sin(rx) * r;
 		var t = Math.cos(rx) * r;
@@ -12664,6 +12775,14 @@ MeshUtils.createSphere = function(size, numSegments) {
 			positions.push(getPosition(i+1, j));
 			positions.push(getPosition(i+1, j+1));
 			positions.push(getPosition(i, j+1));
+
+			if(withNormals) {
+				normals.push(getPosition(i, j, true));
+				normals.push(getPosition(i+1, j, true));
+				normals.push(getPosition(i+1, j+1, true));
+				normals.push(getPosition(i, j+1, true));	
+			}
+			
 
 			var u = j/numSegments;
 			var v = i/numSegments;
@@ -12690,12 +12809,17 @@ MeshUtils.createSphere = function(size, numSegments) {
 	mesh.bufferVertex(positions);
 	mesh.bufferTexCoords(coords);
 	mesh.bufferIndices(indices);
+	console.log('With normals :', withNormals);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
 
 	return mesh;
 };
 
 
-MeshUtils.createCube = function(w,h,d) {
+MeshUtils.createCube = function(w,h,d, withNormals) {
+	withNormals   = withNormals === undefined ? false : withNormals;
 	h = h || w;
 	d = d || w;
 
@@ -12703,11 +12827,11 @@ MeshUtils.createCube = function(w,h,d) {
 	var y = h/2;
 	var z = d/2;
 
-
 	var positions = [];
-	var coords = [];
-	var indices = []; 
-	var count = 0;
+	var coords    = [];
+	var indices   = []; 
+	var normals   = []; 
+	var count     = 0;
 
 
 	// BACK
@@ -12715,6 +12839,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x,  y, -z]);
 	positions.push([ x, -y, -z]);
 	positions.push([-x, -y, -z]);
+
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
 
 	coords.push([0, 0]);
 	coords.push([1, 0]);
@@ -12736,6 +12865,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x, -y,  z]);
 	positions.push([ x, -y, -z]);
 
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+
 	coords.push([0, 0]);
 	coords.push([1, 0]);
 	coords.push([1, 1]);
@@ -12755,6 +12889,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([-x,  y,  z]);
 	positions.push([-x, -y,  z]);
 	positions.push([ x, -y,  z]);
+
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
 
 	coords.push([0, 0]);
 	coords.push([1, 0]);
@@ -12777,6 +12916,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([-x, -y, -z]);
 	positions.push([-x, -y,  z]);
 
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+
 	coords.push([0, 0]);
 	coords.push([1, 0]);
 	coords.push([1, 1]);
@@ -12796,6 +12940,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x,  y,  z]);
 	positions.push([ x,  y, -z]);
 	positions.push([-x,  y, -z]);
+
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
 
 	coords.push([0, 0]);
 	coords.push([1, 0]);
@@ -12817,6 +12966,11 @@ MeshUtils.createCube = function(w,h,d) {
 	positions.push([ x, -y,  z]);
 	positions.push([-x, -y,  z]);
 
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+
 	coords.push([0, 0]);
 	coords.push([1, 0]);
 	coords.push([1, 1]);
@@ -12836,6 +12990,9 @@ MeshUtils.createCube = function(w,h,d) {
 	mesh.bufferVertex(positions);
 	mesh.bufferTexCoords(coords);
 	mesh.bufferIndices(indices);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
 
 	return mesh;
 };
@@ -13567,16 +13724,24 @@ var ShaderLibs = function() { };
 ShaderLibs.shaders = {};
 
 ShaderLibs.shaders.copyVert = "#define GLSLIFY 1\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
+ShaderLibs.shaders.copyNormalVert = "#define GLSLIFY 1\n\n// copyWithNormals.vert\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vNormal;\nvarying vec3 vVertex;\n\nvoid main(void) {\n\tgl_Position   = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n\tvTextureCoord = aTextureCoord;\n\tvNormal       = aNormal;\n\tvVertex \t  = aVertexPosition;\n}";
 
 ShaderLibs.shaders.generalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n    vec3 pos = aVertexPosition;\n    pos *= scale;\n    pos += position;\n    gl_Position = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n    vTextureCoord = aTextureCoord;\n}";
+ShaderLibs.shaders.generalNormalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec3 vVertex;\nvarying vec3 vNormal;\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n\tvec3 pos      = aVertexPosition;\n\tpos           *= scale;\n\tpos           += position;\n\tgl_Position   = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n\tvTextureCoord = aTextureCoord;\n\t\n\tvNormal       = aNormal;\n\tvVertex       = pos;\n}";
+ShaderLibs.shaders.generalWithNormalVert = "#define GLSLIFY 1\n\n#define SHADER_NAME GENERAL_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform vec3 position;\nuniform vec3 scale;\n\nvarying vec3 vVertex;\nvarying vec3 vNormal;\nvarying vec2 vTextureCoord;\n\nvoid main(void) {\n\tvec3 pos      = aVertexPosition;\n\tpos           *= scale;\n\tpos           += position;\n\tgl_Position   = uPMatrix * uMVMatrix * vec4(pos, 1.0);\n\tvTextureCoord = aTextureCoord;\n\t\n\tvNormal       = aNormal;\n\tvVertex       = pos;\n}";
 
 ShaderLibs.shaders.copyFrag = "#define GLSLIFY 1\n\n#define SHADER_NAME SIMPLE_TEXTURE\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n}\n";
+
 
 ShaderLibs.shaders.alphaFrag = "#define GLSLIFY 1\n\n#define SHADER_NAME TEXTURE_WITH_ALPHA\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = texture2D(texture, vTextureCoord);\n    gl_FragColor.a *= opacity;\n}";
 
 ShaderLibs.shaders.simpleColorFrag = "#define GLSLIFY 1\n\n#define SHADER_NAME SIMPLE_COLOR_FRAGMENT\n\nprecision highp float;\nuniform vec3 color;\nuniform float opacity;\n\nvoid main(void) {\n    gl_FragColor = vec4(color, opacity);\n}";
 
 ShaderLibs.shaders.depthFrag = "#define GLSLIFY 1\n\nprecision highp float;\nvarying vec2 vTextureCoord;\nuniform sampler2D texture;\nuniform float n;\nuniform float f;\n\nfloat getDepth(float z) {\n\treturn (6.0 * n) / (f + n - z*(f-n));\n}\n\nvoid main(void) {\n    float r = texture2D(texture, vTextureCoord).r;\n    float grey = getDepth(r);\n    gl_FragColor = vec4(grey, grey, grey, 1.0);\n}";
+
+ShaderLibs.shaders.simpleCopyLighting = "#define GLSLIFY 1\n\n#define SHADER_NAME SIMPLE_TEXTURE_LIGHTING\n\nprecision highp float;\n\nuniform vec3 ambient;\nuniform vec3 lightPosition;\nuniform vec3 lightColor;\nuniform float lightWeight;\n\nuniform sampler2D texture;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vVertex;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec3 L        = normalize(lightPosition-vVertex);\n\tfloat lambert = max(dot(vNormal, L), .0);\n\tvec3 light    = ambient + lightColor * lambert * lightWeight;\n\tvec4 color \t  = texture2D(texture, vTextureCoord);\n\tcolor.rgb \t  *= light;\n\t\n\tgl_FragColor  = color;\n}";
+ShaderLibs.shaders.simpleColorLighting = "#define GLSLIFY 1\n\n// simpleColorLighting.frag\n\n#define SHADER_NAME SIMPLE_COLOR_LIGHTING\n\nprecision highp float;\n\nuniform vec3 ambient;\nuniform vec3 lightPosition;\nuniform vec3 lightColor;\nuniform float lightWeight;\n\nuniform vec3 color;\nuniform float opacity;\n\nvarying vec3 vVertex;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec3 L        = normalize(lightPosition-vVertex);\n\tfloat lambert = max(dot(vNormal, L), .0);\n\tvec3 light    = ambient + lightColor * lambert * lightWeight;\n\t\n\tgl_FragColor  = vec4(color * light, opacity);\n}";
+
 
 
 ShaderLibs.getShader = function(mId) {
@@ -18436,9 +18601,15 @@ dat.utils.common);
 
 var GL = bongiovi.GL, gl;
 var ViewPlane = require("./ViewPlane");
+var ViewSphere = require("./ViewSphere");
+var ViewBox = require("./ViewBox");
+
+
 function SceneApp() {
 	gl = GL.gl;
 	bongiovi.Scene.call(this);
+	this.lightPosition = [0, 0, 0];
+	this.count = 0;
 
 	window.addEventListener("resize", this.resize.bind(this));
 }
@@ -18448,6 +18619,7 @@ var p = SceneApp.prototype = new bongiovi.Scene();
 
 p._initTextures = function() {
 	console.log('Init Textures');
+	this._textureGold = new bongiovi.GLTexture(images.gold);
 };
 
 p._initViews = function() {
@@ -18455,12 +18627,24 @@ p._initViews = function() {
 	this._vAxis = new bongiovi.ViewAxis();
 	this._vDotPlane = new bongiovi.ViewDotPlane();
 	this._vPlane = new ViewPlane();
+	this._vSphere = new ViewSphere();
+	this._vBox = new ViewBox();
 };
 
 p.render = function() {
+	this.count += .01;
+	var r = 150;
+	this.lightPosition[0] = Math.cos(this.count) * r;
+	this.lightPosition[1] = Math.sin(this.count * .75) * 50 + 60;
+	this.lightPosition[2] = Math.sin(this.count) * r;
+
+
 	this._vAxis.render();
 	this._vDotPlane.render();
-	this._vPlane.render();
+	// this._vPlane.render(this.lightPosition);
+	this._vPlane.render(this.lightPosition, this._textureGold);
+	this._vSphere.render(this.lightPosition);
+	this._vBox.render(this.lightPosition);
 };
 
 p.resize = function() {
@@ -18469,7 +18653,48 @@ p.resize = function() {
 };
 
 module.exports = SceneApp;
-},{"./ViewPlane":7}],7:[function(require,module,exports){
+},{"./ViewBox":7,"./ViewPlane":8,"./ViewSphere":9}],7:[function(require,module,exports){
+// ViewBox.js
+
+var GL = bongiovi.GL;
+var gl;
+// var glslify = require("glslify");
+
+function ViewBox() {
+	bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleColorLighting'));
+}
+
+var p = ViewBox.prototype = new bongiovi.View();
+p.constructor = ViewBox;
+
+
+p._init = function() {
+	var size = 100;
+	this.mesh = bongiovi.MeshUtils.createCube(size, size, size, true);
+};
+
+p.render = function(lightPosition, texture) {
+	this.shader.bind();
+	this.shader.uniform("color", "uniform3fv", [1, 1, .95]);
+	this.shader.uniform("position", "uniform3fv", [ 50, 0, 0]);
+	this.shader.uniform("scale", "uniform3fv", [1, 1, 1]);
+	this.shader.uniform("opacity", "uniform1f", 1);
+
+	if(texture) {
+		this.shader.uniform("texture", "uniform1i", 0);
+		texture.bind(0);
+	}
+	
+	var ambient = .2;
+	this.shader.uniform("ambient", "uniform3fv", [ambient, ambient, ambient]);
+	this.shader.uniform("lightPosition", "uniform3fv", lightPosition);
+	this.shader.uniform("lightColor", "uniform3fv", [1, 1, 1]);
+	this.shader.uniform("lightWeight", "uniform1f", 1.0 - ambient);
+	GL.draw(this.mesh);
+};
+
+module.exports = ViewBox;
+},{}],8:[function(require,module,exports){
 // ViewPlane.js
 
 
@@ -18477,7 +18702,10 @@ var GL = bongiovi.GL;
 var gl;
 
 function ViewPlane() {
-	bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalVert'), bongiovi.ShaderLibs.get('simpleColorFrag'));
+	// bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalVert'), bongiovi.ShaderLibs.get('simpleColorFrag'));
+	// bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleColorFrag'));
+	// bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleColorLighting'));
+	bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleCopyLighting'));
 }
 
 var p = ViewPlane.prototype = new bongiovi.View();
@@ -18486,17 +18714,58 @@ p.constructor = ViewPlane;
 
 p._init = function() {
 	gl = GL.gl;
-	this.mesh = bongiovi.MeshUtils.createPlane(100, 100, 1, "yz");
+	this.mesh = bongiovi.MeshUtils.createPlane(500, 500, 1, true, "xz");
 };
 
-p.render = function() {
+p.render = function(lightPosition, texture) {
 	this.shader.bind();
 	this.shader.uniform("color", "uniform3fv", [1, 1, .95]);
 	this.shader.uniform("position", "uniform3fv", [-50, -50, 0]);
 	this.shader.uniform("scale", "uniform3fv", [1, 1, 1]);
 	this.shader.uniform("opacity", "uniform1f", 1);
+
+	if(texture) {
+		this.shader.uniform("texture", "uniform1i", 0);
+		texture.bind(0);
+	}
+	
+	var ambient = .2;
+	this.shader.uniform("ambient", "uniform3fv", [ambient, ambient, ambient]);
+	this.shader.uniform("lightPosition", "uniform3fv", lightPosition);
+	this.shader.uniform("lightColor", "uniform3fv", [1, 1, 1]);
+	this.shader.uniform("lightWeight", "uniform1f", 1.0 - ambient);
 	GL.draw(this.mesh);
 };
 
 module.exports = ViewPlane;
+},{}],9:[function(require,module,exports){
+// ViewSphere.js
+
+var GL = bongiovi.GL;
+var gl;
+
+
+function ViewSphere() {
+	bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleColorFrag'));
+}
+
+var p = ViewSphere.prototype = new bongiovi.View();
+p.constructor = ViewSphere;
+
+
+p._init = function() {
+	gl = GL.gl;
+	this.mesh = bongiovi.MeshUtils.createSphere(10, 10, true);
+};
+
+p.render = function(position) {
+	this.shader.bind();
+	this.shader.uniform("color", "uniform3fv", [1, 1, .95]);
+	this.shader.uniform("position", "uniform3fv", position);
+	this.shader.uniform("scale", "uniform3fv", [1, 1, 1]);
+	this.shader.uniform("opacity", "uniform1f", 1);
+	GL.draw(this.mesh);
+};
+
+module.exports = ViewSphere;
 },{}]},{},[1]);
