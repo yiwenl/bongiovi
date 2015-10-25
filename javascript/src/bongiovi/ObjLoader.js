@@ -23,7 +23,7 @@ p._clearAll = function() {
 
 p.load = function(url, callback, callbackError, ignoreNormals, drawingType) {
 	this._clearAll();
-	if(!gl) gl = GL.gl;
+	if(!gl) {	gl = GL.gl;	}
 	this._drawingType = drawingType === undefined ? gl.TRIANGLES : drawingType;
 	this._ignoreNormals = ignoreNormals === undefined ? true : ignoreNormals;
 
