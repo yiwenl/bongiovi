@@ -1,7 +1,7 @@
 // app.js
 // window.bongiovi = require("./libs/bongiovi.js");
 // window.bongiovi = require("../../../../dist/bongiovi.js");
-window.bongiovi = require("../../../../dist/bongiovi.min.js");
+window.bongiovi = require("../../../../dist/bongiovi.js");
 var dat = require("dat-gui");
 
 (function() {

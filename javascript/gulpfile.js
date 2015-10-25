@@ -33,24 +33,14 @@ function bundle() {
 	.pipe(buffer())
 	.pipe(derequire())
 	.pipe(gulp.dest('./dist/'))
-	.pipe(gulp.dest('./test/src/js/libs'))
 	.pipe(reload({stream: true}));
 }
 
 function bundleProd() {
-    return bundler
-    .bundle()
-	.pipe(exorcist('./dist/bongiovi.js.map').on('error', logError))
-	.on('error', logError)
-	.pipe(source('bongiovi.js'))
-	.pipe(buffer())
-	.pipe(derequire())
-	.pipe(gulp.dest('./dist/'))
-	.pipe(gulp.dest('./test/src/js/libs'))
+    return bundle()
 	.pipe(rename({ extname: '.min.js' }))
 	.pipe(uglify())
 	.pipe(gulp.dest('./dist/'))
-	.pipe(gulp.dest('./test/src/js/libs'))
 	.pipe(reload({stream: true}));
 }
 
@@ -77,24 +67,14 @@ function bundlePost() {
 	.pipe(buffer())
 	.pipe(derequire())
 	.pipe(gulp.dest('./dist/'))
-	.pipe(gulp.dest('./test/src/js/libs'))
 	.pipe(reload({stream: true}));
 }
 
 function bundlePostProd() {
-    return bundlerPost
-    .bundle()
-	.pipe(exorcist('./dist/bongiovi-post.js.map').on('error', logError))
-	.on('error', logError)
-	.pipe(source('bongiovi-post.js'))
-	.pipe(buffer())
-	.pipe(derequire())
-	.pipe(gulp.dest('./dist/'))
-	.pipe(gulp.dest('./test/src/js/libs'))
+    return bundlePost()
 	.pipe(rename({ extname: '.min.js' }))
 	.pipe(uglify())
 	.pipe(gulp.dest('./dist/'))
-	.pipe(gulp.dest('./test/src/js/libs'))
 	.pipe(reload({stream: true}));
 }
 

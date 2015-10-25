@@ -14,7 +14,7 @@ p.constructor = ViewPlane;
 
 p._init = function() {
 	gl = GL.gl;
-	this.mesh = bongiovi.MeshUtils.createPlane(100, 100, 1, "xz");
+	this.mesh = bongiovi.MeshUtils.createPlane(100, 100, 1, "yz");
 };
 
 p.render = function() {

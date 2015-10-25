@@ -38,7 +38,6 @@ MeshUtils.createPlane = function(width, height, numSegments, axis) {
 				positions.push([tx+gapX, 	ty+gapY, 	0]);
 				positions.push([tx, 		ty+gapY, 	0]);	
 			} 
-			
 
 			var u = i/numSegments;
 			var v = j/numSegments;
