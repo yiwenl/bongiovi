@@ -7768,7 +7768,6 @@ MeshUtils.createSphere = function(size, numSegments, withNormals) {
 	return mesh;
 };
 
-
 MeshUtils.createCube = function(w,h,d, withNormals) {
 	withNormals   = withNormals === undefined ? false : withNormals;
 	h = h || w;
@@ -7936,6 +7935,174 @@ MeshUtils.createCube = function(w,h,d, withNormals) {
 
 	count ++;
 
+
+	var mesh = new Mesh(positions.length, indices.length, GL.gl.TRIANGLES);
+	mesh.bufferVertex(positions);
+	mesh.bufferTexCoords(coords);
+	mesh.bufferIndices(indices);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
+
+	return mesh;
+};
+
+MeshUtils.createSkyBox = function(size, withNormals) {
+	withNormals   = withNormals === undefined ? false : withNormals;
+
+	var positions = [];
+	var coords    = [];
+	var indices   = []; 
+	var normals   = []; 
+	var count     = 0;
+
+	// BACK
+	positions.push([ size,  size, -size]);
+	positions.push([-size,  size, -size]);
+	positions.push([-size, -size, -size]);
+	positions.push([ size, -size, -size]);
+
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// RIGHT
+	positions.push([ size, -size, -size]);
+	positions.push([ size, -size,  size]);
+	positions.push([ size,  size,  size]);
+	positions.push([ size,  size, -size]);
+
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// FRONT
+	positions.push([-size,  size,  size]);
+	positions.push([ size,  size,  size]);
+	positions.push([ size, -size,  size]);
+	positions.push([-size, -size,  size]);
+
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// LEFT
+	positions.push([-size, -size,  size]);
+	positions.push([-size, -size, -size]);
+	positions.push([-size,  size, -size]);
+	positions.push([-size,  size,  size]);
+
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// TOP
+	positions.push([ size,  size,  size]);
+	positions.push([-size,  size,  size]);
+	positions.push([-size,  size, -size]);
+	positions.push([ size,  size, -size]);
+
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// BOTTOM
+	positions.push([ size, -size, -size]);
+	positions.push([-size, -size, -size]);
+	positions.push([-size, -size,  size]);
+	positions.push([ size, -size,  size]);
+
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
 
 	var mesh = new Mesh(positions.length, indices.length, GL.gl.TRIANGLES);
 	mesh.bufferVertex(positions);
@@ -12963,7 +13130,6 @@ MeshUtils.createSphere = function(size, numSegments, withNormals) {
 	return mesh;
 };
 
-
 MeshUtils.createCube = function(w,h,d, withNormals) {
 	withNormals   = withNormals === undefined ? false : withNormals;
 	h = h || w;
@@ -13131,6 +13297,174 @@ MeshUtils.createCube = function(w,h,d, withNormals) {
 
 	count ++;
 
+
+	var mesh = new Mesh(positions.length, indices.length, GL.gl.TRIANGLES);
+	mesh.bufferVertex(positions);
+	mesh.bufferTexCoords(coords);
+	mesh.bufferIndices(indices);
+	if(withNormals) {
+		mesh.bufferData(normals, "aNormal", 3);
+	}
+
+	return mesh;
+};
+
+MeshUtils.createSkyBox = function(size, withNormals) {
+	withNormals   = withNormals === undefined ? false : withNormals;
+
+	var positions = [];
+	var coords    = [];
+	var indices   = []; 
+	var normals   = []; 
+	var count     = 0;
+
+	// BACK
+	positions.push([ size,  size, -size]);
+	positions.push([-size,  size, -size]);
+	positions.push([-size, -size, -size]);
+	positions.push([ size, -size, -size]);
+
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+	normals.push([0, 0, -1]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// RIGHT
+	positions.push([ size, -size, -size]);
+	positions.push([ size, -size,  size]);
+	positions.push([ size,  size,  size]);
+	positions.push([ size,  size, -size]);
+
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+	normals.push([1, 0, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// FRONT
+	positions.push([-size,  size,  size]);
+	positions.push([ size,  size,  size]);
+	positions.push([ size, -size,  size]);
+	positions.push([-size, -size,  size]);
+
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+	normals.push([0, 0, 1]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// LEFT
+	positions.push([-size, -size,  size]);
+	positions.push([-size, -size, -size]);
+	positions.push([-size,  size, -size]);
+	positions.push([-size,  size,  size]);
+
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+	normals.push([-1, 0, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// TOP
+	positions.push([ size,  size,  size]);
+	positions.push([-size,  size,  size]);
+	positions.push([-size,  size, -size]);
+	positions.push([ size,  size, -size]);
+
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+	normals.push([0, 1, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
+
+	count ++;
+
+	// BOTTOM
+	positions.push([ size, -size, -size]);
+	positions.push([-size, -size, -size]);
+	positions.push([-size, -size,  size]);
+	positions.push([ size, -size,  size]);
+
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+	normals.push([0, -1, 0]);
+
+	coords.push([0, 0]);
+	coords.push([1, 0]);
+	coords.push([1, 1]);
+	coords.push([0, 1]);
+
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 1);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 0);
+	indices.push(count*4 + 2);
+	indices.push(count*4 + 3);
 
 	var mesh = new Mesh(positions.length, indices.length, GL.gl.TRIANGLES);
 	mesh.bufferVertex(positions);
@@ -18757,6 +19091,7 @@ function SceneApp() {
 
 	this.sceneRotation.lock(true);
 	this.camera.lockRotation(false);
+	this.camera.radius.value = 150;
 
 	window.addEventListener("resize", this.resize.bind(this));
 }
@@ -18809,8 +19144,9 @@ p.constructor = ViewBox;
 
 
 p._init = function() {
-	var size = 100;
-	this.mesh = bongiovi.MeshUtils.createCube(size, size, size, true);
+	var size = 200;
+	// this.mesh = bongiovi.MeshUtils.createCube(size, size, size, true);
+	this.mesh = bongiovi.MeshUtils.createSkyBox(size, true);
 };
 
 p.render = function(texture) {

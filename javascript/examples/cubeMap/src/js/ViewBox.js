@@ -15,8 +15,9 @@ p.constructor = ViewBox;
 
 
 p._init = function() {
-	var size = 100;
-	this.mesh = bongiovi.MeshUtils.createCube(size, size, size, true);
+	var size = 200;
+	// this.mesh = bongiovi.MeshUtils.createCube(size, size, size, true);
+	this.mesh = bongiovi.MeshUtils.createSkyBox(size, true);
 };
 
 p.render = function(texture) {

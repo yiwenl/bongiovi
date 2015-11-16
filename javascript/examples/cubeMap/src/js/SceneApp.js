@@ -12,6 +12,7 @@ function SceneApp() {
 
 	this.sceneRotation.lock(true);
 	this.camera.lockRotation(false);
+	this.camera.radius.value = 150;
 
 	window.addEventListener("resize", this.resize.bind(this));
 }
