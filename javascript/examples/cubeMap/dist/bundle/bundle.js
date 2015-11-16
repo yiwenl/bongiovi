@@ -6770,7 +6770,6 @@ var GL = _dereq_("./GLTools");
 var GLCubeTexture = function(sources, options) {
 	// [posx, negx, posy, negy, posz, negz]
 	options = options || {};
-	console.log('Sources : ', sources, options);
 	gl = GL.gl;
 	this.texture = gl.createTexture();
 	
@@ -12132,7 +12131,6 @@ var GL = _dereq_("./GLTools");
 var GLCubeTexture = function(sources, options) {
 	// [posx, negx, posy, negy, posz, negz]
 	options = options || {};
-	console.log('Sources : ', sources, options);
 	gl = GL.gl;
 	this.texture = gl.createTexture();
 	
@@ -19111,6 +19109,7 @@ p._initViews = function() {
 	this._vDotPlane = new bongiovi.ViewDotPlane();
 
 	this._vCube = new ViewBox();
+	this._vSphere = new ViewSphere();
 };
 
 p.render = function() {
@@ -19118,6 +19117,7 @@ p.render = function() {
 	this._vDotPlane.render();
 
 	this._vCube.render(this.cubeTexture);
+	this._vSphere.render([0, 0, 0]);
 };
 
 p.resize = function() {
@@ -19169,7 +19169,8 @@ var gl;
 
 
 function ViewSphere() {
-	bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleColorFrag'));
+	// bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleColorFrag'));
+	bongiovi.View.call(this, "#define GLSLIFY 1\n\n// reflect.vert\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat3 normalMatrix;\nuniform vec3 camera;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vEye;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);\n    gl_Position = uPMatrix * mvPosition;\n    vTextureCoord = aTextureCoord;\n    vNormal = normalize(normalMatrix * aNormal);\n    vEye = normalize(mvPosition.xyz);\n}", "#define GLSLIFY 1\n\n// reflect.frag\n\n#define SHADER_NAME SIMPLE_TEXTURE\n\nprecision highp float;\n// varying vec2 vTextureCoord;\nuniform samplerCube texture;\nvarying vec3 vEye;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec3 N = vNormal;\n\tvec3 V = vEye;\n    gl_FragColor = textureCube(texture, reflect(V, N));\n    gl_FragColor = textureCube(texture, refract(V, N, .5));\n    // gl_FragColor = vec4(vEye * .5 + .5, 1.0);\n}");
 }
 
 var p = ViewSphere.prototype = new bongiovi.View();
@@ -19178,15 +19179,12 @@ p.constructor = ViewSphere;
 
 p._init = function() {
 	gl = GL.gl;
-	this.mesh = bongiovi.MeshUtils.createSphere(10, 10, true);
+	this.mesh = bongiovi.MeshUtils.createSphere(25, 36, true);
 };
 
-p.render = function(position) {
+p.render = function() {
 	this.shader.bind();
-	this.shader.uniform("color", "uniform3fv", [1, 1, .95]);
-	this.shader.uniform("position", "uniform3fv", position);
-	this.shader.uniform("scale", "uniform3fv", [1, 1, 1]);
-	this.shader.uniform("opacity", "uniform1f", 1);
+	this.shader.uniform("camera", "uniform3fv", GL.camera.position);
 	GL.draw(this.mesh);
 };
 

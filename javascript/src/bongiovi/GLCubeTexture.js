@@ -6,7 +6,6 @@ var GL = require("./GLTools");
 var GLCubeTexture = function(sources, options) {
 	// [posx, negx, posy, negy, posz, negz]
 	options = options || {};
-	console.log('Sources : ', sources, options);
 	gl = GL.gl;
 	this.texture = gl.createTexture();
 	

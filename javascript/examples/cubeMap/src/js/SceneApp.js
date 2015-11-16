@@ -32,6 +32,7 @@ p._initViews = function() {
 	this._vDotPlane = new bongiovi.ViewDotPlane();
 
 	this._vCube = new ViewBox();
+	this._vSphere = new ViewSphere();
 };
 
 p.render = function() {
@@ -39,6 +40,7 @@ p.render = function() {
 	this._vDotPlane.render();
 
 	this._vCube.render(this.cubeTexture);
+	this._vSphere.render([0, 0, 0]);
 };
 
 p.resize = function() {
