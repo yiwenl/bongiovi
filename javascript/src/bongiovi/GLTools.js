@@ -138,6 +138,18 @@ p.draw = function(aMesh) {
 		}
 	}
 
+	if(!this.shaderProgram.normalMatrixValue) {
+		this.shaderProgram.normalMatrixValue = glm.mat4.create();
+		this.gl.uniformMatrix3fv(this.shaderProgram.normalMatrixUniform, false, this.normalMatrix );
+		glm.mat3.copy(this.shaderProgram.normalMatrixValue, this.normalMatrix);
+	} else {
+		if(glm.mat3.str(this.shaderProgram.normalMatrixValue) !== glm.mat3.str(this.normalMatrix)) {
+			this.gl.uniformMatrix3fv(this.shaderProgram.normalMatrixUniform, false, this.normalMatrix );
+			glm.mat3.copy(this.shaderProgram.normalMatrixValue, this.normalMatrix);
+		}
+	}
+
+
 
 	// 	VERTEX POSITIONS
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, aMesh.vBufferPos);
