@@ -18,6 +18,7 @@ var bongiovi = {
 	Face:require("./bongiovi/Face"),
 	GLShader:require("./bongiovi/GLShader"),
 	GLTexture:require("./bongiovi/GLTexture"),
+	GLCubeTexture:require("./bongiovi/GLCubeTexture"),
 	ShaderLibs:require("./bongiovi/ShaderLibs"),
 	View:require("./bongiovi/View"),
 	ViewCopy:require("./bongiovi/ViewCopy"),
