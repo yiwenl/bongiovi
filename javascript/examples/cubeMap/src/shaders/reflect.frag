@@ -12,6 +12,6 @@ void main(void) {
 	vec3 N = vNormal;
 	vec3 V = vEye;
     gl_FragColor = textureCube(texture, reflect(V, N));
-    gl_FragColor = textureCube(texture, refract(V, N, .5));
+    // gl_FragColor = textureCube(texture, refract(V, N, .5));
     // gl_FragColor = vec4(vEye * .5 + .5, 1.0);
 }

@@ -20,6 +20,6 @@ void main(void) {
 	vec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);
     gl_Position = uPMatrix * mvPosition;
     vTextureCoord = aTextureCoord;
-    vNormal = normalize(normalMatrix * aNormal);
+    vNormal = normalize(aNormal);
     vEye = normalize(mvPosition.xyz);
 }
