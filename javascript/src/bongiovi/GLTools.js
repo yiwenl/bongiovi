@@ -146,8 +146,6 @@ p.draw = function(aMesh) {
 	
 	
     //	INVERT MODEL-VIEW MATRIX
-    
-
 	if(!this.shaderProgram.invertMVMatrixValue) {
 		this.shaderProgram.invertMVMatrixValue = glm.mat3.create();
 		this.gl.uniformMatrix3fv(this.shaderProgram.invertMVMatrixUniform, false, this.invertMVMatrix );

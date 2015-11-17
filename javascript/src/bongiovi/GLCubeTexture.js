@@ -2,8 +2,14 @@
 
 var gl;
 var GL = require("./GLTools");
+var GLTexture = require("./GLTexture");
 
 var GLCubeTexture = function(sources, options) {
+	
+	var isGLTexture = false;
+	if(sources[0] instanceof GLTexture) {
+		isGLTexture = true;
+	}
 	// [posx, negx, posy, negy, posz, negz]
 	options = options || {};
 	gl = GL.gl;
@@ -22,7 +28,14 @@ var GLCubeTexture = function(sources, options) {
 	];
 
 	for (var j = 0; j < 6; j++) {
-	    gl.texImage2D(targets[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sources[j]);
+		if(isGLTexture) {
+			console.log('Texture : ', sources[j].texture);
+			// gl.texImage2D(targets[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sources[j].texture);
+			// gl.copyTexImage2D(targets[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sources[j].texture);
+		} else {
+			gl.texImage2D(targets[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, sources[j]);	
+		}
+	    
 	    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, this.wrapS);
 	    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, this.wrapT);
 	}
