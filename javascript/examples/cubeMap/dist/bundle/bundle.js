@@ -6952,6 +6952,7 @@ p.bind = function() {
 	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
 	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
 	if(this.shaderProgram.normalMatrixUniform === undefined) {	this.shaderProgram.normalMatrixUniform = gl.getUniformLocation(this.shaderProgram, "normalMatrix");}
+	if(this.shaderProgram.invertMVMatrixUniform === undefined) {	this.shaderProgram.invertMVMatrixUniform = gl.getUniformLocation(this.shaderProgram, "invertMVMatrix");}
 
 	GL.setShader(this);
 	GL.setShaderProgram(this.shaderProgram);
@@ -7230,6 +7231,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.matrix                 = glm.mat4.create();
 	glm.mat4.identity(this.matrix);
 	this.normalMatrix           = glm.mat3.create();
+	this.invertMVMatrix         = glm.mat3.create();
 	this.depthTextureExt        = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt        = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt  = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
@@ -7275,6 +7277,9 @@ p.rotate = function(aRotation) {
 	glm.mat3.fromMat4(this.normalMatrix, this.matrix);
 	glm.mat3.invert(this.normalMatrix, this.normalMatrix);
 	glm.mat3.transpose(this.normalMatrix, this.normalMatrix);
+
+	glm.mat3.fromMat4(this.invertMVMatrix, this.matrix);
+	glm.mat3.invert(this.invertMVMatrix, this.invertMVMatrix);
 };
 
 
@@ -7300,6 +7305,7 @@ p.draw = function(aMesh) {
 		return;
 	}
 
+	//	PROJECTION MATRIX
 	if(!this.shaderProgram.pMatrixValue) {
 		this.shaderProgram.pMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
@@ -7312,6 +7318,7 @@ p.draw = function(aMesh) {
 		}
 	}
 
+	//	MODEL-VIEW MATRIX
 	if(!this.shaderProgram.mvMatrixValue) {
 		this.shaderProgram.mvMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
@@ -7322,7 +7329,23 @@ p.draw = function(aMesh) {
 			glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
 		}
 	}
+	
+	
+    //	INVERT MODEL-VIEW MATRIX
+    
 
+	if(!this.shaderProgram.invertMVMatrixValue) {
+		this.shaderProgram.invertMVMatrixValue = glm.mat3.create();
+		this.gl.uniformMatrix3fv(this.shaderProgram.invertMVMatrixUniform, false, this.invertMVMatrix );
+		glm.mat3.copy(this.shaderProgram.invertMVMatrixValue, this.invertMVMatrix);
+	} else {
+		if(glm.mat3.str(this.shaderProgram.invertMVMatrixValue) !== glm.mat3.str(this.invertMVMatrix)) {
+			this.gl.uniformMatrix3fv(this.shaderProgram.invertMVMatrixUniform, false, this.invertMVMatrix );
+			glm.mat3.copy(this.shaderProgram.invertMVMatrixValue, this.invertMVMatrix);
+		}
+	}
+
+	//	NORMAL MATRIX
 	if(!this.shaderProgram.normalMatrixValue) {
 		this.shaderProgram.normalMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix3fv(this.shaderProgram.normalMatrixUniform, false, this.normalMatrix );
@@ -12313,6 +12336,7 @@ p.bind = function() {
 	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
 	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
 	if(this.shaderProgram.normalMatrixUniform === undefined) {	this.shaderProgram.normalMatrixUniform = gl.getUniformLocation(this.shaderProgram, "normalMatrix");}
+	if(this.shaderProgram.invertMVMatrixUniform === undefined) {	this.shaderProgram.invertMVMatrixUniform = gl.getUniformLocation(this.shaderProgram, "invertMVMatrix");}
 
 	GL.setShader(this);
 	GL.setShaderProgram(this.shaderProgram);
@@ -12591,6 +12615,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.matrix                 = glm.mat4.create();
 	glm.mat4.identity(this.matrix);
 	this.normalMatrix           = glm.mat3.create();
+	this.invertMVMatrix         = glm.mat3.create();
 	this.depthTextureExt        = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt        = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt  = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
@@ -12636,6 +12661,9 @@ p.rotate = function(aRotation) {
 	glm.mat3.fromMat4(this.normalMatrix, this.matrix);
 	glm.mat3.invert(this.normalMatrix, this.normalMatrix);
 	glm.mat3.transpose(this.normalMatrix, this.normalMatrix);
+
+	glm.mat3.fromMat4(this.invertMVMatrix, this.matrix);
+	glm.mat3.invert(this.invertMVMatrix, this.invertMVMatrix);
 };
 
 
@@ -12661,6 +12689,7 @@ p.draw = function(aMesh) {
 		return;
 	}
 
+	//	PROJECTION MATRIX
 	if(!this.shaderProgram.pMatrixValue) {
 		this.shaderProgram.pMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
@@ -12673,6 +12702,7 @@ p.draw = function(aMesh) {
 		}
 	}
 
+	//	MODEL-VIEW MATRIX
 	if(!this.shaderProgram.mvMatrixValue) {
 		this.shaderProgram.mvMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
@@ -12683,7 +12713,23 @@ p.draw = function(aMesh) {
 			glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
 		}
 	}
+	
+	
+    //	INVERT MODEL-VIEW MATRIX
+    
 
+	if(!this.shaderProgram.invertMVMatrixValue) {
+		this.shaderProgram.invertMVMatrixValue = glm.mat3.create();
+		this.gl.uniformMatrix3fv(this.shaderProgram.invertMVMatrixUniform, false, this.invertMVMatrix );
+		glm.mat3.copy(this.shaderProgram.invertMVMatrixValue, this.invertMVMatrix);
+	} else {
+		if(glm.mat3.str(this.shaderProgram.invertMVMatrixValue) !== glm.mat3.str(this.invertMVMatrix)) {
+			this.gl.uniformMatrix3fv(this.shaderProgram.invertMVMatrixUniform, false, this.invertMVMatrix );
+			glm.mat3.copy(this.shaderProgram.invertMVMatrixValue, this.invertMVMatrix);
+		}
+	}
+
+	//	NORMAL MATRIX
 	if(!this.shaderProgram.normalMatrixValue) {
 		this.shaderProgram.normalMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix3fv(this.shaderProgram.normalMatrixUniform, false, this.normalMatrix );
@@ -19170,7 +19216,7 @@ var gl;
 
 function ViewSphere() {
 	// bongiovi.View.call(this, bongiovi.ShaderLibs.get('generalWithNormalVert'), bongiovi.ShaderLibs.get('simpleColorFrag'));
-	bongiovi.View.call(this, "#define GLSLIFY 1\n\n// reflect.vert\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat3 normalMatrix;\nuniform vec3 camera;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vEye;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);\n    gl_Position = uPMatrix * mvPosition;\n    vTextureCoord = aTextureCoord;\n    vNormal = normalize(aNormal);\n    vEye = normalize(mvPosition.xyz);\n}", "#define GLSLIFY 1\n\n// reflect.frag\n\n#define SHADER_NAME SIMPLE_TEXTURE\n\nprecision highp float;\n// varying vec2 vTextureCoord;\nuniform samplerCube texture;\nvarying vec3 vEye;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec3 N = vNormal;\n\tvec3 V = vEye;\n    gl_FragColor = textureCube(texture, reflect(V, N));\n    // gl_FragColor = textureCube(texture, refract(V, N, .5));\n    // gl_FragColor = vec4(vEye * .5 + .5, 1.0);\n}");
+	bongiovi.View.call(this, "#define GLSLIFY 1\n\n// reflect.vert\n\n#define SHADER_NAME BASIC_VERTEX\n\nprecision highp float;\nattribute vec3 aVertexPosition;\nattribute vec3 aNormal;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\n\nuniform vec3 camera;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vEye;\nvarying vec3 vNormal;\n\nvoid main(void) {\n\tvec4 mvPosition = uMVMatrix * vec4(aVertexPosition, 1.0);\n\tgl_Position     = uPMatrix * mvPosition;\n\tvTextureCoord   = aTextureCoord;\n\t// vNormal         = normalize(normalMatrix*aNormal);\n\tvNormal         = aNormal;\n\tvEye            = normalize(mvPosition.xyz);\n}", "#define GLSLIFY 1\n\n// reflect.frag\n\n#define SHADER_NAME SIMPLE_TEXTURE\n\nprecision highp float;\n// varying vec2 vTextureCoord;\nuniform samplerCube texture;\nvarying vec3 vEye;\nvarying vec3 vNormal;\nuniform mat3 normalMatrix;\n\nuniform mat3 invertMVMatrix;\n\nvoid main(void) {\n\tvec3 N = normalMatrix*vNormal;\n\tvec3 V = vEye;\n    // gl_FragColor = textureCube(texture, invertMVMatrix * refract(V, N, 0.975));\n    vec4 refractColor = textureCube(texture, invertMVMatrix * refract(V, N, 0.975));\n    refractColor.rgb *= .75;\n    vec4 reflectColor = textureCube(texture, invertMVMatrix * reflect(V, N));\n\n    refractColor.rgb += reflectColor.rgb * .5;\n    gl_FragColor = refractColor;\n    // gl_FragColor = mix(refractColor, reflectColor, .75);\n}");
 }
 
 var p = ViewSphere.prototype = new bongiovi.View();
@@ -19179,12 +19225,13 @@ p.constructor = ViewSphere;
 
 p._init = function() {
 	gl = GL.gl;
-	this.mesh = bongiovi.MeshUtils.createSphere(25, 36, true);
+	this.mesh = bongiovi.MeshUtils.createSphere(25, 36*2, true);
 };
 
 p.render = function() {
 	this.shader.bind();
 	this.shader.uniform("camera", "uniform3fv", GL.camera.position);
+	// this.shader.uniform("invertMVMatrix", "uniformMatrix3fv", GL.invertMVMatrix);
 	GL.draw(this.mesh);
 };
 

@@ -15,12 +15,13 @@ p.constructor = ViewSphere;
 
 p._init = function() {
 	gl = GL.gl;
-	this.mesh = bongiovi.MeshUtils.createSphere(25, 36, true);
+	this.mesh = bongiovi.MeshUtils.createSphere(25, 36*2, true);
 };
 
 p.render = function() {
 	this.shader.bind();
 	this.shader.uniform("camera", "uniform3fv", GL.camera.position);
+	// this.shader.uniform("invertMVMatrix", "uniformMatrix3fv", GL.invertMVMatrix);
 	GL.draw(this.mesh);
 };
 
