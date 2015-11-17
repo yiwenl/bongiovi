@@ -45,6 +45,7 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.matrix                 = glm.mat4.create();
 	glm.mat4.identity(this.matrix);
 	this.normalMatrix           = glm.mat3.create();
+	this.invertMVMatrix         = glm.mat3.create();
 	this.depthTextureExt        = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
 	this.floatTextureExt        = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
 	this.floatTextureLinearExt  = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
@@ -90,6 +91,9 @@ p.rotate = function(aRotation) {
 	glm.mat3.fromMat4(this.normalMatrix, this.matrix);
 	glm.mat3.invert(this.normalMatrix, this.normalMatrix);
 	glm.mat3.transpose(this.normalMatrix, this.normalMatrix);
+
+	glm.mat3.fromMat4(this.invertMVMatrix, this.matrix);
+	glm.mat3.invert(this.invertMVMatrix, this.invertMVMatrix);
 };
 
 
@@ -115,6 +119,7 @@ p.draw = function(aMesh) {
 		return;
 	}
 
+	//	PROJECTION MATRIX
 	if(!this.shaderProgram.pMatrixValue) {
 		this.shaderProgram.pMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix4fv(this.shaderProgram.pMatrixUniform, false, this.camera.projection || this.camera.getMatrix() );
@@ -127,6 +132,7 @@ p.draw = function(aMesh) {
 		}
 	}
 
+	//	MODEL-VIEW MATRIX
 	if(!this.shaderProgram.mvMatrixValue) {
 		this.shaderProgram.mvMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix );
@@ -137,7 +143,23 @@ p.draw = function(aMesh) {
 			glm.mat4.copy(this.shaderProgram.mvMatrixValue, this.matrix);
 		}
 	}
+	
+	
+    //	INVERT MODEL-VIEW MATRIX
+    
 
+	if(!this.shaderProgram.invertMVMatrixValue) {
+		this.shaderProgram.invertMVMatrixValue = glm.mat3.create();
+		this.gl.uniformMatrix3fv(this.shaderProgram.invertMVMatrixUniform, false, this.invertMVMatrix );
+		glm.mat3.copy(this.shaderProgram.invertMVMatrixValue, this.invertMVMatrix);
+	} else {
+		if(glm.mat3.str(this.shaderProgram.invertMVMatrixValue) !== glm.mat3.str(this.invertMVMatrix)) {
+			this.gl.uniformMatrix3fv(this.shaderProgram.invertMVMatrixUniform, false, this.invertMVMatrix );
+			glm.mat3.copy(this.shaderProgram.invertMVMatrixValue, this.invertMVMatrix);
+		}
+	}
+
+	//	NORMAL MATRIX
 	if(!this.shaderProgram.normalMatrixValue) {
 		this.shaderProgram.normalMatrixValue = glm.mat4.create();
 		this.gl.uniformMatrix3fv(this.shaderProgram.normalMatrixUniform, false, this.normalMatrix );
