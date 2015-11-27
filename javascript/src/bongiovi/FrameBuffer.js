@@ -2,7 +2,9 @@
 
 var gl, GL = require("./GLTools");
 var GLTexture = require("./GLTexture");
-var isPowerOfTwo = function(x) {	return !(x === 0) && !(x & (x - 1));	};
+var isPowerOfTwo = function(x) {	
+	return (x !== 0) && !(x & (x - 1));	
+};
 
 var FrameBuffer = function(width, height, options) {
 	gl = GL.gl;

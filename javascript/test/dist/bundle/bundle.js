@@ -115,8 +115,10 @@ p.render = function() {
 	this._fbo.unbind();
 
 	GL.clear(0, 0, 0, 0);
-	GL.setMatrices(this.cameraOtho);
+	// GL.setMatrices(this.cameraOtho);
+	GL.setMatrices(this.cameraOrtho);
 	GL.rotate(this.rotationFront);
+	// GL.rotate(this.sceneRotation.matrix);
 
 	// this._passGreyscale.render(this._fbo.getTexture());
 	// this._vCopy.render(this._passGreyscale.getTexture());
@@ -190,45 +192,55 @@ module.exports = ViewRgbSeparate;
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongioviPost = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // bongiovi-post.js
 
-
 "use strict";
 
-var GLTools = _dereq_("./bongiovi/GLTools");
 
+var bongiovi = _dereq_("./bongiovi");
+
+/*/
+var GLTools = require("./bongiovi/GLTools");
 var bongiovi = {
 	GL:GLTools,
 	GLTools:GLTools,
-	Scheduler:_dereq_("./bongiovi/Scheduler"),
-	SimpleImageLoader:_dereq_("./bongiovi/SimpleImageLoader"),
-	EaseNumber:_dereq_("./bongiovi/EaseNumber"),
-	QuatRotation:_dereq_("./bongiovi/QuatRotation"),
-	Scene:_dereq_("./bongiovi/Scene"),
-	Camera:_dereq_("./bongiovi/Camera"),
-	SimpleCamera:_dereq_("./bongiovi/SimpleCamera"),
-	CameraPerspective:_dereq_("./bongiovi/CameraPerspective"),
-	Mesh:_dereq_("./bongiovi/Mesh"),
-	Face:_dereq_("./bongiovi/Face"),
-	GLShader:_dereq_("./bongiovi/GLShader"),
-	GLTexture:_dereq_("./bongiovi/GLTexture"),
-	ShaderLibs:_dereq_("./bongiovi/ShaderLibs"),
-	View:_dereq_("./bongiovi/View"),
-	ViewCopy:_dereq_("./bongiovi/ViewCopy"),
-	ViewAxis:_dereq_("./bongiovi/ViewAxis"),
-	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
-	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
-	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
-	EventDispatcher:_dereq_("./bongiovi/EventDispatcher"),
-	glm:_dereq_("gl-matrix"),
+	Scheduler:require("./bongiovi/Scheduler"),
+	SimpleImageLoader:require("./bongiovi/SimpleImageLoader"),
+	EaseNumber:require("./bongiovi/EaseNumber"),
+	QuatRotation:require("./bongiovi/QuatRotation"),
+	Scene:require("./bongiovi/Scene"),
+	Camera:require("./bongiovi/Camera"),
+	SimpleCamera:require("./bongiovi/SimpleCamera"),
+	CameraPerspective:require("./bongiovi/CameraPerspective"),
+	CameraOrtho:require("./bongiovi/CameraOrtho"),
+	Mesh:require("./bongiovi/Mesh"),
+	Face:require("./bongiovi/Face"),
+	GLShader:require("./bongiovi/GLShader"),
+	GLTexture:require("./bongiovi/GLTexture"),
+	ShaderLibs:require("./bongiovi/ShaderLibs"),
+	View:require("./bongiovi/View"),
+	ViewCopy:require("./bongiovi/ViewCopy"),
+	ViewAxis:require("./bongiovi/ViewAxis"),
+	ViewDotPlane:require("./bongiovi/ViewDotPlanes"),
+	MeshUtils:require("./bongiovi/MeshUtils"),
+	FrameBuffer:require("./bongiovi/FrameBuffer"),
+	EventDispatcher:require("./bongiovi/EventDispatcher"),
+	glm:require("gl-matrix"),
 
 	post: {
-		Pass:_dereq_("./bongiovi/post/Pass"),
-		EffectComposer:_dereq_("./bongiovi/post/EffectComposer"),
-		PassGreyscale:_dereq_("./bongiovi/post/PassGreyscale")
+		Pass:require("./bongiovi/post/Pass"),
+		EffectComposer:require("./bongiovi/post/EffectComposer"),
+		PassGreyscale:require("./bongiovi/post/PassGreyscale")
 	}
 };
+/*/
+bongiovi.post = {
+	Pass:_dereq_("./bongiovi/post/Pass"),
+	EffectComposer:_dereq_("./bongiovi/post/EffectComposer"),
+	PassGreyscale:_dereq_("./bongiovi/post/PassGreyscale")
+};
+//*/
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/EventDispatcher":6,"./bongiovi/Face":7,"./bongiovi/FrameBuffer":8,"./bongiovi/GLShader":9,"./bongiovi/GLTexture":10,"./bongiovi/GLTools":11,"./bongiovi/Mesh":12,"./bongiovi/MeshUtils":13,"./bongiovi/QuatRotation":14,"./bongiovi/Scene":15,"./bongiovi/Scheduler":16,"./bongiovi/ShaderLibs":17,"./bongiovi/SimpleCamera":18,"./bongiovi/SimpleImageLoader":19,"./bongiovi/View":20,"./bongiovi/ViewAxis":21,"./bongiovi/ViewCopy":22,"./bongiovi/ViewDotPlanes":23,"./bongiovi/post/EffectComposer":24,"./bongiovi/post/Pass":25,"./bongiovi/post/PassGreyscale":26,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi":3,"./bongiovi/post/EffectComposer":26,"./bongiovi/post/Pass":27,"./bongiovi/post/PassGreyscale":28}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -2133,45 +2145,55 @@ mat2.invert = function(out, a) {
         return (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.bongioviPost = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 // bongiovi-post.js
 
-
 "use strict";
 
-var GLTools = _dereq_("./bongiovi/GLTools");
 
+var bongiovi = _dereq_("./bongiovi");
+
+/*/
+var GLTools = require("./bongiovi/GLTools");
 var bongiovi = {
 	GL:GLTools,
 	GLTools:GLTools,
-	Scheduler:_dereq_("./bongiovi/Scheduler"),
-	SimpleImageLoader:_dereq_("./bongiovi/SimpleImageLoader"),
-	EaseNumber:_dereq_("./bongiovi/EaseNumber"),
-	QuatRotation:_dereq_("./bongiovi/QuatRotation"),
-	Scene:_dereq_("./bongiovi/Scene"),
-	Camera:_dereq_("./bongiovi/Camera"),
-	SimpleCamera:_dereq_("./bongiovi/SimpleCamera"),
-	CameraPerspective:_dereq_("./bongiovi/CameraPerspective"),
-	Mesh:_dereq_("./bongiovi/Mesh"),
-	Face:_dereq_("./bongiovi/Face"),
-	GLShader:_dereq_("./bongiovi/GLShader"),
-	GLTexture:_dereq_("./bongiovi/GLTexture"),
-	ShaderLibs:_dereq_("./bongiovi/ShaderLibs"),
-	View:_dereq_("./bongiovi/View"),
-	ViewCopy:_dereq_("./bongiovi/ViewCopy"),
-	ViewAxis:_dereq_("./bongiovi/ViewAxis"),
-	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
-	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
-	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
-	EventDispatcher:_dereq_("./bongiovi/EventDispatcher"),
-	glm:_dereq_("gl-matrix"),
+	Scheduler:require("./bongiovi/Scheduler"),
+	SimpleImageLoader:require("./bongiovi/SimpleImageLoader"),
+	EaseNumber:require("./bongiovi/EaseNumber"),
+	QuatRotation:require("./bongiovi/QuatRotation"),
+	Scene:require("./bongiovi/Scene"),
+	Camera:require("./bongiovi/Camera"),
+	SimpleCamera:require("./bongiovi/SimpleCamera"),
+	CameraPerspective:require("./bongiovi/CameraPerspective"),
+	CameraOrtho:require("./bongiovi/CameraOrtho"),
+	Mesh:require("./bongiovi/Mesh"),
+	Face:require("./bongiovi/Face"),
+	GLShader:require("./bongiovi/GLShader"),
+	GLTexture:require("./bongiovi/GLTexture"),
+	ShaderLibs:require("./bongiovi/ShaderLibs"),
+	View:require("./bongiovi/View"),
+	ViewCopy:require("./bongiovi/ViewCopy"),
+	ViewAxis:require("./bongiovi/ViewAxis"),
+	ViewDotPlane:require("./bongiovi/ViewDotPlanes"),
+	MeshUtils:require("./bongiovi/MeshUtils"),
+	FrameBuffer:require("./bongiovi/FrameBuffer"),
+	EventDispatcher:require("./bongiovi/EventDispatcher"),
+	glm:require("gl-matrix"),
 
 	post: {
-		Pass:_dereq_("./bongiovi/post/Pass"),
-		EffectComposer:_dereq_("./bongiovi/post/EffectComposer"),
-		PassGreyscale:_dereq_("./bongiovi/post/PassGreyscale")
+		Pass:require("./bongiovi/post/Pass"),
+		EffectComposer:require("./bongiovi/post/EffectComposer"),
+		PassGreyscale:require("./bongiovi/post/PassGreyscale")
 	}
 };
+/*/
+bongiovi.post = {
+	Pass:_dereq_("./bongiovi/post/Pass"),
+	EffectComposer:_dereq_("./bongiovi/post/EffectComposer"),
+	PassGreyscale:_dereq_("./bongiovi/post/PassGreyscale")
+};
+//*/
 
 module.exports = bongiovi;
-},{"./bongiovi/Camera":3,"./bongiovi/CameraPerspective":4,"./bongiovi/EaseNumber":5,"./bongiovi/EventDispatcher":6,"./bongiovi/Face":7,"./bongiovi/FrameBuffer":8,"./bongiovi/GLShader":9,"./bongiovi/GLTexture":10,"./bongiovi/GLTools":11,"./bongiovi/Mesh":12,"./bongiovi/MeshUtils":13,"./bongiovi/QuatRotation":14,"./bongiovi/Scene":15,"./bongiovi/Scheduler":16,"./bongiovi/ShaderLibs":17,"./bongiovi/SimpleCamera":18,"./bongiovi/SimpleImageLoader":19,"./bongiovi/View":20,"./bongiovi/ViewAxis":21,"./bongiovi/ViewCopy":22,"./bongiovi/ViewDotPlanes":23,"./bongiovi/post/EffectComposer":24,"./bongiovi/post/Pass":25,"./bongiovi/post/PassGreyscale":26,"gl-matrix":2}],2:[function(_dereq_,module,exports){
+},{"./bongiovi":3,"./bongiovi/post/EffectComposer":26,"./bongiovi/post/Pass":27,"./bongiovi/post/PassGreyscale":28}],2:[function(_dereq_,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -6424,6 +6446,39 @@ if(typeof(exports) !== 'undefined') {
 },{}],3:[function(_dereq_,module,exports){
 "use strict";
 
+var GLTools = _dereq_("./bongiovi/GLTools");
+
+var bongiovi = {
+	GL:GLTools,
+	GLTools:GLTools,
+	Scheduler:_dereq_("./bongiovi/Scheduler"),
+	SimpleImageLoader:_dereq_("./bongiovi/SimpleImageLoader"),
+	EaseNumber:_dereq_("./bongiovi/EaseNumber"),
+	QuatRotation:_dereq_("./bongiovi/QuatRotation"),
+	Scene:_dereq_("./bongiovi/Scene"),
+	Camera:_dereq_("./bongiovi/Camera"),
+	SimpleCamera:_dereq_("./bongiovi/SimpleCamera"),
+	CameraOrtho:_dereq_("./bongiovi/CameraOrtho"),
+	CameraPerspective:_dereq_("./bongiovi/CameraPerspective"),
+	Mesh:_dereq_("./bongiovi/Mesh"),
+	Face:_dereq_("./bongiovi/Face"),
+	GLShader:_dereq_("./bongiovi/GLShader"),
+	GLTexture:_dereq_("./bongiovi/GLTexture"),
+	ShaderLibs:_dereq_("./bongiovi/ShaderLibs"),
+	View:_dereq_("./bongiovi/View"),
+	ViewCopy:_dereq_("./bongiovi/ViewCopy"),
+	ViewAxis:_dereq_("./bongiovi/ViewAxis"),
+	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
+	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
+	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
+	EventDispatcher:_dereq_("./bongiovi/EventDispatcher"),
+	glm:_dereq_("gl-matrix")
+};
+
+module.exports = bongiovi;
+},{"./bongiovi/Camera":4,"./bongiovi/CameraOrtho":5,"./bongiovi/CameraPerspective":6,"./bongiovi/EaseNumber":7,"./bongiovi/EventDispatcher":8,"./bongiovi/Face":9,"./bongiovi/FrameBuffer":10,"./bongiovi/GLShader":11,"./bongiovi/GLTexture":12,"./bongiovi/GLTools":13,"./bongiovi/Mesh":14,"./bongiovi/MeshUtils":15,"./bongiovi/QuatRotation":16,"./bongiovi/Scene":17,"./bongiovi/Scheduler":18,"./bongiovi/ShaderLibs":19,"./bongiovi/SimpleCamera":20,"./bongiovi/SimpleImageLoader":21,"./bongiovi/View":22,"./bongiovi/ViewAxis":23,"./bongiovi/ViewCopy":24,"./bongiovi/ViewDotPlanes":25,"gl-matrix":2}],4:[function(_dereq_,module,exports){
+"use strict";
+
 var glm = _dereq_("gl-matrix");
 
 var Camera = function() {
@@ -6446,7 +6501,52 @@ p.getMatrix = function() {
 };
 
 module.exports = Camera;
-},{"gl-matrix":2}],4:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],5:[function(_dereq_,module,exports){
+// CameraOrtho.js
+
+"use strict";
+
+var Camera = _dereq_("./Camera");
+var glm = _dereq_("gl-matrix");
+
+
+var CameraOrtho = function() {
+	Camera.call(this);
+
+	var eye            = glm.vec3.clone([0, 0, 500]  );
+	var center         = glm.vec3.create( );
+	var up             = glm.vec3.clone( [0,-1,0] );
+	this.lookAt(eye, center, up);
+
+	this.projection = glm.mat4.create();
+};
+
+var p = CameraOrtho.prototype = new Camera();
+
+
+p.setBoundary = function(left, right, top, bottom) {
+	this.left = left;
+	this.right = right;
+	this.top = top;
+	this.bottom = bottom;
+	glm.mat4.ortho(this.projection, left, right, top, bottom, 0, 10000);
+};
+
+
+p.ortho = p.setBoundary;
+
+p.getMatrix = function() {
+	return this.matrix;
+};
+
+
+p.resize = function() {
+	glm.mat4.ortho(this.projection, this.left, this.right, this.top, this.bottom, 0, 10000);
+};
+
+
+module.exports = CameraOrtho;
+},{"./Camera":4,"gl-matrix":2}],6:[function(_dereq_,module,exports){
 // CameraPerspective.js
 "use strict";
 
@@ -6489,7 +6589,7 @@ p.__defineGetter__("far", function() {
 });
 
 module.exports = CameraPerspective;
-},{"./Camera":3,"gl-matrix":2}],5:[function(_dereq_,module,exports){
+},{"./Camera":4,"gl-matrix":2}],7:[function(_dereq_,module,exports){
 // EaseNumber.js
 
 "use strict";
@@ -6560,7 +6660,7 @@ p.__defineSetter__("value", function(mValue) {
 
 
 module.exports = EaseNumber;
-},{"./Scheduler":16}],6:[function(_dereq_,module,exports){
+},{"./Scheduler":18}],8:[function(_dereq_,module,exports){
 // EventDispatcher.js
 
 "use strict";
@@ -6687,7 +6787,7 @@ p._copyArray = function(aArray) {
 };
 
 module.exports = EventDispatcher;
-},{}],7:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -6729,7 +6829,7 @@ var equal = function(mV0, mV1) {
 };
 
 module.exports = Face;
-},{"gl-matrix":2}],8:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],10:[function(_dereq_,module,exports){
 "use strict";
 
 var gl, GL = _dereq_("./GLTools");
@@ -6860,7 +6960,7 @@ p.destroy = function() {
 };
 
 module.exports = FrameBuffer;
-},{"./GLTexture":10,"./GLTools":11}],9:[function(_dereq_,module,exports){
+},{"./GLTexture":12,"./GLTools":13}],11:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -7119,7 +7219,7 @@ p.destroy = function() {
 };
 
 module.exports = GLShader;
-},{"./GLTools":11,"./ShaderLibs":17}],10:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./ShaderLibs":19}],12:[function(_dereq_,module,exports){
 // GLTexture.js
 "use strict";
 
@@ -7224,7 +7324,7 @@ p.destroy = function() {
 };
 
 module.exports = GLTexture;
-},{"./GLTools":11}],11:[function(_dereq_,module,exports){
+},{"./GLTools":13}],13:[function(_dereq_,module,exports){
 // GLTools.js
 "use strict";
 
@@ -7458,7 +7558,7 @@ GLTools.getInstance = function() {
 
 
 module.exports = GLTools.getInstance();
-},{"gl-matrix":2}],12:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],14:[function(_dereq_,module,exports){
 "use strict";
 
 var Face = _dereq_("./Face");
@@ -7632,7 +7732,7 @@ p._generateFaces = function() {
 };
 
 module.exports = Mesh;
-},{"./Face":7,"./GLTools":11,"gl-matrix":2}],13:[function(_dereq_,module,exports){
+},{"./Face":9,"./GLTools":13,"gl-matrix":2}],15:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -7750,7 +7850,7 @@ MeshUtils.createSphere = function(size, numSegments) {
 
 
 module.exports = MeshUtils;
-},{"./GLTools":11,"./Mesh":12}],14:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./Mesh":14}],16:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -7943,12 +8043,12 @@ p._updateRotation = function(aTempRotation) {
 
 
 module.exports = QuatRotation;
-},{"gl-matrix":2}],15:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],17:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
 var QuatRotation = _dereq_("./QuatRotation");
-var Camera = _dereq_("./Camera");
+var CameraOrtho = _dereq_("./CameraOrtho");
 var SimpleCamera = _dereq_("./SimpleCamera");
 var glm = _dereq_("gl-matrix");
 
@@ -7966,16 +8066,24 @@ p._init = function() {
 	this.camera.setPerspective(45*Math.PI/180, GL.aspectRatio, 5, 3000);
 	this.camera.lockRotation();
 
-	var eye            = glm.vec3.clone([0, 0, 500]  );
-	var center         = glm.vec3.create( );
-	var up             = glm.vec3.clone( [0,-1,0] );
+	var eye                = glm.vec3.clone([0, 0, 500]  );
+	var center             = glm.vec3.create( );
+	var up                 = glm.vec3.clone( [0,-1,0] );
 	this.camera.lookAt(eye, center, up);
 	
-	this.sceneRotation = new QuatRotation(GL.canvas);
-	this.rotationFront = glm.mat4.create();
+	this.sceneRotation     = new QuatRotation(GL.canvas);
+	this.rotationFront     = glm.mat4.create();
 	glm.mat4.identity(this.rotationFront);
 	
-	this.cameraOtho    = new Camera();
+	this.cameraOrtho       = new CameraOrtho();
+	this.cameraOrthoScreen = new CameraOrtho();
+	this.cameraOtho        = this.cameraOrtho;
+
+	this.cameraOrtho.lookAt(eye, center, up);
+	this.cameraOrtho.ortho( 1, -1, 1, -1);
+
+	this.cameraOrthoScreen.lookAt(eye, center, up);
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 
 	// In SuperClass should call following functions.
 	this._initTextures();
@@ -8007,9 +8115,9 @@ p.update = function() {
 };
 
 p.resize = function() {
-	if(this.camera.resize) {
-		this.camera.resize(GL.aspectRatio);
-	}
+	// if(this.camera.resize) {
+	// 	this.camera.resize(GL.aspectRatio);
+	// }
 };
 
 p.render = function() {
@@ -8017,10 +8125,11 @@ p.render = function() {
 };
 
 p._onResize = function() {
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 };
 
 module.exports = Scene;
-},{"./Camera":3,"./GLTools":11,"./QuatRotation":14,"./SimpleCamera":18,"gl-matrix":2}],16:[function(_dereq_,module,exports){
+},{"./CameraOrtho":5,"./GLTools":13,"./QuatRotation":16,"./SimpleCamera":20,"gl-matrix":2}],18:[function(_dereq_,module,exports){
 // Scheduler.js
 
 "use strict";
@@ -8172,7 +8281,7 @@ Scheduler.getInstance = function() {
 };
 
 module.exports = Scheduler.getInstance();
-},{}],17:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 "use strict";
 
 
@@ -8199,7 +8308,7 @@ ShaderLibs.getShader = function(mId) {
 
 ShaderLibs.get = ShaderLibs.getShader;
 module.exports = ShaderLibs;
-},{}],18:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -8382,7 +8491,7 @@ p.__defineSetter__("ry", function(mValue) {
 });
 
 module.exports = SimpleCamera;
-},{"./CameraPerspective":4,"./EaseNumber":5,"gl-matrix":2}],19:[function(_dereq_,module,exports){
+},{"./CameraPerspective":6,"./EaseNumber":7,"gl-matrix":2}],21:[function(_dereq_,module,exports){
 "use strict";
 
 var SimpleImageLoader = function() {
@@ -8433,7 +8542,7 @@ p._onImageLoaded = function() {
 };
 
 module.exports = SimpleImageLoader;
-},{}],20:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 // View.js
 "use strict";
 
@@ -8457,7 +8566,7 @@ p.render = function() {
 module.exports = View;
 
 
-},{"./GLShader":9}],21:[function(_dereq_,module,exports){
+},{"./GLShader":11}],23:[function(_dereq_,module,exports){
 // ViewAxis.js
 
 "use strict";
@@ -8527,7 +8636,7 @@ p.render = function() {
 
 module.exports = ViewAxis;
 
-},{"./GLTools":11,"./Mesh":12,"./View":20}],22:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./Mesh":14,"./View":22}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var View = _dereq_("./View");
@@ -8556,7 +8665,7 @@ p.render = function(aTexture) {
 
 module.exports = ViewCopy;
 
-},{"./GLTools":11,"./MeshUtils":13,"./View":20}],23:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./MeshUtils":15,"./View":22}],25:[function(_dereq_,module,exports){
 // ViewDotPlanes.js
 
 "use strict";
@@ -8620,14 +8729,14 @@ p.render = function() {
 
 module.exports = ViewDotPlanes;
 
-},{"./GLTools":11,"./Mesh":12,"./ShaderLibs":17,"./View":20}],24:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./Mesh":14,"./ShaderLibs":19,"./View":22}],26:[function(_dereq_,module,exports){
 "use strict";
 
 var Pass = _dereq_("./Pass");
 
 var EffectComposer = function() {
 	this._passes = [];
-}
+};
 
 var p = EffectComposer.prototype = new Pass();
 
@@ -8652,7 +8761,7 @@ p.getTexture = function() {
 
 
 module.exports =EffectComposer;
-},{"./Pass":25}],25:[function(_dereq_,module,exports){
+},{"./Pass":27}],27:[function(_dereq_,module,exports){
 "use strict";
 
 var gl,GL = _dereq_("../GLTools");
@@ -8711,7 +8820,7 @@ p.getFbo = function() {
 };
 
 module.exports = Pass;
-},{"../FrameBuffer":8,"../GLTools":11,"../ViewCopy":22}],26:[function(_dereq_,module,exports){
+},{"../FrameBuffer":10,"../GLTools":13,"../ViewCopy":24}],28:[function(_dereq_,module,exports){
 // PassGreyscale.js
 
 "use strict";
@@ -8725,7 +8834,7 @@ var PassGreyscale = function(mWidth, mHeight, mFboParams) {
 var p = PassGreyscale.prototype = new Pass();
 
 module.exports = PassGreyscale;
-},{"./Pass":25}]},{},[1])(1)
+},{"./Pass":27}]},{},[1])(1)
 });
 
 ;
@@ -11079,6 +11188,39 @@ if(typeof(exports) !== 'undefined') {
 },{}],3:[function(_dereq_,module,exports){
 "use strict";
 
+var GLTools = _dereq_("./bongiovi/GLTools");
+
+var bongiovi = {
+	GL:GLTools,
+	GLTools:GLTools,
+	Scheduler:_dereq_("./bongiovi/Scheduler"),
+	SimpleImageLoader:_dereq_("./bongiovi/SimpleImageLoader"),
+	EaseNumber:_dereq_("./bongiovi/EaseNumber"),
+	QuatRotation:_dereq_("./bongiovi/QuatRotation"),
+	Scene:_dereq_("./bongiovi/Scene"),
+	Camera:_dereq_("./bongiovi/Camera"),
+	SimpleCamera:_dereq_("./bongiovi/SimpleCamera"),
+	CameraOrtho:_dereq_("./bongiovi/CameraOrtho"),
+	CameraPerspective:_dereq_("./bongiovi/CameraPerspective"),
+	Mesh:_dereq_("./bongiovi/Mesh"),
+	Face:_dereq_("./bongiovi/Face"),
+	GLShader:_dereq_("./bongiovi/GLShader"),
+	GLTexture:_dereq_("./bongiovi/GLTexture"),
+	ShaderLibs:_dereq_("./bongiovi/ShaderLibs"),
+	View:_dereq_("./bongiovi/View"),
+	ViewCopy:_dereq_("./bongiovi/ViewCopy"),
+	ViewAxis:_dereq_("./bongiovi/ViewAxis"),
+	ViewDotPlane:_dereq_("./bongiovi/ViewDotPlanes"),
+	MeshUtils:_dereq_("./bongiovi/MeshUtils"),
+	FrameBuffer:_dereq_("./bongiovi/FrameBuffer"),
+	EventDispatcher:_dereq_("./bongiovi/EventDispatcher"),
+	glm:_dereq_("gl-matrix")
+};
+
+module.exports = bongiovi;
+},{"./bongiovi/Camera":4,"./bongiovi/CameraOrtho":5,"./bongiovi/CameraPerspective":6,"./bongiovi/EaseNumber":7,"./bongiovi/EventDispatcher":8,"./bongiovi/Face":9,"./bongiovi/FrameBuffer":10,"./bongiovi/GLShader":11,"./bongiovi/GLTexture":12,"./bongiovi/GLTools":13,"./bongiovi/Mesh":14,"./bongiovi/MeshUtils":15,"./bongiovi/QuatRotation":16,"./bongiovi/Scene":17,"./bongiovi/Scheduler":18,"./bongiovi/ShaderLibs":19,"./bongiovi/SimpleCamera":20,"./bongiovi/SimpleImageLoader":21,"./bongiovi/View":22,"./bongiovi/ViewAxis":23,"./bongiovi/ViewCopy":24,"./bongiovi/ViewDotPlanes":25,"gl-matrix":2}],4:[function(_dereq_,module,exports){
+"use strict";
+
 var glm = _dereq_("gl-matrix");
 
 var Camera = function() {
@@ -11101,7 +11243,52 @@ p.getMatrix = function() {
 };
 
 module.exports = Camera;
-},{"gl-matrix":2}],4:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],5:[function(_dereq_,module,exports){
+// CameraOrtho.js
+
+"use strict";
+
+var Camera = _dereq_("./Camera");
+var glm = _dereq_("gl-matrix");
+
+
+var CameraOrtho = function() {
+	Camera.call(this);
+
+	var eye            = glm.vec3.clone([0, 0, 500]  );
+	var center         = glm.vec3.create( );
+	var up             = glm.vec3.clone( [0,-1,0] );
+	this.lookAt(eye, center, up);
+
+	this.projection = glm.mat4.create();
+};
+
+var p = CameraOrtho.prototype = new Camera();
+
+
+p.setBoundary = function(left, right, top, bottom) {
+	this.left = left;
+	this.right = right;
+	this.top = top;
+	this.bottom = bottom;
+	glm.mat4.ortho(this.projection, left, right, top, bottom, 0, 10000);
+};
+
+
+p.ortho = p.setBoundary;
+
+p.getMatrix = function() {
+	return this.matrix;
+};
+
+
+p.resize = function() {
+	glm.mat4.ortho(this.projection, this.left, this.right, this.top, this.bottom, 0, 10000);
+};
+
+
+module.exports = CameraOrtho;
+},{"./Camera":4,"gl-matrix":2}],6:[function(_dereq_,module,exports){
 // CameraPerspective.js
 "use strict";
 
@@ -11144,7 +11331,7 @@ p.__defineGetter__("far", function() {
 });
 
 module.exports = CameraPerspective;
-},{"./Camera":3,"gl-matrix":2}],5:[function(_dereq_,module,exports){
+},{"./Camera":4,"gl-matrix":2}],7:[function(_dereq_,module,exports){
 // EaseNumber.js
 
 "use strict";
@@ -11215,7 +11402,7 @@ p.__defineSetter__("value", function(mValue) {
 
 
 module.exports = EaseNumber;
-},{"./Scheduler":16}],6:[function(_dereq_,module,exports){
+},{"./Scheduler":18}],8:[function(_dereq_,module,exports){
 // EventDispatcher.js
 
 "use strict";
@@ -11342,7 +11529,7 @@ p._copyArray = function(aArray) {
 };
 
 module.exports = EventDispatcher;
-},{}],7:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -11384,7 +11571,7 @@ var equal = function(mV0, mV1) {
 };
 
 module.exports = Face;
-},{"gl-matrix":2}],8:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],10:[function(_dereq_,module,exports){
 "use strict";
 
 var gl, GL = _dereq_("./GLTools");
@@ -11515,7 +11702,7 @@ p.destroy = function() {
 };
 
 module.exports = FrameBuffer;
-},{"./GLTexture":10,"./GLTools":11}],9:[function(_dereq_,module,exports){
+},{"./GLTexture":12,"./GLTools":13}],11:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -11774,7 +11961,7 @@ p.destroy = function() {
 };
 
 module.exports = GLShader;
-},{"./GLTools":11,"./ShaderLibs":17}],10:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./ShaderLibs":19}],12:[function(_dereq_,module,exports){
 // GLTexture.js
 "use strict";
 
@@ -11879,7 +12066,7 @@ p.destroy = function() {
 };
 
 module.exports = GLTexture;
-},{"./GLTools":11}],11:[function(_dereq_,module,exports){
+},{"./GLTools":13}],13:[function(_dereq_,module,exports){
 // GLTools.js
 "use strict";
 
@@ -12113,7 +12300,7 @@ GLTools.getInstance = function() {
 
 
 module.exports = GLTools.getInstance();
-},{"gl-matrix":2}],12:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],14:[function(_dereq_,module,exports){
 "use strict";
 
 var Face = _dereq_("./Face");
@@ -12287,7 +12474,7 @@ p._generateFaces = function() {
 };
 
 module.exports = Mesh;
-},{"./Face":7,"./GLTools":11,"gl-matrix":2}],13:[function(_dereq_,module,exports){
+},{"./Face":9,"./GLTools":13,"gl-matrix":2}],15:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
@@ -12405,7 +12592,7 @@ MeshUtils.createSphere = function(size, numSegments) {
 
 
 module.exports = MeshUtils;
-},{"./GLTools":11,"./Mesh":12}],14:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./Mesh":14}],16:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -12598,12 +12785,12 @@ p._updateRotation = function(aTempRotation) {
 
 
 module.exports = QuatRotation;
-},{"gl-matrix":2}],15:[function(_dereq_,module,exports){
+},{"gl-matrix":2}],17:[function(_dereq_,module,exports){
 "use strict";
 
 var GL = _dereq_("./GLTools");
 var QuatRotation = _dereq_("./QuatRotation");
-var Camera = _dereq_("./Camera");
+var CameraOrtho = _dereq_("./CameraOrtho");
 var SimpleCamera = _dereq_("./SimpleCamera");
 var glm = _dereq_("gl-matrix");
 
@@ -12621,16 +12808,24 @@ p._init = function() {
 	this.camera.setPerspective(45*Math.PI/180, GL.aspectRatio, 5, 3000);
 	this.camera.lockRotation();
 
-	var eye            = glm.vec3.clone([0, 0, 500]  );
-	var center         = glm.vec3.create( );
-	var up             = glm.vec3.clone( [0,-1,0] );
+	var eye                = glm.vec3.clone([0, 0, 500]  );
+	var center             = glm.vec3.create( );
+	var up                 = glm.vec3.clone( [0,-1,0] );
 	this.camera.lookAt(eye, center, up);
 	
-	this.sceneRotation = new QuatRotation(GL.canvas);
-	this.rotationFront = glm.mat4.create();
+	this.sceneRotation     = new QuatRotation(GL.canvas);
+	this.rotationFront     = glm.mat4.create();
 	glm.mat4.identity(this.rotationFront);
 	
-	this.cameraOtho    = new Camera();
+	this.cameraOrtho       = new CameraOrtho();
+	this.cameraOrthoScreen = new CameraOrtho();
+	this.cameraOtho        = this.cameraOrtho;
+
+	this.cameraOrtho.lookAt(eye, center, up);
+	this.cameraOrtho.ortho( 1, -1, 1, -1);
+
+	this.cameraOrthoScreen.lookAt(eye, center, up);
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 
 	// In SuperClass should call following functions.
 	this._initTextures();
@@ -12662,9 +12857,9 @@ p.update = function() {
 };
 
 p.resize = function() {
-	if(this.camera.resize) {
-		this.camera.resize(GL.aspectRatio);
-	}
+	// if(this.camera.resize) {
+	// 	this.camera.resize(GL.aspectRatio);
+	// }
 };
 
 p.render = function() {
@@ -12672,10 +12867,11 @@ p.render = function() {
 };
 
 p._onResize = function() {
+	this.cameraOrthoScreen.ortho( 0, GL.width, GL.height, 0);
 };
 
 module.exports = Scene;
-},{"./Camera":3,"./GLTools":11,"./QuatRotation":14,"./SimpleCamera":18,"gl-matrix":2}],16:[function(_dereq_,module,exports){
+},{"./CameraOrtho":5,"./GLTools":13,"./QuatRotation":16,"./SimpleCamera":20,"gl-matrix":2}],18:[function(_dereq_,module,exports){
 // Scheduler.js
 
 "use strict";
@@ -12827,7 +13023,7 @@ Scheduler.getInstance = function() {
 };
 
 module.exports = Scheduler.getInstance();
-},{}],17:[function(_dereq_,module,exports){
+},{}],19:[function(_dereq_,module,exports){
 "use strict";
 
 
@@ -12854,7 +13050,7 @@ ShaderLibs.getShader = function(mId) {
 
 ShaderLibs.get = ShaderLibs.getShader;
 module.exports = ShaderLibs;
-},{}],18:[function(_dereq_,module,exports){
+},{}],20:[function(_dereq_,module,exports){
 "use strict";
 
 var glm = _dereq_("gl-matrix");
@@ -13037,7 +13233,7 @@ p.__defineSetter__("ry", function(mValue) {
 });
 
 module.exports = SimpleCamera;
-},{"./CameraPerspective":4,"./EaseNumber":5,"gl-matrix":2}],19:[function(_dereq_,module,exports){
+},{"./CameraPerspective":6,"./EaseNumber":7,"gl-matrix":2}],21:[function(_dereq_,module,exports){
 "use strict";
 
 var SimpleImageLoader = function() {
@@ -13088,7 +13284,7 @@ p._onImageLoaded = function() {
 };
 
 module.exports = SimpleImageLoader;
-},{}],20:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 // View.js
 "use strict";
 
@@ -13112,7 +13308,7 @@ p.render = function() {
 module.exports = View;
 
 
-},{"./GLShader":9}],21:[function(_dereq_,module,exports){
+},{"./GLShader":11}],23:[function(_dereq_,module,exports){
 // ViewAxis.js
 
 "use strict";
@@ -13182,7 +13378,7 @@ p.render = function() {
 
 module.exports = ViewAxis;
 
-},{"./GLTools":11,"./Mesh":12,"./View":20}],22:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./Mesh":14,"./View":22}],24:[function(_dereq_,module,exports){
 "use strict";
 
 var View = _dereq_("./View");
@@ -13211,7 +13407,7 @@ p.render = function(aTexture) {
 
 module.exports = ViewCopy;
 
-},{"./GLTools":11,"./MeshUtils":13,"./View":20}],23:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./MeshUtils":15,"./View":22}],25:[function(_dereq_,module,exports){
 // ViewDotPlanes.js
 
 "use strict";
@@ -13275,14 +13471,14 @@ p.render = function() {
 
 module.exports = ViewDotPlanes;
 
-},{"./GLTools":11,"./Mesh":12,"./ShaderLibs":17,"./View":20}],24:[function(_dereq_,module,exports){
+},{"./GLTools":13,"./Mesh":14,"./ShaderLibs":19,"./View":22}],26:[function(_dereq_,module,exports){
 "use strict";
 
 var Pass = _dereq_("./Pass");
 
 var EffectComposer = function() {
 	this._passes = [];
-}
+};
 
 var p = EffectComposer.prototype = new Pass();
 
@@ -13307,7 +13503,7 @@ p.getTexture = function() {
 
 
 module.exports =EffectComposer;
-},{"./Pass":25}],25:[function(_dereq_,module,exports){
+},{"./Pass":27}],27:[function(_dereq_,module,exports){
 "use strict";
 
 var gl,GL = _dereq_("../GLTools");
@@ -13366,7 +13562,7 @@ p.getFbo = function() {
 };
 
 module.exports = Pass;
-},{"../FrameBuffer":8,"../GLTools":11,"../ViewCopy":22}],26:[function(_dereq_,module,exports){
+},{"../FrameBuffer":10,"../GLTools":13,"../ViewCopy":24}],28:[function(_dereq_,module,exports){
 // PassGreyscale.js
 
 "use strict";
@@ -13380,7 +13576,7 @@ var PassGreyscale = function(mWidth, mHeight, mFboParams) {
 var p = PassGreyscale.prototype = new Pass();
 
 module.exports = PassGreyscale;
-},{"./Pass":25}]},{},[1])(1)
+},{"./Pass":27}]},{},[1])(1)
 });
 
 

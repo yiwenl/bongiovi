@@ -1,10 +1,12 @@
 // bongiovi-post.js
 
-
 "use strict";
 
-var GLTools = require("./bongiovi/GLTools");
 
+var bongiovi = require("./bongiovi");
+
+/*/
+var GLTools = require("./bongiovi/GLTools");
 var bongiovi = {
 	GL:GLTools,
 	GLTools:GLTools,
@@ -16,6 +18,7 @@ var bongiovi = {
 	Camera:require("./bongiovi/Camera"),
 	SimpleCamera:require("./bongiovi/SimpleCamera"),
 	CameraPerspective:require("./bongiovi/CameraPerspective"),
+	CameraOrtho:require("./bongiovi/CameraOrtho"),
 	Mesh:require("./bongiovi/Mesh"),
 	Face:require("./bongiovi/Face"),
 	GLShader:require("./bongiovi/GLShader"),
@@ -36,5 +39,12 @@ var bongiovi = {
 		PassGreyscale:require("./bongiovi/post/PassGreyscale")
 	}
 };
+/*/
+bongiovi.post = {
+	Pass:require("./bongiovi/post/Pass"),
+	EffectComposer:require("./bongiovi/post/EffectComposer"),
+	PassGreyscale:require("./bongiovi/post/PassGreyscale")
+};
+//*/
 
 module.exports = bongiovi;

@@ -4,7 +4,7 @@
 var gl;
 var GL = require("./GLTools");
 var _isPowerOfTwo = function(x) {	
-	var check = !(x === 0) && (!(x & (x - 1)));
+	var check = (x !== 0) && (!(x & (x - 1)));
 	return check;
 };
 var isPowerOfTwo = function(obj) {	

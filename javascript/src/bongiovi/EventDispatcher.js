@@ -66,21 +66,16 @@ p.dispatchEvent = function(aEvent) {
 		aEvent.currentTarget = this;
 	}
 	catch(theError) {
-		// console.error("Couldn't set targets for current event. " + aEvent.message);
-		//MENOTE: sometimes Firefox can't set the target
 		var newEvent = {"type" : eventType, "detail" : aEvent.detail, "dispatcher" : this };
 		return this.dispatchEvent(newEvent);
 	}
 	
-	//console.log(eventType, this._eventListeners[eventType], this._eventListeners[eventType].length);
 	var currentEventListeners = this._eventListeners[eventType];
 	if(currentEventListeners !== null && currentEventListeners !== undefined) {
 		var currentArray = this._copyArray(currentEventListeners);
 		var currentArrayLength = currentArray.length;
 		for(var i = 0; i < currentArrayLength; i++){
 			var currentFunction = currentArray[i];
-			//console.log(currentFunction);
-			//console.log(eventType, i, currentArray.length);
 			currentFunction.call(this, aEvent);
 		}
 	}
@@ -103,12 +98,14 @@ p.dispatchCustomEvent = function(aEventType, aDetail) {
 p._destroy = function() {
 	if(this._eventListeners !== null) {
 		for(var objectName in this._eventListeners) {
-			var currentArray = this._eventListeners[objectName];
-			var currentArrayLength = currentArray.length;
-			for(var i = 0; i < currentArrayLength; i++) {
-				currentArray[i] = null;
+			if(this._eventListeners.hasOwnProperty(objectName)) {
+				var currentArray = this._eventListeners[objectName];
+				var currentArrayLength = currentArray.length;
+				for(var i = 0; i < currentArrayLength; i++) {
+					currentArray[i] = null;
+				}
+				delete this._eventListeners[objectName];	
 			}
-			delete this._eventListeners[objectName];
 		}
 		this._eventListeners = null;
 	}

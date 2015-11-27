@@ -12,11 +12,13 @@ var bongiovi = {
 	Scene:require("./bongiovi/Scene"),
 	Camera:require("./bongiovi/Camera"),
 	SimpleCamera:require("./bongiovi/SimpleCamera"),
+	CameraOrtho:require("./bongiovi/CameraOrtho"),
 	CameraPerspective:require("./bongiovi/CameraPerspective"),
 	Mesh:require("./bongiovi/Mesh"),
 	Face:require("./bongiovi/Face"),
 	GLShader:require("./bongiovi/GLShader"),
 	GLTexture:require("./bongiovi/GLTexture"),
+	GLCubeTexture:require("./bongiovi/GLCubeTexture"),
 	ShaderLibs:require("./bongiovi/ShaderLibs"),
 	View:require("./bongiovi/View"),
 	ViewCopy:require("./bongiovi/ViewCopy"),
@@ -25,6 +27,7 @@ var bongiovi = {
 	MeshUtils:require("./bongiovi/MeshUtils"),
 	FrameBuffer:require("./bongiovi/FrameBuffer"),
 	EventDispatcher:require("./bongiovi/EventDispatcher"),
+	ObjLoader:require("./bongiovi/ObjLoader"),
 	glm:require("gl-matrix")
 };
 

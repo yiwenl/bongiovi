@@ -131,6 +131,8 @@ p.bind = function() {
 
 	if(this.shaderProgram.pMatrixUniform === undefined) {	this.shaderProgram.pMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uPMatrix");}
 	if(this.shaderProgram.mvMatrixUniform === undefined) {	this.shaderProgram.mvMatrixUniform = gl.getUniformLocation(this.shaderProgram, "uMVMatrix");}
+	if(this.shaderProgram.normalMatrixUniform === undefined) {	this.shaderProgram.normalMatrixUniform = gl.getUniformLocation(this.shaderProgram, "normalMatrix");}
+	if(this.shaderProgram.invertMVMatrixUniform === undefined) {	this.shaderProgram.invertMVMatrixUniform = gl.getUniformLocation(this.shaderProgram, "invertMVMatrix");}
 
 	GL.setShader(this);
 	GL.setShaderProgram(this.shaderProgram);
