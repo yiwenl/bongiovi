@@ -3,3 +3,4 @@ cinder/xcode/build
 .DS_Store
 npm-debug.log
 *.scssc
+UserInterfaceState.xcuserstate

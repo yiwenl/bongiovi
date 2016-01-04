@@ -85,7 +85,7 @@ MeshUtils.createPlane = function(width, height, numSegments, withNormals, axis) 
 	return mesh;
 };
 
-MeshUtils.createSphere = function(size, numSegments, withNormals) {
+MeshUtils.createSphere = function(size, numSegments, withNormals, isInvert) {
 	withNormals   = withNormals === undefined ? false : withNormals;
 	var positions = [];
 	var coords    = [];
@@ -147,6 +147,11 @@ MeshUtils.createSphere = function(size, numSegments, withNormals) {
 
 			index++;
 		}
+	}
+
+
+	if(isInvert) {
+		indices.reverse();
 	}
 
 

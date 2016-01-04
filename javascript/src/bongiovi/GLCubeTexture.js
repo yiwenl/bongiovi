@@ -38,8 +38,9 @@ var GLCubeTexture = function(sources, options) {
 	    
 	    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, this.wrapS);
 	    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, this.wrapT);
+	    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
 	}
-	gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+	
 
 	gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 };
