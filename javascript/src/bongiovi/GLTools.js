@@ -42,18 +42,31 @@ p.init = function(mCanvas, mWidth, mHeight, parameters) {
 	this.gl.clearColor( 0, 0, 0, 1 );
 	this.gl.clearDepth( 1 );
 
-	this.matrix                 = glm.mat4.create();
+	this.matrix                    = glm.mat4.create();
 	glm.mat4.identity(this.matrix);
-	this.normalMatrix           = glm.mat3.create();
-	this.invertMVMatrix         = glm.mat3.create();
-	this.depthTextureExt        = this.gl.getExtension("WEBKIT_WEBGL_depth_texture"); // Or browser-appropriate prefix
-	this.floatTextureExt        = this.gl.getExtension("OES_texture_float"); // Or browser-appropriate prefix
-	this.floatTextureLinearExt  = this.gl.getExtension("OES_texture_float_linear"); // Or browser-appropriate prefix
-	this.standardDerivativesExt = this.gl.getExtension("OES_standard_derivatives"); // Or browser-appropriate prefix
+	this.normalMatrix              = glm.mat3.create();
+	this.invertMVMatrix            = glm.mat3.create();
+
+	var extensions = ["EXT_shader_texture_lod", "GL_EXT_shader_texture_lod", "EXT_sRGB", "WEBKIT_WEBGL_depth_texture", "EXT_frag_depth", "OES_texture_float", "OES_texture_half_float", "OES_texture_float_linear", "OES_texture_half_float_linear", "OES_standard_derivatives"];
+	this.extensions = {};
+	for(var i=0; i<extensions.length; i++) {
+		this.extensions[extensions[i]] = this.gl.getExtension(extensions[i]);
+	}
 
 	this.enabledVertexAttribute = [];
 	this.enableAlphaBlending();
 	this._viewport = [0, 0, this.width, this.height];
+};
+
+
+
+p.showExtensions = function() {
+	for(var ext in this.extensions) {
+		if(this.extensions[ext]) {
+			console.log(ext, ':', this.extensions[ext]);	
+		}
+		
+	}	
 };
 
 

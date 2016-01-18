@@ -49,8 +49,15 @@ var GLTexture = function(source, isTexture, options) {
 
 		gl.bindTexture(gl.TEXTURE_2D, this.texture);
 		gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
 
+		if(source.exposure) {
+			// console.debug('Is HDR', source, typeof(source.data));
+			// gl.texImage2D(target, level, internalformat, width, height, border, format, type, buffer)
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.shape[0], source.shape[1], 0, gl.RGBA, gl.FLOAT, source.data);
+		} else {
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);	
+		}
+		
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.magFilter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.minFilter);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.wrapS);
