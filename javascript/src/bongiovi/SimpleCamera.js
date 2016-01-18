@@ -17,6 +17,7 @@ var s = CameraPerspective.prototype;
 p._init = function() {
 	this.radius          = new EaseNumber(500);
 	this.position[2]     = this.radius.value;
+	this.positionOffset  = glm.vec3.create();
 	this.center          = glm.vec3.create( );
 	this.up              = glm.vec3.clone( [0,-1,0] );
 	this.lookAt(this.position, this.center, this.up);
@@ -140,12 +141,11 @@ p.getMatrix = function() {
 
 
 p._updateCameraPosition = function() {
-	this.position[2] 	= this.radius.value;
-
 	this.position[1] = Math.sin(this._rx.value) * this.radius.value;
 	var tr = Math.cos(this._rx.value) * this.radius.value;
 	this.position[0] = Math.cos(this._ry.value + Math.PI*0.5) * tr;
 	this.position[2] = Math.sin(this._ry.value + Math.PI*0.5) * tr;
+	glm.vec3.add(this.position, this.position, this.positionOffset);
 };
 
 
