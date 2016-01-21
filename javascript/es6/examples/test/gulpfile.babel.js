@@ -28,8 +28,8 @@ function bundle() {
 	.pipe(source('bundle.js'))
 	.pipe(buffer())
 	.pipe(sourcemaps.init({ loadMaps: true }))
-	.pipe(gulp.dest('./dist/bundle/'))
 	.pipe(sourcemaps.write('./'))
+	.pipe(gulp.dest('./dist/bundle/'))
 	.pipe(reload({stream: true, once: true}));
 
     return b;
