@@ -1,8 +1,10 @@
 // GLTool.js
 
+import glm from 'gl-matrix';
+
 class GLTool {
 	constructor() {
-		console.log('GLTOOL : ');
+		console.log('GL TOOL : ', glm);
 	}
 }
 

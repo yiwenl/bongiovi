@@ -2,12 +2,17 @@
 
 import GLM from 'gl-matrix';
 import GLTool from './bongiovi/GLTool';
+import Scheduler from './bongiovi/tools/Scheduler';
 
-let bongiovi = {
-	glm: GLM,
-	GLTool: GLTool,
-	GL: GLTool
-};
+class bongiovi {
+	constructor() {
+		this.glm = GLM;
+		this.GL = GLTool;
+		this.GLTool = GLTool;
+		this.scheduler = Scheduler;
 
+		console.log(this.GL);
+	}
+}
 
-export default bongiovi;
+module.exports = new bongiovi();
