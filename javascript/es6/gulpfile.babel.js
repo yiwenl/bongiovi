@@ -10,6 +10,8 @@ import source from 'vinyl-source-stream';
 import sourcemaps from 'gulp-sourcemaps';
 import uglify from 'gulp-uglify';
 import jshint from 'gulp-jshint';
+import derequire from 'gulp-derequire';
+import watchify  from 'watchify';
 
 
 let logError = function(msg) {
@@ -17,11 +19,11 @@ let logError = function(msg) {
 }
 
 
-let bundler = browserify({
+let bundler = watchify(browserify({
     entries: 'src/bongiovi.js',
     standalone: 'bongiovi',
     debug: true
-});
+}, watchify.args));
 
 
 let lint = function() {
@@ -34,18 +36,23 @@ let lint = function() {
 
 
 let bundle = function() {
+    console.log('Bundle');
     bundler.transform(babelify);
 
     bundler.bundle()
         .on('error', logError)
         .pipe(source('bongiovi.js'))
         .pipe(buffer())
+        .pipe(derequire())
         .pipe(sourcemaps.init({ loadMaps: true }))
         // .pipe(uglify()) // Use any gulp plugins you want now
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('build'))
         .pipe(gulp.dest('examples/test/dist/bundle'));
 }
+
+bundler.on('update', bundle);
+
 
 
 let release = function() {
@@ -55,6 +62,7 @@ let release = function() {
         .on('error', logError)
         .pipe(source('bongiovi.min.js'))
         .pipe(buffer())
+        .pipe(derequire())
         .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(uglify()) // Use any gulp plugins you want now
         .pipe(sourcemaps.write('./'))
@@ -65,7 +73,7 @@ let release = function() {
 //  Tasks
 
 gulp.task('watch', function() {
-    gulp.watch('src/**/*.js', ['jshint', 'bundle']);
+    gulp.watch('src/**/*.js', ['jshint']);
 });
 
 gulp.task('jshint', lint);
