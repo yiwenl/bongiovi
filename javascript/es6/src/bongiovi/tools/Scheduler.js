@@ -44,7 +44,6 @@ class Scheduler {
 	}
 
 	removeEF(id) {
-		console.log('REMOVE EF:', id);
 		if(this._enterframeTasks[id] !== undefined) {
 			this._enterframeTasks[id] = null;
 		}
