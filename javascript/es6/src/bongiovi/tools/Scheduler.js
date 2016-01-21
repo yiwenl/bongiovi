@@ -35,42 +35,43 @@ class Scheduler {
 
 	//	PUBLIC METHODS
 
-	addEF(scope, func, params) {
+	addEF(func, params) {
 		params = params || [];
 		let id = this._idTable;
-		this._enterframeTasks[id] = {scope:scope, func:func, params:params};
+		this._enterframeTasks[id] = {func:func, params:params};
 		this._idTable ++;
 		return id;
 	}
 
 	removeEF(id) {
+		console.log('REMOVE EF:', id);
 		if(this._enterframeTasks[id] !== undefined) {
 			this._enterframeTasks[id] = null;
 		}
 		return -1;
 	}
 
-	delay(scope, func, params, delay) {
+	delay(func, params, delay) {
 		let time = new Date().getTime();
-		let t = {scope:scope, func:func, params:params, delay:delay, time:time};
+		let t = {func:func, params:params, delay:delay, time:time};
 		this._delayTasks.push(t);
 	}
 
-	defer(scope, func, params) {
-		let t = {scope:scope, func:func, params:params};
+	defer(func, params) {
+		let t = {func:func, params:params};
 		this._deferTasks.push(t);
 	}
 
-	next(scope, func, params) {
-		let t = {scope:scope, func:func, params:params};
+	next(func, params) {
+		let t = {func:func, params:params};
 		this._nextTasks.push(t);
 	}
 
-	usurp(scope, func, params) {
-		let t = {scope:scope, func:func, params:params};
+	usurp(func, params) {
+		let t = {func:func, params:params};
 		this._usurpTask.push(t);
 	}
-	
+
 
 	//	PRIVATE METHODS
 
@@ -80,13 +81,16 @@ class Scheduler {
 		for ( i=0; i<this._enterframeTasks.length; i++) {
 			task = this._enterframeTasks[i];
 			if(task !== null && task !== undefined) {
-				task.func.apply(task.scope, task.params);
+				// task.func.apply(task.scope, task.params);
+				// console.log(task.func());
+				task.func(task.params);
 			}
 		}
 		
 		while ( this._highTasks.length > 0) {
 			task = this._highTasks.pop();
-			task.func.apply(task.scope, task.params);
+			task.func(task.params);
+			// task.func.apply(task.scope, task.params);
 		}
 		
 
@@ -95,7 +99,8 @@ class Scheduler {
 		for ( i=0; i<this._delayTasks.length; i++) {
 			task = this._delayTasks[i];
 			if(startTime-task.time > task.delay) {
-				task.func.apply(task.scope, task.params);
+				// task.func.apply(task.scope, task.params);
+				task.func(task.params);
 				this._delayTasks.splice(i, 1);
 			}
 		}
@@ -106,7 +111,8 @@ class Scheduler {
 			task = this._deferTasks.shift();
 			current = new Date().getTime();
 			if(current - startTime < interval ) {
-				task.func.apply(task.scope, task.params);
+				// task.func.apply(task.scope, task.params);
+				task.func(task.params);
 			} else {
 				this._deferTasks.unshift(task);
 				break;
@@ -120,7 +126,8 @@ class Scheduler {
 			task = this._usurpTask.shift();
 			current = new Date().getTime();
 			if(current - startTime < interval ) {
-				task.func.apply(task.scope, task.params);
+				// task.func.apply(task.scope, task.params);
+				task.func(task.params);
 			} else {
 				// this._usurpTask.unshift(task);
 				break;
