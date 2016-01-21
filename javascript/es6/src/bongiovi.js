@@ -2,10 +2,13 @@
 import Test from './test';
 import GLM from 'gl-matrix';
 
+let tt = new Test();
+
 let bongiovi = {
 	glm: GLM,
-	test: Test,
-	title: 'title'
+	test: tt,
+	title: 'title',
+	name: 'bongiovi'
 };
 
 
