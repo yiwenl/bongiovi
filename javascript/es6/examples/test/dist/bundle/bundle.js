@@ -311,9 +311,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             j = s * d - m * v,
             Y = s * p - h * v,
             P = l * d - m * M,
-            E = l * p - h * M,
-            T = m * p - h * d,
-            _ = g * T - A * E + w * P + R * Y - q * j + x * y;return _ ? (_ = 1 / _, t[0] = (i * T - c * E + f * P) * _, t[1] = (c * Y - u * T - f * j) * _, t[2] = (u * E - i * Y + f * y) * _, t[3] = (a * E - e * T - o * P) * _, t[4] = (r * T - a * Y + o * j) * _, t[5] = (e * Y - r * E - o * y) * _, t[6] = (M * x - d * q + p * R) * _, t[7] = (d * w - v * x - p * A) * _, t[8] = (v * q - M * w + p * g) * _, t) : null;
+            T = l * p - h * M,
+            E = m * p - h * d,
+            _ = g * E - A * T + w * P + R * Y - q * j + x * y;return _ ? (_ = 1 / _, t[0] = (i * E - c * T + f * P) * _, t[1] = (c * Y - u * E - f * j) * _, t[2] = (u * T - i * Y + f * y) * _, t[3] = (a * T - e * E - o * P) * _, t[4] = (r * E - a * Y + o * j) * _, t[5] = (e * Y - r * T - o * y) * _, t[6] = (M * x - d * q + p * R) * _, t[7] = (d * w - v * x - p * A) * _, t[8] = (v * q - M * w + p * g) * _, t) : null;
       }, a.str = function (t) {
         return "mat3(" + t[0] + ", " + t[1] + ", " + t[2] + ", " + t[3] + ", " + t[4] + ", " + t[5] + ", " + t[6] + ", " + t[7] + ", " + t[8] + ")";
       }, a.frob = function (t) {
@@ -365,9 +365,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             j = s * d - m * v,
             Y = s * p - h * v,
             P = l * d - m * M,
-            E = l * p - h * M,
-            T = m * p - h * d,
-            _ = g * T - A * E + w * P + R * Y - q * j + x * y;return _ ? (_ = 1 / _, t[0] = (i * T - c * E + f * P) * _, t[1] = (a * E - e * T - o * P) * _, t[2] = (M * x - d * q + p * R) * _, t[3] = (m * q - l * x - h * R) * _, t[4] = (c * Y - u * T - f * j) * _, t[5] = (r * T - a * Y + o * j) * _, t[6] = (d * w - v * x - p * A) * _, t[7] = (s * x - m * w + h * A) * _, t[8] = (u * E - i * Y + f * y) * _, t[9] = (e * Y - r * E - o * y) * _, t[10] = (v * q - M * w + p * g) * _, t[11] = (l * w - s * q - h * g) * _, t[12] = (i * j - u * P - c * y) * _, t[13] = (r * P - e * j + a * y) * _, t[14] = (M * A - v * R - d * g) * _, t[15] = (s * R - l * A + m * g) * _, t) : null;
+            T = l * p - h * M,
+            E = m * p - h * d,
+            _ = g * E - A * T + w * P + R * Y - q * j + x * y;return _ ? (_ = 1 / _, t[0] = (i * E - c * T + f * P) * _, t[1] = (a * T - e * E - o * P) * _, t[2] = (M * x - d * q + p * R) * _, t[3] = (m * q - l * x - h * R) * _, t[4] = (c * Y - u * E - f * j) * _, t[5] = (r * E - a * Y + o * j) * _, t[6] = (d * w - v * x - p * A) * _, t[7] = (s * x - m * w + h * A) * _, t[8] = (u * T - i * Y + f * y) * _, t[9] = (e * Y - r * T - o * y) * _, t[10] = (v * q - M * w + p * g) * _, t[11] = (l * w - s * q - h * g) * _, t[12] = (i * j - u * P - c * y) * _, t[13] = (r * P - e * j + a * y) * _, t[14] = (M * A - v * R - d * g) * _, t[15] = (s * R - l * A + m * g) * _, t) : null;
       }, a.adjoint = function (t, n) {
         var r = n[0],
             e = n[1],
@@ -413,7 +413,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             j = f * d - m * h,
             Y = s * M - l * v,
             P = s * d - m * v,
-            E = l * d - m * M;return p * E - g * P + A * Y + w * j - R * y + q * x;
+            T = l * d - m * M;return p * T - g * P + A * Y + w * j - R * y + q * x;
       }, a.multiply = function (t, n, r) {
         var e = n[0],
             a = n[1],
@@ -479,11 +479,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             j,
             Y,
             P,
-            E,
-            T = a[0],
+            T,
+            E = a[0],
             _ = a[1],
             b = a[2],
-            D = Math.sqrt(T * T + _ * _ + b * b);return Math.abs(D) < e.EPSILON ? null : (D = 1 / D, T *= D, _ *= D, b *= D, o = Math.sin(r), u = Math.cos(r), i = 1 - u, c = n[0], f = n[1], s = n[2], l = n[3], m = n[4], h = n[5], v = n[6], M = n[7], d = n[8], p = n[9], g = n[10], A = n[11], w = T * T * i + u, R = _ * T * i + b * o, q = b * T * i - _ * o, x = T * _ * i - b * o, y = _ * _ * i + u, j = b * _ * i + T * o, Y = T * b * i + _ * o, P = _ * b * i - T * o, E = b * b * i + u, t[0] = c * w + m * R + d * q, t[1] = f * w + h * R + p * q, t[2] = s * w + v * R + g * q, t[3] = l * w + M * R + A * q, t[4] = c * x + m * y + d * j, t[5] = f * x + h * y + p * j, t[6] = s * x + v * y + g * j, t[7] = l * x + M * y + A * j, t[8] = c * Y + m * P + d * E, t[9] = f * Y + h * P + p * E, t[10] = s * Y + v * P + g * E, t[11] = l * Y + M * P + A * E, n !== t && (t[12] = n[12], t[13] = n[13], t[14] = n[14], t[15] = n[15]), t);
+            L = Math.sqrt(E * E + _ * _ + b * b);return Math.abs(L) < e.EPSILON ? null : (L = 1 / L, E *= L, _ *= L, b *= L, o = Math.sin(r), u = Math.cos(r), i = 1 - u, c = n[0], f = n[1], s = n[2], l = n[3], m = n[4], h = n[5], v = n[6], M = n[7], d = n[8], p = n[9], g = n[10], A = n[11], w = E * E * i + u, R = _ * E * i + b * o, q = b * E * i - _ * o, x = E * _ * i - b * o, y = _ * _ * i + u, j = b * _ * i + E * o, Y = E * b * i + _ * o, P = _ * b * i - E * o, T = b * b * i + u, t[0] = c * w + m * R + d * q, t[1] = f * w + h * R + p * q, t[2] = s * w + v * R + g * q, t[3] = l * w + M * R + A * q, t[4] = c * x + m * y + d * j, t[5] = f * x + h * y + p * j, t[6] = s * x + v * y + g * j, t[7] = l * x + M * y + A * j, t[8] = c * Y + m * P + d * T, t[9] = f * Y + h * P + p * T, t[10] = s * Y + v * P + g * T, t[11] = l * Y + M * P + A * T, n !== t && (t[12] = n[12], t[13] = n[13], t[14] = n[14], t[15] = n[15]), t);
       }, a.rotateX = function (t, n, r) {
         var e = Math.sin(r),
             a = Math.cos(r),
@@ -1052,19 +1052,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
       "use strict";
       function e(t) {
         return t && t.__esModule ? t : { "default": t };
-      }Object.defineProperty(r, "__esModule", { value: !0 });var a = t("./test"),
+      }Object.defineProperty(r, "__esModule", { value: !0 });var a = t("gl-matrix"),
           o = e(a),
-          u = t("gl-matrix"),
+          u = t("./bongiovi/GLTool"),
           i = e(u),
-          c = new o["default"](),
-          f = { glm: i["default"], test: c, title: "title", name: "bongiovi" };r["default"] = f;
-    }, { "./test": 12, "gl-matrix": 1 }], 12: [function (t, n, r) {
+          c = { glm: o["default"], GLTool: i["default"], GL: i["default"] };r["default"] = c;
+    }, { "./bongiovi/GLTool": 12, "gl-matrix": 1 }], 12: [function (t, n, r) {
       "use strict";
       function e(t, n) {
         if (!(t instanceof n)) throw new TypeError("Cannot call a class as a function");
-      }Object.defineProperty(r, "__esModule", { value: !0 });var a = function o() {
-        e(this, o), console.log("This is test");
-      };r["default"] = a;
+      }Object.defineProperty(r, "__esModule", { value: !0 });var a = function u() {
+        e(this, u), console.log("GLTOOL : ");
+      },
+          o = new a();r["default"] = o;
     }, {}] }, {}, [11])(11);
 });
 

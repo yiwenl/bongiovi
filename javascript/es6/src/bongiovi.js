@@ -1,14 +1,12 @@
 // bongiovi.js
-import Test from './test';
-import GLM from 'gl-matrix';
 
-let tt = new Test();
+import GLM from 'gl-matrix';
+import GLTool from './bongiovi/GLTool';
 
 let bongiovi = {
 	glm: GLM,
-	test: tt,
-	title: 'title',
-	name: 'bongiovi'
+	GLTool: GLTool,
+	GL: GLTool
 };
 
 
