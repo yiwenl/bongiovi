@@ -16,11 +16,13 @@ let logError = function(msg) {
     console.log('Error', msg.toString());   
 }
 
+
 let bundler = browserify({
     entries: 'src/bongiovi.js',
     standalone: 'bongiovi',
     debug: true
 });
+
 
 let lint = function() {
     return gulp.src([
@@ -39,9 +41,25 @@ let bundle = function() {
         .pipe(source('bongiovi.js'))
         .pipe(buffer())
         .pipe(sourcemaps.init({ loadMaps: true }))
+        // .pipe(uglify()) // Use any gulp plugins you want now
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('build'))
+        .pipe(gulp.dest('examples/test/dist/bundle'));
+}
+
+
+let release = function() {
+    bundler.transform(babelify);
+
+    bundler.bundle()
+        .on('error', logError)
+        .pipe(source('bongiovi.min.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({ loadMaps: true }))
         .pipe(uglify()) // Use any gulp plugins you want now
         .pipe(sourcemaps.write('./'))
-        .pipe(gulp.dest('build'));
+        .pipe(gulp.dest('build'))
+        .pipe(gulp.dest('examples/test/dist/bundle'));
 }
 
 //  Tasks
@@ -49,7 +67,10 @@ let bundle = function() {
 gulp.task('watch', function() {
     gulp.watch('src/**/*.js', ['jshint', 'bundle']);
 });
+
 gulp.task('jshint', lint);
 gulp.task('lint', lint);
 gulp.task('bundle', bundle);
+gulp.task('release', release);
+gulp.task('build', ['jshint', 'bundle', 'release']);
 gulp.task('default', ['jshint', 'bundle', 'watch']);
